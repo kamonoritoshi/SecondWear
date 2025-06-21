@@ -1,0 +1,201 @@
+package com.sw.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
+import com.sw.entity.Account;
+import com.sw.entity.Order;
+import com.sw.entity.Product;
+import com.sw.entity.Role;
+import com.sw.entity.User;
+import com.sw.service.AccountService;
+import com.sw.service.OrderService;
+import com.sw.service.ProductService;
+import com.sw.service.RoleService;
+import com.sw.service.UserService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
+@org.springframework.web.bind.annotation.RestController
+public class RestController {
+	@Autowired
+	private ProductService pService;
+	@Autowired
+	private AccountService aService;
+	@Autowired
+	private UserService uService;
+	@Autowired
+    private RoleService rService;
+	@Autowired
+    private OrderService oService;
+	
+	// Product REST API
+	
+	@GetMapping("/api/products")
+	public List<Product> getAllProducts() {
+		return pService.getAllProducts();
+	}
+	
+	@GetMapping("/api/products/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = pService.getProductById(id);
+        if (product == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(product);
+    }
+	
+	@PostMapping("/api/products")
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        return ResponseEntity.ok(pService.createProduct(product));
+    }
+	
+	@PutMapping("/api/products/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Product updated = pService.updateProduct(id, product);
+        if (updated == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
+    }
+	
+	@DeleteMapping("/api/products/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        pService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+	
+	// Account REST API
+	
+	@GetMapping("/api/accounts")
+    public List<Account> getAllAccounts() {
+        return aService.getAllAccounts();
+    }
+
+    @GetMapping("/api/accounts/{id}")
+    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
+        Account account = aService.getAccountById(id);
+        if (account == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(account);
+    }
+
+    @PostMapping("/api/accounts")
+    public ResponseEntity<Account> createAccount(@RequestBody Account account) {
+        return ResponseEntity.ok(aService.createAccount(account));
+    }
+
+    @PutMapping("/api/accounts/{id}")
+    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account account) {
+        Account updated = aService.updateAccount(id, account);
+        if (updated == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/api/accounts/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+        aService.deleteAccount(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    // User REST API
+    
+    @GetMapping("/api/users")
+    public List<User> getAllUsers() {
+        return uService.getAllUsers();
+    }
+
+    @GetMapping("/api/users/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = uService.getUserById(id);
+        if (user == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/api/users")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(uService.createUser(user));
+    }
+
+    @PutMapping("/api/users/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        User updated = uService.updateUser(id, user);
+        if (updated == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/api/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        uService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    // Role REST API
+    
+    @GetMapping("/api/roles")
+    public List<Role> getAllRoles() {
+        return rService.getAllRoles();
+    }
+
+    @GetMapping("/api/roles/{id}")
+    public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
+        Role role = rService.getRoleById(id);
+        if (role == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(role);
+    }
+
+    @PostMapping("/api/roles")
+    public ResponseEntity<Role> createRole(@RequestBody Role role) {
+        return ResponseEntity.ok(rService.createRole(role));
+    }
+
+    @PutMapping("/api/roles/{id}")
+    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
+        Role updated = rService.updateRole(id, role);
+        if (updated == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/api/roles/{id}")
+    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
+        rService.deleteRole(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    // Order REST API
+    
+    @GetMapping("/api/orders")
+    public List<Order> getAllOrders() {
+        return oService.getAllOrders();
+    }
+
+    @GetMapping("/api/orders/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+        Order order = oService.getOrderById(id);
+        if (order == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/api/orders")
+    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+        return ResponseEntity.ok(oService.createOrder(order));
+    }
+
+    @PutMapping("/api/orders/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
+        Order updated = oService.updateOrder(id, order);
+        if (updated == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/api/orders/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        oService.deleteOrder(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    
+}
