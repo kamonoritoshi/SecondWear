@@ -217,6 +217,30 @@ public class RestController {
         return ResponseEntity.noContent().build();
     }
     
+ // Lấy đơn hàng theo tài khoản
+    @GetMapping("/api/orders/account/{accountId}")
+    public List<Order> getOrdersByAccount(@PathVariable Long accountId) {
+        return oService.getOrdersByAccount(accountId);
+    }
+
+    // Lấy đơn hàng theo trạng thái
+    @GetMapping("/api/orders/status/{status}")
+    public List<Order> getOrdersByStatus(@PathVariable String status) {
+        return oService.getOrdersByStatus(status);
+    }
+
+    // Lấy đơn hàng theo tài khoản và trạng thái
+    @GetMapping("/api/orders/account/{accountId}/status/{status}")
+    public List<Order> getOrdersByAccountAndStatus(@PathVariable Long accountId, @PathVariable String status) {
+        return oService.getOrdersByAccountAndStatus(accountId, status);
+    }
+
+    // Lấy tất cả đơn hàng mới nhất trước
+    @GetMapping("/sorted/latest")
+    public List<Order> getAllOrdersSortedByDateDesc() {
+        return oService.getOrdersSortedByDateDesc();
+    }
+    
     // Payment REST API
     
     @GetMapping("/api/payments")
