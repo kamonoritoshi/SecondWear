@@ -14,6 +14,9 @@ public class OrderService {
 
     @Autowired
     private OrderRepository oDAO;
+    
+    @Autowired
+    private AccountService accountService;
 
     // Lấy tất cả đơn hàng
     public List<Order> getAllOrders() {
@@ -50,8 +53,8 @@ public class OrderService {
 
     // Lấy đơn hàng theo accountId
     public List<Order> getOrdersByAccount(Long accountId) {
-        Account acc = new Account();
-        acc.setAccountId(accountId);
+        Account acc = accountService.getAccountById(accountId); // lấy thật từ DB
+        if (acc == null) return List.of();
         return oDAO.findByAccount(acc);
     }
 
