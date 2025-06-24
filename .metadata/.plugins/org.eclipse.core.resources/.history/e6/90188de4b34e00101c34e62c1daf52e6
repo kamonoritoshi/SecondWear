@@ -1,0 +1,5 @@
+package com.sw.dao;
+
+public interface ShippingRepository {
+
+}

@@ -1,0 +1,5 @@
+package com.sw.entity;
+
+public class Complaint {
+
+}
