@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @org.springframework.web.bind.annotation.RestController
@@ -218,25 +219,26 @@ public class RestController {
     }
     
  // Lấy đơn hàng theo tài khoản
-    @GetMapping("/api/orders/account/{accountId}")
+    @GetMapping("/api/orders/accounts/{accountId}")
     public List<Order> getOrdersByAccount(@PathVariable Long accountId) {
         return oService.getOrdersByAccount(accountId);
     }
 
     // Lấy đơn hàng theo trạng thái
-    @GetMapping("/api/orders/status/{status}")
-    public List<Order> getOrdersByStatus(@PathVariable String status) {
+    //http://localhost:9999/api/orders/status?status=Hoàn thành
+    @GetMapping("/api/orders/status")
+    public List<Order> getOrdersByStatus(@RequestParam String status) {
         return oService.getOrdersByStatus(status);
     }
 
     // Lấy đơn hàng theo tài khoản và trạng thái
-    @GetMapping("/api/orders/account/{accountId}/status/{status}")
+    @GetMapping("/api/orders/accounts/{accountId}/status/{status}")
     public List<Order> getOrdersByAccountAndStatus(@PathVariable Long accountId, @PathVariable String status) {
         return oService.getOrdersByAccountAndStatus(accountId, status);
     }
 
     // Lấy tất cả đơn hàng mới nhất trước
-    @GetMapping("/sorted/latest")
+    @GetMapping("/api/orders/sorted/latest")
     public List<Order> getAllOrdersSortedByDateDesc() {
         return oService.getOrdersSortedByDateDesc();
     }
