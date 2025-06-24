@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
@@ -87,5 +90,15 @@ public class RestController {
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         aService.deleteAccount(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/api/products/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+        return ResponseEntity.ok(pService.searchProductsByName(name));
+    }
+
+    @GetMapping("/api/products/paged")
+    public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(pService.getAllProducts(pageable));
     }
 }

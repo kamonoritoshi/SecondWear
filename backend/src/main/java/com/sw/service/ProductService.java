@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.sw.dao.ProductRepository;
 import com.sw.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ProductService {
@@ -42,5 +44,13 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
     	pDAO.deleteById(id);
+    }
+    
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return pDAO.findAll(pageable);
+    }
+
+    public List<Product> searchProductsByName(String name) {
+        return pDAO.findByNameContainingIgnoreCase(name);
     }
 }
