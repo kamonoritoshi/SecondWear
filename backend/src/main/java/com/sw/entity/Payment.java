@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 public class Payment {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "payment_id")
     private Long paymentId;
 
     @OneToOne
@@ -36,6 +37,7 @@ public class Payment {
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
     @Column(nullable = false)

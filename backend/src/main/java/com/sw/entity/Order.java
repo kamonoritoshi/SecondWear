@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 public class Order {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "order_id")
     private Long orderId;
 
     @ManyToOne
@@ -36,10 +37,11 @@ public class Order {
 
     @Column(nullable = false)
     private String status;
-
+    
+    @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    @Column(nullable = false)
+    @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
     @PrePersist

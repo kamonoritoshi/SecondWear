@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Review {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "review_id")
     private Long reviewId;
 
     @ManyToOne
@@ -39,6 +40,7 @@ public class Review {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String comment;
 
+    @Column(name = "review_date")
     private LocalDateTime reviewDate;
 
     @PrePersist

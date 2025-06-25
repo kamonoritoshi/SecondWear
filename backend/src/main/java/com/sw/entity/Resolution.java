@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Resolution {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "resolution_id")
     private Long resolutionId;
 
     @OneToOne
@@ -32,6 +33,7 @@ public class Resolution {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String result;
 
+    @Column(name = "resolution_date")
     private LocalDateTime resolutionDate;
 
     @PrePersist

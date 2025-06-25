@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
+import com.sw.dao.ProductRepository;
 import com.sw.entity.Account;
 import com.sw.entity.Complaint;
 import com.sw.entity.Order;
 import com.sw.entity.Payment;
 import com.sw.entity.Product;
+import com.sw.entity.ProductImage;
 import com.sw.entity.Resolution;
 import com.sw.entity.Review;
 import com.sw.entity.Role;
@@ -19,6 +21,7 @@ import com.sw.service.AccountService;
 import com.sw.service.ComplaintService;
 import com.sw.service.OrderService;
 import com.sw.service.PaymentService;
+import com.sw.service.ProductImageService;
 import com.sw.service.ProductService;
 import com.sw.service.ResolutionService;
 import com.sw.service.ReviewService;
@@ -46,372 +49,419 @@ public class RestController {
 	@Autowired
 	private UserService uService;
 	@Autowired
-    private RoleService rService;
+	private RoleService rService;
 	@Autowired
-    private OrderService oService;
+	private OrderService oService;
 	@Autowired
-    private PaymentService paymentService;
+	private PaymentService paymentService;
 	@Autowired
-    private ShippingService shippingService;
+	private ShippingService shippingService;
 	@Autowired
-    private ReviewService reviewService;
+	private ReviewService reviewService;
 	@Autowired
-    private ComplaintService complaintService;
+	private ComplaintService complaintService;
 	@Autowired
-    private ResolutionService resolutionService;
-	
+	private ResolutionService resolutionService;
+	@Autowired
+	private ProductImageService productImageService;
+	@Autowired
+    private ProductRepository productRepo;
+
 	// Product REST API
-	
+
 	@GetMapping("/api/products")
 	public List<Product> getAllProducts() {
 		return pService.getAllProducts();
 	}
-	
+
 	@GetMapping("/api/products/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = pService.getProductById(id);
-        if (product == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(product);
-    }
-	
+	public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+		Product product = pService.getProductById(id);
+		if (product == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(product);
+	}
+
 	@PostMapping("/api/products")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(pService.createProduct(product));
-    }
-	
+	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+		return ResponseEntity.ok(pService.createProduct(product));
+	}
+
 	@PutMapping("/api/products/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Product updated = pService.updateProduct(id, product);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
-	
+	public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+		Product updated = pService.updateProduct(id, product);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
+
 	@DeleteMapping("/api/products/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        pService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    @GetMapping("/api/products/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
-        return ResponseEntity.ok(pService.searchProductsByName(name));
-    }
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+		pService.deleteProduct(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @GetMapping("/api/products/paged")
-    public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(pService.getAllProducts(pageable));
-    }
-	
+	@GetMapping("/api/products/search")
+	public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+		return ResponseEntity.ok(pService.searchProductsByName(name));
+	}
+
+	@GetMapping("/api/products/paged")
+	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
+		return ResponseEntity.ok(pService.getAllProducts(pageable));
+	}
+
+	// ProductImage REST API
+
+	@GetMapping("/api/product-images/product/{productId}")
+	public List<ProductImage> getImagesByProduct(@PathVariable Long productId) {
+		return productImageService.getImagesByProductId(productId);
+	}
+
+	@PostMapping("/api/product-images/product/{productId}")
+	public ResponseEntity<?> addImage(@PathVariable Long productId, @RequestParam String imageUrl) {
+		Product product = productRepo.findById(productId).orElse(null);
+		if (product == null) {
+			return ResponseEntity.notFound().build();
+		}
+		ProductImage saved = productImageService.addImage(product, imageUrl);
+		return ResponseEntity.ok(saved);
+	}
+
+	@DeleteMapping("/api/product-images/{imageId}")
+	public ResponseEntity<?> deleteImage(@PathVariable Long imageId) {
+		productImageService.deleteImage(imageId);
+		return ResponseEntity.ok("Image deleted");
+	}
+
 	// Account REST API
-	
+
 	@GetMapping("/api/accounts")
-    public List<Account> getAllAccounts() {
-        return aService.getAllAccounts();
-    }
+	public List<Account> getAllAccounts() {
+		return aService.getAllAccounts();
+	}
 
-    @GetMapping("/api/accounts/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
-        Account account = aService.getAccountById(id);
-        if (account == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(account);
-    }
+	@GetMapping("/api/accounts/{id}")
+	public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
+		Account account = aService.getAccountById(id);
+		if (account == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(account);
+	}
 
-    @PostMapping("/api/accounts")
-    public ResponseEntity<Account> createAccount(@RequestBody Account account) {
-        return ResponseEntity.ok(aService.createAccount(account));
-    }
+	@PostMapping("/api/accounts")
+	public ResponseEntity<Account> createAccount(@RequestBody Account account) {
+		return ResponseEntity.ok(aService.createAccount(account));
+	}
 
-    @PutMapping("/api/accounts/{id}")
-    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account account) {
-        Account updated = aService.updateAccount(id, account);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@PutMapping("/api/accounts/{id}")
+	public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account account) {
+		Account updated = aService.updateAccount(id, account);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
 
-    @DeleteMapping("/api/accounts/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        aService.deleteAccount(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // User REST API
-    
-    @GetMapping("/api/users")
-    public List<User> getAllUsers() {
-        return uService.getAllUsers();
-    }
+	@DeleteMapping("/api/accounts/{id}")
+	public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+		aService.deleteAccount(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @GetMapping("/api/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = uService.getUserById(id);
-        if (user == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(user);
-    }
+	// User REST API
 
-    @PostMapping("/api/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(uService.createUser(user));
-    }
+	@GetMapping("/api/users")
+	public List<User> getAllUsers() {
+		return uService.getAllUsers();
+	}
 
-    @PutMapping("/api/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        User updated = uService.updateUser(id, user);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@GetMapping("/api/users/{id}")
+	public ResponseEntity<User> getUserById(@PathVariable Long id) {
+		User user = uService.getUserById(id);
+		if (user == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(user);
+	}
 
-    @DeleteMapping("/api/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        uService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Role REST API
-    
-    @GetMapping("/api/roles")
-    public List<Role> getAllRoles() {
-        return rService.getAllRoles();
-    }
+	@PostMapping("/api/users")
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+		return ResponseEntity.ok(uService.createUser(user));
+	}
 
-    @GetMapping("/api/roles/{id}")
-    public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
-        Role role = rService.getRoleById(id);
-        if (role == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(role);
-    }
+	@PutMapping("/api/users/{id}")
+	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+		User updated = uService.updateUser(id, user);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
 
-    @PostMapping("/api/roles")
-    public ResponseEntity<Role> createRole(@RequestBody Role role) {
-        return ResponseEntity.ok(rService.createRole(role));
-    }
+	@DeleteMapping("/api/users/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+		uService.deleteUser(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @PutMapping("/api/roles/{id}")
-    public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
-        Role updated = rService.updateRole(id, role);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	// Role REST API
 
-    @DeleteMapping("/api/roles/{id}")
-    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
-        rService.deleteRole(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Order REST API
-    
-    @GetMapping("/api/orders")
-    public List<Order> getAllOrders() {
-        return oService.getAllOrders();
-    }
+	@GetMapping("/api/roles")
+	public List<Role> getAllRoles() {
+		return rService.getAllRoles();
+	}
 
-    @GetMapping("/api/orders/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        Order order = oService.getOrderById(id);
-        if (order == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(order);
-    }
+	@GetMapping("/api/roles/{id}")
+	public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
+		Role role = rService.getRoleById(id);
+		if (role == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(role);
+	}
 
-    @PostMapping("/api/orders")
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        return ResponseEntity.ok(oService.createOrder(order));
-    }
+	@PostMapping("/api/roles")
+	public ResponseEntity<Role> createRole(@RequestBody Role role) {
+		return ResponseEntity.ok(rService.createRole(role));
+	}
 
-    @PutMapping("/api/orders/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
-        Order updated = oService.updateOrder(id, order);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@PutMapping("/api/roles/{id}")
+	public ResponseEntity<Role> updateRole(@PathVariable Long id, @RequestBody Role role) {
+		Role updated = rService.updateRole(id, role);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
 
-    @DeleteMapping("/api/orders/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        oService.deleteOrder(id);
-        return ResponseEntity.noContent().build();
-    }
-    
- // Lấy đơn hàng theo tài khoản
-    @GetMapping("/api/orders/accounts/{accountId}")
-    public List<Order> getOrdersByAccount(@PathVariable Long accountId) {
-        return oService.getOrdersByAccount(accountId);
-    }
+	@DeleteMapping("/api/roles/{id}")
+	public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
+		rService.deleteRole(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    // Lấy đơn hàng theo trạng thái
-    //http://localhost:9999/api/orders/status?status=Hoàn thành
-    @GetMapping("/api/orders/status")
-    public List<Order> getOrdersByStatus(@RequestParam String status) {
-        return oService.getOrdersByStatus(status);
-    }
+	// Order REST API
 
-    // Lấy đơn hàng theo tài khoản và trạng thái
-    @GetMapping("/api/orders/accounts/{accountId}/status/{status}")
-    public List<Order> getOrdersByAccountAndStatus(@PathVariable Long accountId, @PathVariable String status) {
-        return oService.getOrdersByAccountAndStatus(accountId, status);
-    }
+	@GetMapping("/api/orders")
+	public List<Order> getAllOrders() {
+		return oService.getAllOrders();
+	}
 
-    // Lấy tất cả đơn hàng mới nhất trước
-    @GetMapping("/api/orders/sorted/latest")
-    public List<Order> getAllOrdersSortedByDateDesc() {
-        return oService.getOrdersSortedByDateDesc();
-    }
-    
-    // Payment REST API
-    
-    @GetMapping("/api/payments")
-    public List<Payment> getAllPayments() {
-        return paymentService.getAllPayments();
-    }
+	@GetMapping("/api/orders/{id}")
+	public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+		Order order = oService.getOrderById(id);
+		if (order == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(order);
+	}
 
-    @GetMapping("/api/payments/{id}")
-    public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
-        Payment payment = paymentService.getPaymentById(id);
-        if (payment == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(payment);
-    }
+	@PostMapping("/api/orders")
+	public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+		return ResponseEntity.ok(oService.createOrder(order));
+	}
 
-    @PostMapping("/api/payments")
-    public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
-        return ResponseEntity.ok(paymentService.createPayment(payment));
-    }
+	@PutMapping("/api/orders/{id}")
+	public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
+		Order updated = oService.updateOrder(id, order);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
 
-    @PutMapping("/api/payments/{id}")
-    public ResponseEntity<Payment> updatePayment(@PathVariable Long id, @RequestBody Payment payment) {
-        Payment updated = paymentService.updatePayment(id, payment);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@DeleteMapping("/api/orders/{id}")
+	public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+		oService.deleteOrder(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @DeleteMapping("/api/payments/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
-        paymentService.deletePayment(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Shipping REST API
-    
-    @GetMapping("/api/shippings")
-    public List<Shipping> getAllShippings() {
-        return shippingService.getAllShippings();
-    }
+	// Lấy đơn hàng theo tài khoản
+	@GetMapping("/api/orders/accounts/{accountId}")
+	public List<Order> getOrdersByAccount(@PathVariable Long accountId) {
+		return oService.getOrdersByAccount(accountId);
+	}
 
-    @GetMapping("/api/shippings/{id}")
-    public ResponseEntity<Shipping> getShippingById(@PathVariable Long id) {
-        Shipping shipping = shippingService.getShippingById(id);
-        if (shipping == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(shipping);
-    }
+	// Lấy đơn hàng theo trạng thái
+	// http://localhost:9999/api/orders/status?status=Hoàn thành
+	@GetMapping("/api/orders/status")
+	public List<Order> getOrdersByStatus(@RequestParam String status) {
+		return oService.getOrdersByStatus(status);
+	}
 
-    @PostMapping("/api/shippings")
-    public ResponseEntity<Shipping> createShipping(@RequestBody Shipping shipping) {
-        return ResponseEntity.ok(shippingService.createShipping(shipping));
-    }
+	// Lấy đơn hàng theo tài khoản và trạng thái
+	@GetMapping("/api/orders/accounts/{accountId}/status/{status}")
+	public List<Order> getOrdersByAccountAndStatus(@PathVariable Long accountId, @PathVariable String status) {
+		return oService.getOrdersByAccountAndStatus(accountId, status);
+	}
 
-    @PutMapping("/api/shippings/{id}")
-    public ResponseEntity<Shipping> updateShipping(@PathVariable Long id, @RequestBody Shipping shipping) {
-        Shipping updated = shippingService.updateShipping(id, shipping);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	// Lấy tất cả đơn hàng mới nhất trước
+	@GetMapping("/api/orders/sorted/latest")
+	public List<Order> getAllOrdersSortedByDateDesc() {
+		return oService.getOrdersSortedByDateDesc();
+	}
 
-    @DeleteMapping("/api/shippings/{id}")
-    public ResponseEntity<Void> deleteShipping(@PathVariable Long id) {
-        shippingService.deleteShipping(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Review REST API
-    
-    @GetMapping("/api/reviews")
-    public List<Review> getAllReviews() {
-        return reviewService.getAllReviews();
-    }
+	// Payment REST API
 
-    @GetMapping("/api/reviews/{id}")
-    public ResponseEntity<Review> getReviewById(@PathVariable Long id) {
-        Review review = reviewService.getReviewById(id);
-        if (review == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(review);
-    }
+	@GetMapping("/api/payments")
+	public List<Payment> getAllPayments() {
+		return paymentService.getAllPayments();
+	}
 
-    @PostMapping("/api/reviews")
-    public ResponseEntity<Review> createReview(@RequestBody Review review) {
-        return ResponseEntity.ok(reviewService.createReview(review));
-    }
+	@GetMapping("/api/payments/{id}")
+	public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
+		Payment payment = paymentService.getPaymentById(id);
+		if (payment == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(payment);
+	}
 
-    @PutMapping("/api/reviews/{id}")
-    public ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody Review review) {
-        Review updated = reviewService.updateReview(id, review);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@PostMapping("/api/payments")
+	public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
+		return ResponseEntity.ok(paymentService.createPayment(payment));
+	}
 
-    @DeleteMapping("/api/reviews/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-        reviewService.deleteReview(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Complaint REST API
-    
-    @GetMapping("/api/complaints")
-    public List<Complaint> getAllComplaints() {
-        return complaintService.getAllComplaints();
-    }
+	@PutMapping("/api/payments/{id}")
+	public ResponseEntity<Payment> updatePayment(@PathVariable Long id, @RequestBody Payment payment) {
+		Payment updated = paymentService.updatePayment(id, payment);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
 
-    @GetMapping("/api/complaints/{id}")
-    public ResponseEntity<Complaint> getComplaintById(@PathVariable Long id) {
-        Complaint complaint = complaintService.getComplaintById(id);
-        if (complaint == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(complaint);
-    }
+	@DeleteMapping("/api/payments/{id}")
+	public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+		paymentService.deletePayment(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @PostMapping("/api/complaints")
-    public ResponseEntity<Complaint> createComplaint(@RequestBody Complaint complaint) {
-        return ResponseEntity.ok(complaintService.createComplaint(complaint));
-    }
+	// Shipping REST API
 
-    @PutMapping("/api/complaints/{id}")
-    public ResponseEntity<Complaint> updateComplaint(@PathVariable Long id, @RequestBody Complaint complaint) {
-        Complaint updated = complaintService.updateComplaint(id, complaint);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@GetMapping("/api/shippings")
+	public List<Shipping> getAllShippings() {
+		return shippingService.getAllShippings();
+	}
 
-    @DeleteMapping("/api/complaints/{id}")
-    public ResponseEntity<Void> deleteComplaint(@PathVariable Long id) {
-        complaintService.deleteComplaint(id);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Resolution REST API
-    
-    @GetMapping("/api/resolutions")
-    public List<Resolution> getAllResolutions() {
-        return resolutionService.getAllResolutions();
-    }
+	@GetMapping("/api/shippings/{id}")
+	public ResponseEntity<Shipping> getShippingById(@PathVariable Long id) {
+		Shipping shipping = shippingService.getShippingById(id);
+		if (shipping == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(shipping);
+	}
 
-    @GetMapping("/api/resolutions/{id}")
-    public ResponseEntity<Resolution> getResolutionById(@PathVariable Long id) {
-        Resolution resolution = resolutionService.getResolutionById(id);
-        if (resolution == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(resolution);
-    }
+	@PostMapping("/api/shippings")
+	public ResponseEntity<Shipping> createShipping(@RequestBody Shipping shipping) {
+		return ResponseEntity.ok(shippingService.createShipping(shipping));
+	}
 
-    @PostMapping("/api/resolutions")
-    public ResponseEntity<Resolution> createResolution(@RequestBody Resolution resolution) {
-        return ResponseEntity.ok(resolutionService.createResolution(resolution));
-    }
+	@PutMapping("/api/shippings/{id}")
+	public ResponseEntity<Shipping> updateShipping(@PathVariable Long id, @RequestBody Shipping shipping) {
+		Shipping updated = shippingService.updateShipping(id, shipping);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
 
-    @PutMapping("/api/resolutions/{id}")
-    public ResponseEntity<Resolution> updateResolution(@PathVariable Long id, @RequestBody Resolution resolution) {
-        Resolution updated = resolutionService.updateResolution(id, resolution);
-        if (updated == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
-    }
+	@DeleteMapping("/api/shippings/{id}")
+	public ResponseEntity<Void> deleteShipping(@PathVariable Long id) {
+		shippingService.deleteShipping(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @DeleteMapping("/api/resolutions/{id}")
-    public ResponseEntity<Void> deleteResolution(@PathVariable Long id) {
-        resolutionService.deleteResolution(id);
-        return ResponseEntity.noContent().build();
-    }
+	// Review REST API
+
+	@GetMapping("/api/reviews")
+	public List<Review> getAllReviews() {
+		return reviewService.getAllReviews();
+	}
+
+	@GetMapping("/api/reviews/{id}")
+	public ResponseEntity<Review> getReviewById(@PathVariable Long id) {
+		Review review = reviewService.getReviewById(id);
+		if (review == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(review);
+	}
+
+	@PostMapping("/api/reviews")
+	public ResponseEntity<Review> createReview(@RequestBody Review review) {
+		return ResponseEntity.ok(reviewService.createReview(review));
+	}
+
+	@PutMapping("/api/reviews/{id}")
+	public ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody Review review) {
+		Review updated = reviewService.updateReview(id, review);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
+
+	@DeleteMapping("/api/reviews/{id}")
+	public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+		reviewService.deleteReview(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	// Complaint REST API
+
+	@GetMapping("/api/complaints")
+	public List<Complaint> getAllComplaints() {
+		return complaintService.getAllComplaints();
+	}
+
+	@GetMapping("/api/complaints/{id}")
+	public ResponseEntity<Complaint> getComplaintById(@PathVariable Long id) {
+		Complaint complaint = complaintService.getComplaintById(id);
+		if (complaint == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(complaint);
+	}
+
+	@PostMapping("/api/complaints")
+	public ResponseEntity<Complaint> createComplaint(@RequestBody Complaint complaint) {
+		return ResponseEntity.ok(complaintService.createComplaint(complaint));
+	}
+
+	@PutMapping("/api/complaints/{id}")
+	public ResponseEntity<Complaint> updateComplaint(@PathVariable Long id, @RequestBody Complaint complaint) {
+		Complaint updated = complaintService.updateComplaint(id, complaint);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
+
+	@DeleteMapping("/api/complaints/{id}")
+	public ResponseEntity<Void> deleteComplaint(@PathVariable Long id) {
+		complaintService.deleteComplaint(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	// Resolution REST API
+
+	@GetMapping("/api/resolutions")
+	public List<Resolution> getAllResolutions() {
+		return resolutionService.getAllResolutions();
+	}
+
+	@GetMapping("/api/resolutions/{id}")
+	public ResponseEntity<Resolution> getResolutionById(@PathVariable Long id) {
+		Resolution resolution = resolutionService.getResolutionById(id);
+		if (resolution == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(resolution);
+	}
+
+	@PostMapping("/api/resolutions")
+	public ResponseEntity<Resolution> createResolution(@RequestBody Resolution resolution) {
+		return ResponseEntity.ok(resolutionService.createResolution(resolution));
+	}
+
+	@PutMapping("/api/resolutions/{id}")
+	public ResponseEntity<Resolution> updateResolution(@PathVariable Long id, @RequestBody Resolution resolution) {
+		Resolution updated = resolutionService.updateResolution(id, resolution);
+		if (updated == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(updated);
+	}
+
+	@DeleteMapping("/api/resolutions/{id}")
+	public ResponseEntity<Void> deleteResolution(@PathVariable Long id) {
+		resolutionService.deleteResolution(id);
+		return ResponseEntity.noContent().build();
+	}
 }
