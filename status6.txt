@@ -1,0 +1,37 @@
+interactive rebase in progress; onto afb4d16
+Last commands done (6 commands done):
+   pick 79a049b Cập nhật backend 25/6: Thêm entity ProductImage, chỉnh sửa API
+   pick 6fb84b4 Cập nhật backend 25/6: Thêm entity Category, thêm thuộc tính cho entity Product, chỉnh sửa REST API
+  (see more in file .git/rebase-merge/done)
+Next commands to do (19 remaining commands):
+   pick a7c77f8 Delete dtb/create_database.sql
+   pick 7defee6 Update file tạo database
+  (use "git rebase --edit-todo" to view and edit)
+You are currently rebasing branch 'branch_trung' on 'afb4d16'.
+  (fix conflicts and then run "git rebase --continue")
+  (use "git rebase --skip" to skip this patch)
+  (use "git rebase --abort" to check out the original branch)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   backend/src/main/java/com/sw/controller/RestController.java
+	new file:   backend/src/main/java/com/sw/dao/CategoryRepository.java
+	modified:   backend/src/main/java/com/sw/dao/ProductRepository.java
+	new file:   backend/src/main/java/com/sw/entity/Category.java
+	modified:   backend/src/main/java/com/sw/entity/Product.java
+	new file:   backend/src/main/java/com/sw/service/CategoryService.java
+	modified:   backend/src/main/java/com/sw/service/ProductService.java
+	modified:   backend/target/classes/com/sw/dao/ProductRepository.class
+	modified:   backend/target/classes/com/sw/entity/Product.class
+	modified:   backend/target/classes/com/sw/service/ProductService.class
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+	both modified:   backend/target/classes/META-INF/maven/com.sw/SecondWear/pom.properties
+	both modified:   backend/target/classes/com/sw/controller/RestController.class
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	status6.txt
+

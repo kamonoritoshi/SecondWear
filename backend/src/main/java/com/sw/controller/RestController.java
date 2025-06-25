@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.sw.dao.ProductRepository;
 import com.sw.entity.Account;
+import com.sw.entity.Category;
 import com.sw.entity.Complaint;
 import com.sw.entity.Order;
 import com.sw.entity.Payment;
@@ -18,6 +19,7 @@ import com.sw.entity.Role;
 import com.sw.entity.Shipping;
 import com.sw.entity.User;
 import com.sw.service.AccountService;
+import com.sw.service.CategoryService;
 import com.sw.service.ComplaintService;
 import com.sw.service.OrderService;
 import com.sw.service.PaymentService;
@@ -66,6 +68,38 @@ public class RestController {
 	private ProductImageService productImageService;
 	@Autowired
     private ProductRepository productRepo;
+	@Autowired
+    private CategoryService categoryService;
+	
+	// Category REST API
+	
+	@GetMapping("/api/categories")
+    public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/api/categories/{id}")
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+        return categoryService.getCategoryById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/categories")
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.createCategory(category));
+    }
+
+    @PutMapping("/api/categories/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, category));
+    }
+
+    @DeleteMapping("/api/categories/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
 
 	// Product REST API
 
@@ -117,7 +151,11 @@ public class RestController {
 	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
 		return ResponseEntity.ok(pService.getAllProducts(pageable));
 	}
-
+	
+	@GetMapping("/api/products/category/{categoryId}")
+	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
+	    return pService.getProductsByCategory(categoryId);
+	}
 	// ProductImage REST API
 
 	@GetMapping("/api/product-images/product/{productId}")

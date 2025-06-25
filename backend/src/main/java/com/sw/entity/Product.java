@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -47,4 +48,12 @@ public class Product {
     private String color;
     private BigDecimal price;
     private String status;
+    private Integer quantity;
+    private String brand;
+    private String origin;
+    
+    @JsonIgnoreProperties("products")
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

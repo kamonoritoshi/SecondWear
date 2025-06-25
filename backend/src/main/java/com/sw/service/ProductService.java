@@ -62,4 +62,8 @@ public class ProductService {
 	public List<Product> searchProductsByName(String name) {
 		return pDAO.findByNameContainingIgnoreCase(name);
 	}
+	
+	public List<Product> getProductsByCategory(Integer categoryId) {
+	    return pDAO.findByCategory_CategoryId(categoryId);
+	}
 }
