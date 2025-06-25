@@ -1,5 +1,7 @@
 package com.sw.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,24 +18,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Account")
-public class Account {
+@Table(name = "ProductImage")
+public class ProductImage {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "account_id")
-    private Long accountId;
+	@Column(name = "image_id")
+    private Long imageId;
+
+	@Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String status;
+    @JoinColumn(name = "product_id")
+    @JsonBackReference
+    private Product product;
 }

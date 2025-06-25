@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Shipping {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "shipping_id")
     private Long shippingId;
 
     @OneToOne
@@ -34,6 +35,7 @@ public class Shipping {
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "shipping_date")
     private LocalDateTime shippingDate;
 
     // Optionally auto-set shippingDate if needed

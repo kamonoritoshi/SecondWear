@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Complaint {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "complaint_id")
     private Long complaintId;
 
     @ManyToOne
@@ -35,6 +36,7 @@ public class Complaint {
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "complaint_date")
     private LocalDateTime complaintDate;
 
     @PrePersist

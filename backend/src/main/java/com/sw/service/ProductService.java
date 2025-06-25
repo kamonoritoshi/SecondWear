@@ -14,43 +14,52 @@ import org.springframework.data.domain.Pageable;
 public class ProductService {
 	@Autowired
 	private ProductRepository pDAO;
-	
+
 	public List<Product> getAllProducts() {
-		return pDAO.findAll();
+		List<Product> products = pDAO.findAll();
+		// Ép Hibernate load danh sách ảnh
+	    for (Product p : products) {
+	        p.getImages().size(); // force lazy load
+	    }
+	    return products;
 	}
-	
+
 	public Product getProductById(Long id) {
-        return pDAO.findById(id).orElse(null);
-    }
+		Product p = pDAO.findById(id).orElse(null);
+	    if (p != null) {
+	        p.getImages().size(); // ép load ảnh
+	    }
+	    return p;
+	}
 
-    public Product createProduct(Product product) {
-        return pDAO.save(product);
-    }
+	public Product createProduct(Product product) {
+		return pDAO.save(product);
+	}
 
-    public Product updateProduct(Long id, Product product) {
-        Product existing = pDAO.findById(id).orElse(null);
-        if (existing == null) return null;
+	public Product updateProduct(Long id, Product product) {
+		Product existing = pDAO.findById(id).orElse(null);
+		if (existing == null)
+			return null;
 
-        existing.setName(product.getName());
-        existing.setPrice(product.getPrice());
-        existing.setDescription(product.getDescription());
-        existing.setCondition(product.getCondition());
-        existing.setSize(product.getSize());
-        existing.setColor(product.getColor());
-        existing.setImage(product.getImage());
-        existing.setStatus(product.getStatus());
-        return pDAO.save(existing);
-    }
+		existing.setName(product.getName());
+		existing.setPrice(product.getPrice());
+		existing.setDescription(product.getDescription());
+		existing.setCondition(product.getCondition());
+		existing.setSize(product.getSize());
+		existing.setColor(product.getColor());
+		existing.setStatus(product.getStatus());
+		return pDAO.save(existing);
+	}
 
-    public void deleteProduct(Long id) {
-    	pDAO.deleteById(id);
-    }
-    
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return pDAO.findAll(pageable);
-    }
+	public void deleteProduct(Long id) {
+		pDAO.deleteById(id);
+	}
 
-    public List<Product> searchProductsByName(String name) {
-        return pDAO.findByNameContainingIgnoreCase(name);
-    }
+	public Page<Product> getAllProducts(Pageable pageable) {
+		return pDAO.findAll(pageable);
+	}
+
+	public List<Product> searchProductsByName(String name) {
+		return pDAO.findByNameContainingIgnoreCase(name);
+	}
 }

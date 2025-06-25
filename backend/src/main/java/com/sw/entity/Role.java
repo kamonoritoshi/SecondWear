@@ -18,8 +18,9 @@ import lombok.NoArgsConstructor;
 public class Role {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "role_id")
 	private Long roleId;
 	
-	@Column(nullable = false, unique = true)
+	@Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
 }
