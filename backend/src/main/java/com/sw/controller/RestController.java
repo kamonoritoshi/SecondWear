@@ -323,15 +323,16 @@ public class RestController {
 	}
 
 	// Lấy đơn hàng theo trạng thái
-	// http://localhost:9999/api/orders/status?status=Hoàn thành
+	// http://localhost:8080/api/orders/status?status=Hoàn thành
 	@GetMapping("/api/orders/status")
 	public List<Order> getOrdersByStatus(@RequestParam String status) {
 		return oService.getOrdersByStatus(status);
 	}
 
 	// Lấy đơn hàng theo tài khoản và trạng thái
-	@GetMapping("/api/orders/accounts/{accountId}/status/{status}")
-	public List<Order> getOrdersByAccountAndStatus(@PathVariable Long accountId, @PathVariable String status) {
+	// http://localhost:8080/api/orders/accounts/54/status?status=Đang xử lý
+	@GetMapping("/api/orders/accounts/{accountId}/status")
+	public List<Order> getOrdersByAccountAndStatus(@PathVariable Long accountId, @RequestParam String status) {
 		return oService.getOrdersByAccountAndStatus(accountId, status);
 	}
 
