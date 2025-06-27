@@ -16,18 +16,17 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
 	
 	private final String jwtSecret = "SecondWear@2024!JwtAuthSecretKey%$1a2b3c4d";
-	private final long jwtExpirationMs = 604800000;
 	
 	private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 	
 	// Sinh token dựa vào username (email)
-    public String generateToken(String email) {
+    public String generateToken(String email, long expirationMs) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

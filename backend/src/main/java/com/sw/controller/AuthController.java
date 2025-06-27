@@ -1,8 +1,7 @@
 package com.sw.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-	
-	private final AuthenticationManager authenticationManager;
+
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
@@ -34,11 +32,22 @@ public class AuthController {
     
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+    	System.out.println("⏺ Email: " + request.getEmail());
+    	System.out.println("⏺ Role: " + request.getRoleName());
+    	
+    	Account acc = accountRepository.findByEmailAndRole(
+    	        request.getEmail(), request.getRoleName()
+    	    ).orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
 
-        String token = jwtUtil.generateToken(request.getEmail());
+	    // Kiểm tra password
+	    if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
+	    }
+        
+        // ⏱ Token duration tùy thuộc vào rememberMe
+        long expiration = request.isRememberMe() ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
+
+        String token = jwtUtil.generateToken(request.getEmail(), expiration);
         return ResponseEntity.ok(new AuthResponse(token));
     }
     
