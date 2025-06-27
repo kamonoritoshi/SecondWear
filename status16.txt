@@ -1,0 +1,47 @@
+interactive rebase in progress; onto afb4d16
+Last commands done (16 commands done):
+   pick 24b8b52 Chỉnh sửa lại các chức năng lỗi trong API Order
+   pick d57190c Cập nhật backend 27/6: Mã hoá toàn bộ password trong Account, cải thiện đăng nhập với role và rememberMe
+  (see more in file .git/rebase-merge/done)
+Next commands to do (9 remaining commands):
+   pick 2b9cd10 Cập nhật backend 28/6: Làm APi đăng ký, có xác nhận từ email
+   pick ff8e2e8 Add files via upload
+  (use "git rebase --edit-todo" to view and edit)
+You are currently rebasing branch 'branch_trung' on 'afb4d16'.
+  (fix conflicts and then run "git rebase --continue")
+  (use "git rebase --skip" to skip this patch)
+  (use "git rebase --abort" to check out the original branch)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   backend/src/main/java/com/sw/controller/AuthController.java
+	modified:   backend/src/main/java/com/sw/dao/AccountRepository.java
+	modified:   backend/src/main/java/com/sw/dto/AuthRequest.java
+	modified:   backend/src/main/java/com/sw/security/JwtFilter.java
+	modified:   backend/src/main/java/com/sw/security/JwtUtil.java
+	modified:   backend/src/main/resources/application.properties
+	modified:   backend/src/main/resources/static/login-register.html
+	modified:   backend/target/classes/application.properties
+	modified:   backend/target/classes/com/sw/dao/AccountRepository.class
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+	both modified:   backend/target/classes/META-INF/maven/com.sw/SecondWear/pom.properties
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   backend/target/classes/com/sw/SecondWearApplication.class
+	modified:   backend/target/classes/com/sw/controller/RestController.class
+	modified:   backend/target/classes/com/sw/dao/ProductRepository.class
+	modified:   backend/target/classes/com/sw/entity/Account.class
+	modified:   backend/target/classes/com/sw/entity/Product.class
+	modified:   backend/target/classes/com/sw/entity/Role.class
+	modified:   backend/target/classes/com/sw/entity/User.class
+	modified:   backend/target/classes/com/sw/service/ProductService.class
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	status16.txt
+
