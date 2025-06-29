@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>SecondWear API Tester</title>
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  padding: 0;
+}
+.tabs {
+  display: flex;
+  background: #333;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
+.tab.active {
+  background: #555;
+}
+.content {
+  padding: 20px;
+  display: none;
+}
+.content.active {
+  display: block;
+}
+textarea, input, select {
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+}
+button {
+  padding: 8px 12px;
+  margin: 5px 0;
+}
+pre, .table-container {
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: left;
+}
+th {
+  background: #eee;
+}
+</style>
+</head>
+<body>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(0)">🔐 Đăng nhập</div>
+    <div class="tab" onclick="switchTab(1)">📦 Đơn hàng</div>
+    <div class="tab" onclick="switchTab(2)">🛍️ Sản phẩm</div>
+    <div class="tab" onclick="switchTab(3)">📁 Danh mục</div>
+    <div class="tab" onclick="switchTab(4)">👤 Tài khoản</div>
+    <div class="tab" onclick="switchTab(5)">👥 Người dùng</div>
+    <div class="tab" onclick="switchTab(6)">🖼️ Ảnh sản phẩm</div>
+    <div class="tab" onclick="switchTab(7)">🛡️ Vai trò</div>
+  </div>
+
+  <div class="content active">
+    <h3>🔐 Đăng nhập</h3>
+    <input id="email" placeholder="Email">
+    <input id="password" placeholder="Mật khẩu" type="password">
+    <select id="role">
+      <option value="customer">Customer</option>
+      <option value="seller">Seller</option>
+    </select>
+    <button onclick="login()">Đăng nhập</button>
+    <pre id="token"></pre>
+  </div>
+
+  <div class="content">
+    <h3>📦 Đơn hàng</h3>
+    <button onclick="fetchApi('/api/orders', 'result-order')">Tất cả đơn</button>
+    <input id="orderId" placeholder="ID đơn hàng">
+    <button onclick="fetchApi('/api/orders/' + orderId.value, 'result-order')">Xem theo ID</button>
+    <textarea id="newOrder" rows="6" placeholder='{"account":{"accountId":1},"status":"Đang xử lý","totalAmount":100000}'></textarea>
+    <button onclick="postApi('/api/orders', newOrder.value, 'result-order')">Tạo đơn</button>
+    <div id="result-order" class="table-container"></div>
+  </div>
+
+  <div class="content">
+    <h3>🛍️ Sản phẩm</h3>
+    <button onclick="fetchApi('/api/products', 'result-product')">Tất cả sản phẩm</button>
+    <input id="productId" placeholder="ID sản phẩm">
+    <button onclick="fetchApi('/api/products/' + productId.value, 'result-product')">Xem theo ID</button>
+    <textarea id="newProduct" rows="6" placeholder='{"name":"Áo thun","price":99000}'></textarea>
+    <button onclick="postApi('/api/products', newProduct.value, 'result-product')">Tạo sản phẩm</button>
+    <div id="result-product" class="table-container"></div>
+  </div>
+
+  <div class="content">
+    <h3>📁 Danh mục</h3>
+    <button onclick="fetchApi('/api/categories', 'result-category')">Tất cả danh mục</button>
+    <input id="categoryId" placeholder="ID danh mục">
+    <button onclick="fetchApi('/api/categories/' + categoryId.value, 'result-category')">Xem theo ID</button>
+    <textarea id="newCategory" rows="3" placeholder='{"name":"Thời trang nam"}'></textarea>
+    <button onclick="postApi('/api/categories', newCategory.value, 'result-category')">Tạo danh mục</button>
+    <div id="result-category" class="table-container"></div>
+  </div>
+
+  <div class="content">
+    <h3>👤 Tài khoản</h3>
+    <button onclick="fetchApi('/api/accounts', 'result-account')">Tất cả tài khoản</button>
+    <div id="result-account" class="table-container"></div>
+  </div>
+
+  <div class="content">
+    <h3>👥 Người dùng</h3>
+    <button onclick="fetchApi('/api/users', 'result-user')">Tất cả người dùng</button>
+    <div id="result-user" class="table-container"></div>
+  </div>
+
+  <div class="content">
+    <h3>🖼️ Ảnh sản phẩm</h3>
+    <button onclick="fetchApi('/api/product-images/product/1', 'result-image')">Ảnh sản phẩm ID 1</button>
+    <div id="result-image" class="table-container"></div>
+  </div>
+
+  <div class="content">
+    <h3>🛡️ Vai trò</h3>
+    <button onclick="fetchApi('/api/roles', 'result-role')">Tất cả vai trò</button>
+    <div id="result-role" class="table-container"></div>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:8080';
+    let token = '';
+
+    function switchTab(index) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
+      });
+      document.querySelectorAll('.content').forEach((c, i) => {
+        c.classList.toggle('active', i === index);
+      });
+    }
+
+    async function login() {
+   	  const tokenEl = document.getElementById('token');
+      const body = JSON.stringify({
+        email: email.value,
+        password: password.value,
+        roleName: role.value,
+        rememberMe: true
+      });
+
+      try {
+        const res = await fetch(BASE + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body
+        });
+
+        const text = await res.text();
+        if (!res.ok) {
+          token = '';
+          tokenEl.textContent = `❌ Đăng nhập thất bại (${res.status}):\n${text}`;
+          return;
+        }
+
+        const data = JSON.parse(text);
+        token = data.token;
+        tokenEl.textContent = '✅ Đăng nhập thành công\nBearer ' + token;
+      } catch (err) {
+        tokenEl.textContent = '❌ Lỗi: ' + err.message;
+      }
+    }
+
+    async function fetchApi(endpoint, resultId) {
+      const result = document.getElementById(resultId);
+      try {
+        const res = await fetch(BASE + endpoint, {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+
+        const text = await res.text();
+        if (!res.ok) {
+          result.textContent = `❌ Lỗi ${res.status}:\n${text}`;
+          return;
+        }
+
+        const data = JSON.parse(text);
+        result.innerHTML = Array.isArray(data)
+          ? (data.length === 0 ? '<p>📭 Không có dữ liệu.</p>' : renderTable(data))
+          : renderObject(data);
+      } catch (err) {
+        result.textContent = '❌ Lỗi kết nối: ' + err.message;
+      }
+    }
+
+    async function postApi(endpoint, rawBody, resultId) {
+      const result = document.getElementById(resultId);
+      try {
+        const res = await fetch(BASE + endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token
+          },
+          body: rawBody
+        });
+
+        const text = await res.text();
+        const data = JSON.parse(text);
+        result.innerHTML = Array.isArray(data) ? renderTable(data) : renderObject(data);
+      } catch (err) {
+        result.textContent = '❌ Lỗi: ' + err.message;
+      }
+    }
+
+    function renderTable(data) {
+      const keys = Object.keys(data[0]);
+      let html = '<table><thead><tr>';
+      html += keys.map(k => `<th>${k}</th>`).join('');
+      html += '</tr></thead><tbody>';
+      html += data.map(row => {
+        return '<tr>' + keys.map(k => `<td>${formatCell(row[k])}</td>`).join('') + '</tr>';
+      }).join('');
+      html += '</tbody></table>';
+      return html;
+    }
+
+    function renderObject(obj) {
+      let html = '<table>';
+      for (const key in obj) {
+        html += `<tr><th>${key}</th><td>${formatCell(obj[key])}</td></tr>`;
+      }
+      html += '</table>';
+      return html;
+    }
+
+    function formatCell(value) {
+      if (typeof value === 'object' && value !== null) {
+        return '<pre>' + JSON.stringify(value, null, 2) + '</pre>';
+      }
+      return String(value);
+    }
+  </script>
+</body>
+</html>
