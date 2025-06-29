@@ -1,5 +1,7 @@
 package com.sw.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.sw.dao.OrderRepository;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
+import com.sw.entity.OrderItem;
 
 @Service
 public class OrderService {
@@ -30,7 +33,23 @@ public class OrderService {
 
     // Tạo đơn hàng mới
     public Order createOrder(Order order) {
-        return oDAO.save(order);
+    	// Gắn lại quan hệ cho từng item
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderItem item : order.getItems()) {
+            item.setOrder(order);
+
+            if (item.getProduct() != null && item.getQuantity() != null) {
+                BigDecimal price = item.getProduct().getPrice();
+                item.setPrice(price); // gắn giá sản phẩm tại thời điểm đặt
+                total = total.add(price.multiply(BigDecimal.valueOf(item.getQuantity())));
+            }
+        }
+
+        order.setOrderDate(LocalDateTime.now());
+        order.setTotalAmount(total);
+        order.setStatus(order.getStatus() == null ? "pending" : order.getStatus());
+
+        return oDAO.save(order); // Cascade sẽ tự lưu OrderItem
     }
 
     // Cập nhật đơn hàng
@@ -39,7 +58,6 @@ public class OrderService {
         if (existing == null) return null;
 
         existing.setAccount(updatedOrder.getAccount());
-        existing.setProduct(updatedOrder.getProduct());
         existing.setStatus(updatedOrder.getStatus());
         existing.setTotalAmount(updatedOrder.getTotalAmount());
 
