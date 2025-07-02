@@ -129,10 +129,10 @@ public class RestController {
 	}
 
 	@DeleteMapping("/api/products/{id}")
-	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-		pService.deleteProduct(id);
-		return ResponseEntity.noContent().build();
-	}
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        pService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 
 	@GetMapping("/api/products/search")
 	public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
@@ -143,7 +143,7 @@ public class RestController {
 	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
 		return ResponseEntity.ok(pService.getAllProducts(pageable));
 	}
-	
+
 	@GetMapping("/api/products/category/{categoryId}")
 	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
 	    return pService.getProductsByCategory(categoryId);
@@ -170,7 +170,7 @@ public class RestController {
 		productImageService.deleteImage(imageId);
 		return ResponseEntity.ok("Image deleted");
 	}
-
+  
 	// Account REST API
 
 	@GetMapping("/api/accounts")
