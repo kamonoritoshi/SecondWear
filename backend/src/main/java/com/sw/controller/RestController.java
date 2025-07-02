@@ -55,7 +55,7 @@ public class RestController {
 	private OrderService oService;
 	@Autowired
 	private PaymentService paymentService;
-	@Autowired
+	@Autowired 
 	private ShippingService shippingService;
 	@Autowired
 	private ReviewService reviewService;
