@@ -129,13 +129,11 @@ public class RestController {
 	}
 
 	@DeleteMapping("/api/products/{id}")
-<<<<<<< HEAD
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         pService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 	
-=======
 	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
 		pService.deleteProduct(id);
 		return ResponseEntity.noContent().build();
@@ -150,7 +148,22 @@ public class RestController {
 	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
 		return ResponseEntity.ok(pService.getAllProducts(pageable));
 	}
-	
+
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+		pService.deleteProduct(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/api/products/search")
+	public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+		return ResponseEntity.ok(pService.searchProductsByName(name));
+	}
+
+	@GetMapping("/api/products/paged")
+	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
+		return ResponseEntity.ok(pService.getAllProducts(pageable));
+	}
+
 	@GetMapping("/api/products/category/{categoryId}")
 	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
 	    return pService.getProductsByCategory(categoryId);
@@ -177,8 +190,7 @@ public class RestController {
 		productImageService.deleteImage(imageId);
 		return ResponseEntity.ok("Image deleted");
 	}
-
->>>>>>> 79a049b (Cập nhật backend 25/6: Thêm entity ProductImage, chỉnh sửa API)
+  
 	// Account REST API
 
 	@GetMapping("/api/accounts")
@@ -408,8 +420,6 @@ public class RestController {
 		shippingService.deleteShipping(id);
 		return ResponseEntity.noContent().build();
 	}
-
-<<<<<<< HEAD
     @DeleteMapping("/api/resolutions/{id}")
     public ResponseEntity<Void> deleteResolution(@PathVariable Long id) {
         resolutionService.deleteResolution(id);
@@ -425,7 +435,7 @@ public class RestController {
     public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(pService.getAllProducts(pageable));
     }
-=======
+
 	// Review REST API
 
 	@GetMapping("/api/reviews")
@@ -527,5 +537,4 @@ public class RestController {
 		resolutionService.deleteResolution(id);
 		return ResponseEntity.noContent().build();
 	}
->>>>>>> 79a049b (Cập nhật backend 25/6: Thêm entity ProductImage, chỉnh sửa API)
 }
