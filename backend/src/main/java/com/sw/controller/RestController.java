@@ -129,6 +129,11 @@ public class RestController {
 	}
 
 	@DeleteMapping("/api/products/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        pService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+	
 	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
 		pService.deleteProduct(id);
 		return ResponseEntity.noContent().build();
@@ -143,7 +148,22 @@ public class RestController {
 	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
 		return ResponseEntity.ok(pService.getAllProducts(pageable));
 	}
-	
+
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+		pService.deleteProduct(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/api/products/search")
+	public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+		return ResponseEntity.ok(pService.searchProductsByName(name));
+	}
+
+	@GetMapping("/api/products/paged")
+	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
+		return ResponseEntity.ok(pService.getAllProducts(pageable));
+	}
+
 	@GetMapping("/api/products/category/{categoryId}")
 	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
 	    return pService.getProductsByCategory(categoryId);
@@ -170,7 +190,7 @@ public class RestController {
 		productImageService.deleteImage(imageId);
 		return ResponseEntity.ok("Image deleted");
 	}
-
+  
 	// Account REST API
 
 	@GetMapping("/api/accounts")
@@ -400,6 +420,21 @@ public class RestController {
 		shippingService.deleteShipping(id);
 		return ResponseEntity.noContent().build();
 	}
+    @DeleteMapping("/api/resolutions/{id}")
+    public ResponseEntity<Void> deleteResolution(@PathVariable Long id) {
+        resolutionService.deleteResolution(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/api/products/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+        return ResponseEntity.ok(pService.searchProductsByName(name));
+    }
+
+    @GetMapping("/api/products/paged")
+    public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(pService.getAllProducts(pageable));
+    }
 
 	// Review REST API
 
