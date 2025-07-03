@@ -1,9 +1,15 @@
 package com.sw.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import com.sw.dao.OrderRepository;
 import com.sw.dao.ProductRepository;
 import com.sw.entity.Account;
 import com.sw.entity.Category;
@@ -17,6 +23,7 @@ import com.sw.entity.Review;
 import com.sw.entity.Role;
 import com.sw.entity.Shipping;
 import com.sw.entity.User;
+import com.sw.security.CustomUserDetails;
 import com.sw.service.AccountService;
 import com.sw.service.CategoryService;
 import com.sw.service.ComplaintService;
@@ -66,39 +73,39 @@ public class RestController {
 	@Autowired
 	private ProductImageService productImageService;
 	@Autowired
-    private ProductRepository productRepo;
+	private ProductRepository productRepo;
 	@Autowired
-    private CategoryService categoryService;
-	
+	private CategoryService categoryService;
+	@Autowired
+	private OrderRepository orderRepository;
+
 	// Category REST API
-	
+
 	@GetMapping("/api/categories")
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
-    }
+	public List<Category> getAllCategories() {
+		return categoryService.getAllCategories();
+	}
 
-    @GetMapping("/api/categories/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+	@GetMapping("/api/categories/{id}")
+	public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+		return categoryService.getCategoryById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+	}
 
-    @PostMapping("/api/categories")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        return ResponseEntity.ok(categoryService.createCategory(category));
-    }
+	@PostMapping("/api/categories")
+	public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+		return ResponseEntity.ok(categoryService.createCategory(category));
+	}
 
-    @PutMapping("/api/categories/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, category));
-    }
+	@PutMapping("/api/categories/{id}")
+	public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
+		return ResponseEntity.ok(categoryService.updateCategory(id, category));
+	}
 
-    @DeleteMapping("/api/categories/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/api/categories/{id}")
+	public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+		categoryService.deleteCategory(id);
+		return ResponseEntity.noContent().build();
+	}
 
 	// Product REST API
 
@@ -129,10 +136,10 @@ public class RestController {
 	}
 
 	@DeleteMapping("/api/products/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        pService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+		pService.deleteProduct(id);
+		return ResponseEntity.noContent().build();
+	}
 
 	@GetMapping("/api/products/search")
 	public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
@@ -146,7 +153,7 @@ public class RestController {
 
 	@GetMapping("/api/products/category/{categoryId}")
 	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
-	    return pService.getProductsByCategory(categoryId);
+		return pService.getProductsByCategory(categoryId);
 	}
 	// ProductImage REST API
 
@@ -170,7 +177,7 @@ public class RestController {
 		productImageService.deleteImage(imageId);
 		return ResponseEntity.ok("Image deleted");
 	}
-  
+
 	// Account REST API
 
 	@GetMapping("/api/accounts")
@@ -331,6 +338,26 @@ public class RestController {
 	@GetMapping("/api/orders/sorted/latest")
 	public List<Order> getAllOrdersSortedByDateDesc() {
 		return oService.getOrdersSortedByDateDesc();
+	}
+
+	@GetMapping("/api/orders/processing")
+	public ResponseEntity<?> getProcessingOrders(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Account account = userDetails.getAccount();
+		System.out.println("[OrderController] → Processing orders for account ID: " + account.getAccountId());
+		List<Order> orders = orderRepository.findByAccountAndStatus(account, "Đang xử lý");
+		System.out.println("[OrderController] → Found " + orders.size() + " orders.");
+		for (Order o : orders) {
+		    System.out.println("→ Order: ID=" + o.getOrderId() + ", status=" + o.getStatus());
+		}
+
+		List<Map<String, Object>> result = orders.stream().map(order -> {
+			Map<String, Object> map = new HashMap<>();
+			map.put("orderId", order.getOrderId());
+			map.put("totalAmount", order.getTotalAmount());
+			return map;
+		}).collect(Collectors.toList());
+
+		return ResponseEntity.ok(result);
 	}
 
 	// Payment REST API

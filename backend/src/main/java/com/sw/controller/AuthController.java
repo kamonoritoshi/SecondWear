@@ -56,7 +56,8 @@ public class AuthController {
         // ⏱ Token duration tùy thuộc vào rememberMe
         long expiration = request.isRememberMe() ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
 
-        String token = jwtUtil.generateToken(request.getEmail(), expiration);
+        String input = request.getEmail() + "|" + request.getRoleName();
+        String token = jwtUtil.generateToken(input, expiration);
         return ResponseEntity.ok(new AuthResponse(token));
     }
     

@@ -28,26 +28,31 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-    	String path = request.getRequestURI();
+        String path = request.getRequestURI();
         if (path.startsWith("/api/auth/")) {
             // Bỏ qua filter cho login/register
             filterChain.doFilter(request, response);
             return;
         }
-    	
-        final String authHeader = request.getHeader("Authorization");
 
-        String email = null;
+        System.out.println("[JwtFilter] → URI: " + request.getRequestURI());
+        
+        final String authHeader = request.getHeader("Authorization");
+        System.out.println("[JwtFilter] → Authorization header: " + authHeader);
+        
+        String input = null; // sẽ chứa email|role
         String jwt = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            email = jwtUtil.extractUsername(jwt);
+            input = jwtUtil.extractUsername(jwt); // 📌 phải trả về "email|role"
+            System.out.println("[JwtFilter] → Extracted input from token: " + input);
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
+        if (input != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(input);
+            System.out.println("[JwtFilter] → Loaded user: " + userDetails.getUsername());
+            
             if (jwtUtil.isTokenValid(jwt)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

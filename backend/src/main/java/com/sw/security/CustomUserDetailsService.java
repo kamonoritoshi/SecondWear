@@ -17,13 +17,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 	
 	@Override
     public UserDetails loadUserByUsername(String input) throws UsernameNotFoundException {
-		String[] parts = input.split("\\|");
-		String email = parts[0];
-		String role = (parts.length > 1) ? parts[1] : "customer";
+		System.out.println("[UserDetailsService] → loadUserByUsername: " + input);
+		// 📌 Tách chuỗi email|role
+        String[] parts = input.split("\\|");
+        String email = parts[0];
+        String role = (parts.length > 1) ? parts[1] : "customer";
 
-		Account account = accountRepository.findByEmailAndRole(email, role)
-				.orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản cho " + email + " với vai trò " + role));
+        // 📌 Tìm trong DB
+        Account account = accountRepository.findByEmailAndRole(email, role)
+            .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản cho " + email + " với vai trò " + role));
+        System.out.println("[UserDetailsService] → Found account ID: " + account.getAccountId() + ", role: " + account.getRole());
 
-		return new CustomUserDetails(account);
+
+        // 📌 Trả về đối tượng chứa Account
+        return new CustomUserDetails(account);
     }
 }

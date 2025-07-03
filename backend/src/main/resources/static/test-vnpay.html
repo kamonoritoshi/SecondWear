@@ -37,6 +37,13 @@ button {
 	border-top: 1px solid #ccc;
 	padding-top: 20px;
 }
+
+.flex {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 8px 0;
+}
 </style>
 </head>
 <body>
@@ -55,8 +62,7 @@ button {
 		<option value="admin">Admin</option>
 	</select>
 
-	<div
-		style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
+	<div class="flex">
 		<input type="checkbox" id="rememberMe" /> <label for="rememberMe">Ghi
 			nhớ đăng nhập</label>
 	</div>
@@ -68,14 +74,15 @@ button {
 	<div id="loginResult" class="result"></div>
 
 	<div class="section">
-		<h2>Thanh toán VNPay</h2>
+		<h2>Danh sách đơn hàng đang xử lý</h2>
+		<button onclick="loadOrders()">Tải đơn hàng</button>
 
-		<label>Số tiền (VNĐ):</label> <input type="number" id="amount"
-			placeholder="Ví dụ: 100000" value="100000" /> <label>Nội
-			dung thanh toán:</label> <input type="text" id="orderInfo"
-			placeholder="Nội dung" value="Thanh toán đơn hàng SecondWear" />
+		<label for="orderSelect">Chọn đơn hàng:</label> <select
+			id="orderSelect">
+			<option value="">-- Vui lòng tải danh sách --</option>
+		</select>
 
-		<button onclick="createVNPay()">Thanh toán với VNPay</button>
+		<button onclick="paySelectedOrder()">Thanh toán VNPay</button>
 
 		<div id="payResult" class="result"></div>
 	</div>
@@ -87,7 +94,8 @@ button {
 
 	<script>
     const BASE_AUTH = 'http://localhost:8080/api/auth';
-    const BASE_PAYMENT = 'http://localhost:8080/api/payment/vnpay';
+    const BASE_PAYMENT = 'http://localhost:8080/api/payment';
+    const BASE_ORDER = 'http://localhost:8080/api/orders';
 
     async function login() {
       const payload = {
@@ -110,6 +118,7 @@ button {
         localStorage.setItem('jwt', data.token);
         loginResult.textContent = `Đăng nhập thành công!\nToken đã được lưu.`;
         loginResult.className = "result";
+        console.log("JWT Token đang dùng:", data.token);
       } else {
         const text = await res.text();
         loginResult.textContent = `Đăng nhập thất bại: ${text}`;
@@ -117,18 +126,47 @@ button {
       }
     }
 
-    async function createVNPay() {
+    async function loadOrders() {
       const token = localStorage.getItem('jwt');
-      if (!token) {
-        alert("Bạn cần đăng nhập trước.");
+      const res = await fetch(`${BASE_ORDER}/processing`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const select = document.getElementById('orderSelect');
+      select.innerHTML = ''; // clear
+
+      if (res.ok) {
+        const orders = await res.json();
+        if (orders.length === 0) {
+          const opt = document.createElement('option');
+          opt.text = "Không có đơn hàng đang xử lý";
+          opt.disabled = true;
+          select.appendChild(opt);
+          return;
+        }
+
+        orders.forEach(order => {
+          const opt = document.createElement('option');
+          opt.value = order.orderId;
+          opt.text = `Đơn hàng #${order.orderId} - ${order.totalAmount} VND`;
+          select.appendChild(opt);
+        });
+      } else {
+        alert("Không thể tải danh sách đơn hàng.");
+      }
+    }
+
+    async function paySelectedOrder() {
+      const token = localStorage.getItem('jwt');
+      const orderId = document.getElementById('orderSelect').value;
+      const payResult = document.getElementById('payResult');
+
+      if (!orderId) {
+        alert("Vui lòng chọn đơn hàng.");
         return;
       }
 
-      const amount = document.getElementById('amount').value;
-      const orderInfo = document.getElementById('orderInfo').value;
-      const url = `${BASE_PAYMENT}/create?amount=${amount}&orderInfo=${encodeURIComponent(orderInfo)}`;
-
-      const payResult = document.getElementById('payResult');
+      const url = `${BASE_PAYMENT}/vnpay/create?orderId=${orderId}`;
 
       try {
         const res = await fetch(url, {
@@ -152,7 +190,6 @@ button {
       }
     }
 
-    // ✅ Đọc query params kết quả thanh toán từ URL
     function displayVnPayResult() {
       const params = new URLSearchParams(window.location.search);
       const txnRef = params.get("vnp_TxnRef");
@@ -169,7 +206,7 @@ button {
       }
     }
 
-    displayVnPayResult(); // Gọi khi trang load
+    displayVnPayResult();
   </script>
 </body>
 </html>
