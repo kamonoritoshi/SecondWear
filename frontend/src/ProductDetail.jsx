@@ -138,18 +138,45 @@ const ProductDetail = ({ t, setCartCount }) => {
                 </button>
                 <section className="product-main-info">
                     <div className="product-image-gallery">
-                        <div className="main-image-container">
-                            <img src={selectedImage || '/images/placeholder.png'} alt={product.name} className="main-product-image" />
+                        <div className="main-image-container" style={{ width: 400, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #ddd' }}>
+                            <img
+                                src={selectedImage || '/images/placeholder.png'}
+                                alt={product.name}
+                                style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                                className="main-product-image"
+                            />
                         </div>
-                        <div className="thumbnail-images-container">
+                        <div className="thumbnail-images-container" style={{ display: 'flex', gap: 8 }}>
                             {productImages.map(image => (
-                                <img
+                                <div
                                     key={image.imageId}
-                                    src={image.imageUrl}
-                                    alt={`Thumbnail ${image.imageId}`}
-                                    className={`thumbnail-image ${selectedImage === image.imageUrl ? 'active' : ''}`}
+                                    style={{
+                                        width: 60,
+                                        height: 60,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        overflow: 'hidden',
+                                        borderRadius: 6,
+                                        border: selectedImage === image.imageUrl ? '2px solid #ff6f61' : '2px solid transparent',
+                                        background: '#fff',
+                                        boxSizing: 'border-box',
+                                        cursor: 'pointer',
+                                    }}
                                     onMouseOver={() => setSelectedImage(image.imageUrl)}
-                                />
+                                >
+                                    <img
+                                        src={image.imageUrl}
+                                        alt={`Thumbnail ${image.imageId}`}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain',
+                                            display: 'block',
+                                        }}
+                                        className={`thumbnail-image${selectedImage === image.imageUrl ? ' active' : ''}`}
+                                    />
+                                </div>
                             ))}
                         </div>
                     </div>

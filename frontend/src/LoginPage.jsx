@@ -5,8 +5,9 @@ import { useAuth } from './contexts/AuthContext';
 const LoginPage = ({ t }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // THÊM STATE ĐỂ LƯU VAI TRÒ
+    // THÊM STATE ĐỂ LƯU VAI TRÒ VÀ REMEMBER ME
     const [role, setRole] = useState('customer'); // Mặc định là khách hàng
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -20,8 +21,8 @@ const LoginPage = ({ t }) => {
         setError('');
         setLoading(true);
         try {
-            // Gửi cả 3 tham số vào hàm login
-            await login(email, password, role);
+            // Gửi cả 4 tham số vào hàm login
+            await login(email, password, role, rememberMe);
             navigate(from, { replace: true });
         } catch (err) {
             setError(err.message);
@@ -65,6 +66,17 @@ const LoginPage = ({ t }) => {
                             <option value="customer">Khách hàng</option>
                             <option value="seller">Người bán</option>
                         </select>
+                    </div>
+                    <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                        <input
+                            type="checkbox"
+                            id="rememberMe"
+                            className="rememberme-checkbox"
+                            checked={rememberMe}
+                            onChange={e => setRememberMe(e.target.checked)}
+                            style={{ width: 18, height: 18, marginRight: 8 }}
+                        />
+                        <label htmlFor="rememberMe" style={{ margin: 0, cursor: 'pointer', userSelect: 'none' }}>Ghi nhớ đăng nhập</label>
                     </div>
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? "Đang xử lý..." : (t('login_label') || "Đăng nhập")}

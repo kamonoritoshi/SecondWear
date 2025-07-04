@@ -2,6 +2,9 @@
 export const translations = {
     'vi': {
         // --- Keys có sẵn ---
+        'homepage_title': 'Trang chủ - SecondWear',
+        'hot_section_title': 'Xu hướng nổi bật',
+        'category_section_title': 'Danh mục sản phẩm',
         'page_title': 'Chi Tiết Sản Phẩm - SecondWear',
         'search_placeholder': 'Tìm kiếm sản phẩm...',
         'guest_label': 'Khách',
@@ -84,6 +87,7 @@ export const translations = {
         'confirm_password_placeholder': 'Nhập lại mật khẩu',
         'register_button': 'Đăng Ký',
         'already_have_account_prompt': 'Đã có tài khoản?',
+        'dont_have_account_prompt': 'Chưa có tài khoản?',
         'login_link': 'Đăng nhập',
         'password_mismatch_error': 'Mật khẩu và xác nhận mật khẩu không khớp.',
         'verification_email_sent_message': 'Mã xác thực đã được gửi đến email của bạn!',
@@ -95,6 +99,10 @@ export const translations = {
     },
     'en': {
         // --- Existing Keys ---
+        'homepage_title': 'Homepage - SecondWear',
+        'hot_section_title': 'Hot Trends',
+        'category_section_title': 'Product Categories',
+        'dont_have_account_prompt': "Don't have an account?",
         'page_title': 'Product Details - SecondWear',
         'search_placeholder': 'Search products...',
         // ... (all other existing keys)

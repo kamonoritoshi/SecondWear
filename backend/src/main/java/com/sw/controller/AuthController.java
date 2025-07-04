@@ -58,7 +58,8 @@ public class AuthController {
 
         String input = request.getEmail() + "|" + request.getRoleName();
         String token = jwtUtil.generateToken(input, expiration);
-        return ResponseEntity.ok(new AuthResponse(token));
+        System.out.println("Trả về name: " + acc.getUser().getName());
+        return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getName()));
     }
     
     @PostMapping("/register")

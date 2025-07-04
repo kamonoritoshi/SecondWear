@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/payment/vnpay-return").permitAll()
+                        .requestMatchers("/api/products/**").permitAll() // Thêm dòng này
+                        .requestMatchers("/api/categories/**").permitAll() // Thêm dòng này
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

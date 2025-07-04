@@ -7,6 +7,8 @@ const categoryIcons = import.meta.glob('./icons/*.png', {
   eager: true,
   import: 'default',
 });
+
+import heroBanner from './icons/hero-banner.png';
 import defaultIcon from './icons/default-category.png';
 
 // Hàm lấy icon từ tên file (do API trả về)
@@ -20,7 +22,7 @@ const getIconFromFileName = (fileName) => {
 const HeroBanner = ({ t }) => (
   <section className="hero-section">
     <div className="hero-banner-image">
-      <img src="/icons/hero-banner.png" alt="Eco-friendly Clothing" />
+      <img src={heroBanner} alt="Eco-friendly Clothing" />
     </div>
     <div className="hot-section">
       <h4>{t('hot_section_title')}</h4>
@@ -90,7 +92,7 @@ const ProductCard = ({ product }) => (
             alert('Đã thêm vào giỏ!');
           }}
         >
-          <img src="/icons/cart-icon-red.png" alt="Add to cart" />
+          <img src="/src/icons/cart-icon.png" alt="Add to cart" />
         </button>
       </div>
     </div>
@@ -245,7 +247,7 @@ const HomePage = ({ t }) => {
           <div className="search-bar secondary-search">
             <input type="text" placeholder={t('search_placeholder')} />
             <button className="search-button">
-              <img src="/icons/search-icon.png" alt="Search" className="header-icon" />
+              <img src="/src/icons/search-icon.png" alt="Search" className="header-icon" />
             </button>
           </div>
         </div>
