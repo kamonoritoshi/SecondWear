@@ -14,6 +14,7 @@ public class PendingRegistration {
     private String city;
     private String address;
     private String password; // bạn có thể mã hóa sau nếu cần
+    private String roleName;
     private String verificationCode;
     private long createdAt; // thời gian tạo, dùng để hết hạn mã
 }

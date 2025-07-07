@@ -80,15 +80,17 @@ public class AuthController {
         emailService.sendVerificationCode(request.getEmail(), code);
 
         PendingRegistration pending = new PendingRegistration(
-                request.getEmail(),
-                request.getFullName(),
-                request.getPhone(),
-                request.getCity(),
-                request.getAddress(),
-                request.getPassword(),
-                code,
-                System.currentTimeMillis()
-        );
+        	    request.getEmail(),
+        	    request.getFullName(),
+        	    request.getPhone(),
+        	    request.getCity(),
+        	    request.getAddress(),
+        	    request.getPassword(),
+        	    request.getRoleName(), // THÊM roleName từ request
+        	    code,
+        	    System.currentTimeMillis()
+        	);
+
 
         registrationService.save(pending);
         return ResponseEntity.ok("Đã gửi mã xác nhận đến email.");
@@ -113,9 +115,9 @@ public class AuthController {
         user.setAddress(pending.getAddress() + ", " + pending.getCity());
         user = userRepository.save(user);
 
-        // Gán role "customer"
-        Role role = roleRepository.findByRoleName("customer")
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy role 'customer'"));
+        // 🔍 Lấy role theo roleName trong pending
+        Role role = roleRepository.findByRoleName(pending.getRoleName())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy role '" + pending.getRoleName() + "'"));
 
         // Tạo Account
         Account account = new Account();

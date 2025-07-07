@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.sw.dao.OrderRepository;
@@ -62,7 +63,7 @@ public class RestController {
 	private OrderService oService;
 	@Autowired
 	private PaymentService paymentService;
-	@Autowired
+	@Autowired 
 	private ShippingService shippingService;
 	@Autowired
 	private ReviewService reviewService;
@@ -155,6 +156,13 @@ public class RestController {
 	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
 		return pService.getProductsByCategory(categoryId);
 	}
+	
+	@PostMapping("/api/products/admin")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Product> createProductByAdmin(@RequestBody Product product) {
+	    return ResponseEntity.ok(pService.createProduct(product));
+	}
+
 	// ProductImage REST API
 
 	@GetMapping("/api/product-images/product/{productId}")
@@ -339,6 +347,18 @@ public class RestController {
 	public List<Order> getAllOrdersSortedByDateDesc() {
 		return oService.getOrdersSortedByDateDesc();
 	}
+	// Cập nhật trạng thái đơn hàng
+	// http://localhost:8080/api/orders/54/status?status=Đang xử lý
+	@PutMapping("/api/orders/{id}/status")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+	    Order updatedOrder = oService.updateOrderStatus(id, status);
+	    if (updatedOrder == null) {
+	        return ResponseEntity.notFound().build();
+	    }
+	    return ResponseEntity.ok(updatedOrder);
+	}
+
 
 	@GetMapping("/api/orders/processing")
 	public ResponseEntity<?> getProcessingOrders(@AuthenticationPrincipal CustomUserDetails userDetails) {
