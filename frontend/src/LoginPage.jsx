@@ -65,6 +65,7 @@ const LoginPage = ({ t }) => {
                         <select id="role" value={role} onChange={(e) => setRole(e.target.value)} required>
                             <option value="customer">Khách hàng</option>
                             <option value="seller">Người bán</option>
+                             <option value="admin">Quản trị viên</option>
                         </select>
                     </div>
                     <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>

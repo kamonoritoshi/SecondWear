@@ -92,4 +92,13 @@ public class OrderService {
     public List<Order> getOrdersSortedByDateDesc() {
         return oDAO.findAllByOrderByOrderDateDesc();
     }
+    
+    public Order updateOrderStatus(Long id, String status) {
+        Order existing = oDAO.findById(id).orElse(null);
+        if (existing == null) return null;
+
+        existing.setStatus(status);
+        return oDAO.save(existing);
+    }
+
 }

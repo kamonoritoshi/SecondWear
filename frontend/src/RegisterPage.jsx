@@ -99,6 +99,7 @@ const RegisterPage = ({ t }) => {
                         <select id="role" name="role" value={formData.role} onChange={handleChange} required>
                             <option value="customer">Người mua</option>
                             <option value="seller">Người bán</option>
+                            <option value="admin">Quản trị viên</option>
                         </select>
                     </div>
 

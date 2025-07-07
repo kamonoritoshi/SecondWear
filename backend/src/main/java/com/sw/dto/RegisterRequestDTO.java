@@ -31,4 +31,7 @@ public class RegisterRequestDTO {
 
     @NotBlank(message = "Xác nhận mật khẩu là bắt buộc")
     private String confirmPassword;
+
+    @NotBlank(message = "Vai trò là bắt buộc") 
+    private String roleName;
 }
