@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { translations } from './translations';
 // Import các components
 import Header from './Header';
 import SideMenu from './SideMenu';
 import HomePage from './HomePage';
+import ProductsPage from './ProductsPage';
 import ProductDetail from './ProductDetail';
 import CartPage from './CartPage';
 import LoginPage from './LoginPage';
@@ -16,7 +17,7 @@ function App() {
   // State quản lý trạng thái của menu (đóng/mở)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // State quản lý theme (sáng/tối)
+  // State theme: 'light' | 'dark'
   const [theme, setTheme] = useState('light');
 
   // State quản lý ngôn ngữ
@@ -29,15 +30,11 @@ function App() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-  };
+  // Xóa hàm toggleTheme vì đã dùng setTheme trực tiếp
 
-  // useEffect để cập nhật thuộc tính trên thẻ <html> khi theme thay đổi
+  // Cập nhật class cho <html> khi theme đổi
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.body.className = `${theme}-mode`; // Thêm class theme vào body
+    document.documentElement.classList.toggle('dark-mode', theme === 'dark');
   }, [theme]);
 
   return (
@@ -45,10 +42,10 @@ function App() {
     <Router>
       <div className={`app-container ${isMenuOpen ? 'menu-open' : ''}`}>
         <Header
-          onMenuClick={toggleMenu}
           t={t}
-          toggleTheme={toggleTheme}
-          theme={theme}
+          currentTheme={theme}
+          setTheme={setTheme}
+          handleLanguageChange={setLanguage}
         />
         <SideMenu
           isOpen={isMenuOpen}
@@ -62,6 +59,7 @@ function App() {
           <Routes>
             {/* Các Route công khai */}
             <Route path="/" element={<HomePage t={t} />} />
+            <Route path="/products" element={<ProductsPage t={t} />} />
             <Route path="/products/:id" element={<ProductDetail t={t} />} />
             <Route path="/login" element={<LoginPage t={t} />} />
             <Route path="/register" element={<RegisterPage t={t} />} />

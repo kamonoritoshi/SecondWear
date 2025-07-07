@@ -68,34 +68,34 @@ const RegisterPage = ({ t }) => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-form-container">
-                <h2>{t('register_label') || "Đăng Ký"}</h2>
+        <div className="auth-page" style={{ background: 'var(--main-bg)' }}>
+            <div className="auth-form-container" style={{ background: 'var(--section-bg)' }}>
+                <h2 style={{ color: 'var(--main-text)' }}>{t('register_label') || "Đăng Ký"}</h2>
                 <form onSubmit={handleSubmit}>
                     {error && <p className="error-message">{error}</p>}
                     
                     <div className="form-group">
-                        <label htmlFor="fullName">Họ và tên</label>
+                        <label htmlFor="fullName" style={{ color: 'var(--main-text)' }}>Họ và tên</label>
                         <input id="fullName" name="fullName" type="text" placeholder="Nhập họ và tên" onChange={handleChange} required />
                     </div>
                     
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email" style={{ color: 'var(--main-text)' }}>Email</label>
                         <input id="email" name="email" type="email" placeholder="Nhập email" onChange={handleChange} required />
                     </div>
                     
                     <div className="form-group">
-                        <label htmlFor="phone">Số điện thoại</label>
+                        <label htmlFor="phone" style={{ color: 'var(--main-text)' }}>Số điện thoại</label>
                         <input id="phone" name="phone" type="tel" placeholder="Nhập số điện thoại" onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="address">Địa chỉ (Số nhà, tên đường)</label>
+                        <label htmlFor="address" style={{ color: 'var(--main-text)' }}>Địa chỉ (Số nhà, tên đường)</label>
                         <input id="address" name="address" type="text" placeholder="Nhập địa chỉ cụ thể" onChange={handleChange} required />
                     </div>
                     
                     <div className="form-group">
-                        <label htmlFor="role">Bạn muốn đăng ký với vai trò?</label>
+                        <label htmlFor="role" style={{ color: 'var(--main-text)' }}>Bạn muốn đăng ký với vai trò?</label>
                         <select id="role" name="role" value={formData.role} onChange={handleChange} required>
                             <option value="customer">Người mua</option>
                             <option value="seller">Người bán</option>
@@ -103,12 +103,12 @@ const RegisterPage = ({ t }) => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Mật khẩu</label>
+                        <label htmlFor="password" style={{ color: 'var(--main-text)' }}>Mật khẩu</label>
                         <input id="password" name="password" type="password" placeholder="Ít nhất 6 ký tự" onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
+                        <label htmlFor="confirmPassword" style={{ color: 'var(--main-text)' }}>Xác nhận mật khẩu</label>
                         <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" onChange={handleChange} required />
                     </div>
 

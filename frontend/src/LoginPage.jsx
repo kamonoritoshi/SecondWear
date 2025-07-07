@@ -32,13 +32,13 @@ const LoginPage = ({ t }) => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-form-container">
-                <h2>{t('login_label') || "Đăng nhập"}</h2>
+        <div className="auth-page" style={{ background: 'var(--main-bg)' }}>
+            <div className="auth-form-container" style={{ background: 'var(--section-bg)' }}>
+                <h2 style={{ color: 'var(--main-text)' }}>{t('login_label') || "Đăng nhập"}</h2>
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email" style={{ color: 'var(--main-text)' }}>Email</label>
                         <input
                             id="email"
                             type="email"
@@ -49,7 +49,7 @@ const LoginPage = ({ t }) => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Mật khẩu</label>
+                        <label htmlFor="password" style={{ color: 'var(--main-text)' }}>Mật khẩu</label>
                         <input
                             id="password"
                             type="password"
@@ -61,7 +61,7 @@ const LoginPage = ({ t }) => {
                     </div>
                     {/* THÊM TRƯỜNG CHỌN VAI TRÒ */}
                     <div className="form-group">
-                        <label htmlFor="role">Vai trò</label>
+                        <label htmlFor="role" style={{ color: 'var(--main-text)' }}>Vai trò</label>
                         <select id="role" value={role} onChange={(e) => setRole(e.target.value)} required>
                             <option value="customer">Khách hàng</option>
                             <option value="seller">Người bán</option>
@@ -76,7 +76,7 @@ const LoginPage = ({ t }) => {
                             onChange={e => setRememberMe(e.target.checked)}
                             style={{ width: 18, height: 18, marginRight: 8 }}
                         />
-                        <label htmlFor="rememberMe" style={{ margin: 0, cursor: 'pointer', userSelect: 'none' }}>Ghi nhớ đăng nhập</label>
+                        <label htmlFor="rememberMe" style={{ margin: 0, cursor: 'pointer', userSelect: 'none', color: 'var(--main-text)' }}>Ghi nhớ đăng nhập</label>
                     </div>
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? "Đang xử lý..." : (t('login_label') || "Đăng nhập")}

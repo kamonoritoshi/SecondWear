@@ -96,6 +96,9 @@ export const translations = {
         'verification_code_placeholder': 'Nhập mã xác thực gồm 6 ký tự',
         'verify_button': 'Xác thực',
         'verification_success_message': 'Xác thực thành công! Đang chuyển đến trang đăng nhập...',
+        'all_products_title': 'Tất cả sản phẩm',
+        'my_account_label': 'Tài khoản của tôi',
+        'logout_label': 'Đăng xuất',
     },
     'en': {
         // --- Existing Keys ---

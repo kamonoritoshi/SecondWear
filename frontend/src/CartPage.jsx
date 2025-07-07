@@ -118,8 +118,8 @@ const CartPage = ({ t }) => {
 
     return (
         <main className="cart-page-container">
-            <div className="cart-header-title">{t('cart_title')}</div>
-            <div className="cart-content">
+            <div className="cart-header-title" style={{ background: 'var(--section-bg)', color: '--main-text' }}>{t('cart_title')}</div>
+            <div className="cart-content" style={{ background: 'var(--section-bg)', color: '--main-text' }}>
                 {cartItems.length > 0 ? (
                     <>
                         {Object.entries(groupedByShop).map(([shopName, items]) => (

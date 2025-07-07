@@ -1,127 +1,191 @@
+/* Helper: main-bg cho wrapper ngoài cùng */
+.main-bg {
+    background-color: var(--main-bg, #f0f2f5);
+    transition: background-color 0.3s;
+}
 /* General Body & Container Styles */
+
+/* =====================
+   THEME VARIABLES ROOT
+   ===================== */
+:root {
+  /* Light theme colors */
+  --main-bg: #f0f2f5;
+  --header-bg: #fff;
+  --dropdown-bg: #fff;
+  --product-card-bg: #fff;
+  --button-bg: #fff;
+  --modal-bg: #fff;
+  --side-menu-bg: #fff;
+  --section-bg: #fff;
+  --input-bg: #f2f2f2;
+  --input-text: #333;
+  --main-text: #333;
+  --secondary-text: #555;
+  --border: #eee;
+  --border-strong: #ddd;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --highlight: #ff6f61;
+  --highlight-hover: #e05e55;
+  --card-hover: #f9f9f9;
+  --footer-bg: #ff6f61;
+  --footer-text: #fff;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: #f0f2f5;
-    /* Nền xám nhạt */
-    color: #333;
+    background-color: var(--main-bg);
+    color: var(--main-text);
     transition: background-color 0.3s ease, color 0.3s ease;
-    /* Hiệu ứng chuyển đổi theme */
 }
 
 /* Dark Mode Styles */
-body.dark-mode {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+
+body.dark-mode, html.dark-mode {
+  --main-bg: #1a1a1a;
+  --header-bg: #2b2b2b;
+  --dropdown-bg: #3a3a3a;
+  --product-card-bg: #2b2b2b;
+  --button-bg: #2b2b2b;
+  --modal-bg: #2b2b2b;
+  --side-menu-bg: #2b2b2b;
+  --section-bg: #2b2b2b;
+  --input-bg: #3a3a3a;
+  --input-text: #e0e0e0;
+  --main-text: #e0e0e0;
+  --secondary-text: #bbb;
+  --border: #444;
+  --border-strong: #555; 
+  --shadow: 0 2px 4px rgba(0,0,0,0.3);
+  --highlight: #ff6f61;
+  --highlight-hover: #ff8a80;
+  --card-hover: #444;
+  --footer-bg: #222;
+  --footer-text: #fff;
+  background-color: var(--main-bg);
+  color: var(--main-text);
 }
 
-body.dark-mode .main-header {
-    background-color: #2b2b2b;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+.main-header {
+    background-color: var(--header-bg);
+    box-shadow: var(--shadow);
 }
 
-body.dark-mode .main-header .menu-button,
-body.dark-mode .main-header .search-bar .search-button,
-body.dark-mode .main-header .dropdown-toggle {
-    background-color: #444;
-    color: #e0e0e0;
+
+.main-header .menu-button,
+.main-header .search-bar .search-button,
+.main-header .dropdown-toggle {
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
-body.dark-mode .main-header .search-bar {
-    background-color: #3a3a3a;
+
+.main-header .search-bar {
+    background-color: var(--input-bg);
 }
 
-body.dark-mode .main-header .search-bar input {
-    color: #e0e0e0;
+
+.main-header .search-bar input {
+    color: var(--input-text);
 }
 
-body.dark-mode .main-header .search-bar input::placeholder {
-    /* Placeholder color for dark mode */
-    color: #bbb;
+
+.main-header .search-bar input::placeholder {
+    color: var(--secondary-text);
 }
 
-body.dark-mode .main-header .logo,
-body.dark-mode .main-header .header-icons a,
-body.dark-mode .main-header .user-text,
-body.dark-mode .main-header .arrow-down {
-    color: #e0e0e0;
+.search-bar input::placeholder {
+    color: var(--secondary-text);
 }
 
-body.dark-mode .product-detail-page,
-body.dark-mode .modal-content,
-body.dark-mode .side-menu {
-    /* Thêm side-menu */
-    background-color: #2b2b2b;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+.main-header .logo,
+.main-header .header-icons a,
+.main-header .user-text,
+.main-header .arrow-down {
+    color: var(--main-text);
 }
 
-body.dark-mode .product-name,
-body.dark-mode .section-title,
-body.dark-mode .modal-content h3,
-body.dark-mode .modal-product-name,
-body.dark-mode .option-group p,
-body.dark-mode .side-menu h3,
-/* Thêm side-menu */
-body.dark-mode .side-menu ul li a {
-    /* Thêm side-menu */
-    color: #e0e0e0;
+
+.product-detail-page,
+.modal-content,
+.side-menu {
+    background-color: var(--section-bg);
+    box-shadow: var(--shadow);
 }
 
-body.dark-mode .product-meta p,
-body.dark-mode .description-text,
-body.dark-mode .quality-rating,
-body.dark-mode .seller-name,
-body.dark-mode .location,
-body.dark-mode .stock-info,
-body.dark-mode .size-guide-link,
-body.dark-mode .side-menu-footer p {
-    /* Thêm side-menu */
-    color: #ccc;
+
+.product-name,
+.section-title,
+.modal-content h3,
+.modal-product-name,
+.option-group p,
+.side-menu h3,
+.side-menu ul li a {
+    color: var(--main-text);
 }
 
-body.dark-mode .product-image-gallery {
-    border-color: #444;
+
+.product-meta p,
+.description-text,
+.quality-rating,
+.seller-name,
+.location,
+.stock-info,
+.size-guide-link,
+.side-menu-footer p {
+    color: var(--secondary-text);
 }
 
-body.dark-mode .option-button {
-    background-color: #444;
-    border-color: #555;
-    color: #e0e0e0;
+
+.product-image-gallery {
+    border-color: var(--border);
 }
 
-body.dark-mode .option-button.selected {
-    background-color: #ff6f61;
-    /* Vẫn giữ màu hồng làm điểm nhấn */
-    color: white;
-    border-color: #ff6f61;
-    /* Bỏ viền đen khi chọn */
+
+.option-button {
+    background-color: var(--input-bg);
+    border-color: var(--border-strong);
+    color: var(--main-text);
 }
 
-body.dark-mode .option-button:hover:not(.selected) {
-    background-color: #555;
+
+.option-button.selected {
+    background-color: var(--highlight);
+    color: #fff;
+    border-color: var(--highlight);
 }
 
-body.dark-mode .quantity-btn,
-body.dark-mode .quantity-input {
-    background-color: #444;
-    border-color: #555;
-    color: #e0e0e0;
+
+.option-button:hover:not(.selected) {
+    background-color: var(--card-hover);
 }
 
-body.dark-mode .dropdown-menu {
-    background-color: #3a3a3a;
-    border: 1px solid #555;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+
+.quantity-btn,
+.quantity-input {
+    background-color: var(--input-bg);
+    border-color: var(--border-strong);
+    color: var(--main-text);
 }
 
-body.dark-mode .dropdown-menu .dropdown-item {
-    color: #e0e0e0;
+
+.dropdown-menu {
+    background-color: var(--dropdown-bg);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow);
 }
 
-body.dark-mode .dropdown-menu .dropdown-item:hover {
-    background-color: #ff6f61;
-    /* Màu hồng hover */
-    color: white;
+
+.dropdown-menu .dropdown-item {
+    color: var(--main-text);
+}
+
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--highlight);
+    color: #fff;
 }
 
 
@@ -621,7 +685,6 @@ body.dark-mode .dropdown-menu .dropdown-item:hover {
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 5px 0;
-    -moz-appearance: textfield;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
@@ -1137,8 +1200,6 @@ body.dark-mode .cart-section {
     border-left: none;
     border-right: none;
     box-sizing: border-box;
-    /* Đảm bảo kích thước đúng */
-    -moz-appearance: textfield;
 }
 
 .quantity-input::-webkit-outer-spin-button,
@@ -1465,14 +1526,15 @@ body.dark-mode .error-message {
 }
 
 .product-card {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
+    background-color: var(--product-card-bg);
+    border: none;
     border-radius: 8px;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow); /* Thêm shadow mặc định */
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -1500,10 +1562,14 @@ body.dark-mode .error-message {
 }
 
 .product-card-info {
+    background: var(--product-card-bg);
+    color: var(--main-text);
+    border-radius: 0 0 12px 12px;
     padding: 15px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s;
 }
 
 .product-card-name {
@@ -1517,7 +1583,7 @@ body.dark-mode .error-message {
 .product-card-price {
     font-size: 18px;
     font-weight: bold;
-    color: #ff6f61;
+    color: var(--highlight);
     margin: 0;
 }
 
@@ -1542,7 +1608,7 @@ body.dark-mode .product-card {
 }
 
 .section-container {
-    background-color: #fff;
+    background-color: var(--section-bg);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -1607,15 +1673,15 @@ body.dark-mode .product-card {
     display: flex;
     align-items: center;
     padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    box-shadow: var(--shadow);
     margin-bottom: 10px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .hot-item:hover {
-    background-color: #f9f9f9;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .hot-item .hot-icon {
@@ -1656,7 +1722,7 @@ body.dark-mode .product-card {
     align-items: center;
     gap: 10px;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 8px;
     width: 100px;
     cursor: pointer;
@@ -1664,6 +1730,7 @@ body.dark-mode .product-card {
 }
 
 .category-item:hover {
+    transform: translateY(-3px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -1674,7 +1741,7 @@ body.dark-mode .product-card {
 
 .category-item span {
     font-weight: bold;
-    color: #222;
+    color: var(--main-text);
     text-decoration: none !important;
 }
 
@@ -1687,7 +1754,7 @@ body.dark-mode .product-card {
 }
 
 .product-card {
-    background-color: #fff;
+    background-color: var(--section-bg);
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
@@ -1736,6 +1803,7 @@ body.dark-mode .product-card {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow);
 }
 
 .product-card-name {
@@ -1745,6 +1813,7 @@ body.dark-mode .product-card {
     height: 45px;
     /* Giữ 2 dòng */
     overflow: hidden;
+    color: var(--main-text);
 }
 
 .product-card-price-container {
@@ -1792,6 +1861,7 @@ body.dark-mode .product-card {
 
 .secondary-search {
     max-width: 600px;
+    box-shadow: var(--shadow);
 }
 
 .show-more-container {
@@ -1845,6 +1915,7 @@ body.dark-mode .product-card {
     margin-bottom: 15px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     padding-bottom: 10px;
+    color: var(--footer-text);
 }
 
 .footer-column p,
@@ -1853,6 +1924,7 @@ body.dark-mode .product-card {
     padding: 0;
     list-style: none;
     line-height: 1.8;
+    color: var(--footer-text);
 }
 
 .footer-column ul li a {
@@ -2020,4 +2092,9 @@ body.dark-mode .product-card {
 .thumbnail-image.active {
   border-color: #ff6f61;
   transform: scale(1.05);
+}
+
+.menu-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }

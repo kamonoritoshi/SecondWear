@@ -125,20 +125,20 @@ const ProductDetail = ({ t, setCartCount }) => {
     const closeOptionsModal = useCallback(() => setIsOptionsModalOpen(false), []);
 
 
-    if (loading) return <main className="product-detail-page"><div>Đang tải...</div></main>;
-    if (error) return <main className="product-detail-page"><div>Lỗi: {error}</div></main>;
-    if (!product) return <main className="product-detail-page"><div>Không tìm thấy sản phẩm.</div></main>;
+    if (loading) return <main className="product-detail-page" style={{ background: 'var(--section-bg)', color: 'var(--main-text)' }}><div>Đang tải...</div></main>;
+    if (error) return <main className="product-detail-page" style={{ background: 'var(--section-bg)', color: 'var(--main-text)' }}><div>Lỗi: {error}</div></main>;
+    if (!product) return <main className="product-detail-page" style={{ background: 'var(--section-bg)', color: 'var(--main-text)' }}><div>Không tìm thấy sản phẩm.</div></main>;
 
     return (
         <>
-            <main className="product-detail-page">
+            <main className="product-detail-page" style={{ background: 'var(--section-bg)' }}>
                 <button className="report-product-button" onClick={() => alert('Chức năng đang phát triển')}>
-                    <span>{t('report_button_label')}</span>
+                    <span style={{ color: 'var(--secondary-text)' }}>{t('report_button_label')}</span>
                     <img src={reportIcon} alt={t('report_button_label')} className="header-icon" />
                 </button>
                 <section className="product-main-info">
-                    <div className="product-image-gallery">
-                        <div className="main-image-container" style={{ width: 400, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #ddd' }}>
+                    <div className="product-image-gallery" style={{ border: 'none'}}>
+                        <div className="main-image-container" style={{ width: 400, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--modal-bg)', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
                             <img
                                 src={selectedImage || '/images/placeholder.png'}
                                 alt={product.name}
@@ -158,8 +158,8 @@ const ProductDetail = ({ t, setCartCount }) => {
                                         justifyContent: 'center',
                                         overflow: 'hidden',
                                         borderRadius: 6,
-                                        border: selectedImage === image.imageUrl ? '2px solid #ff6f61' : '2px solid transparent',
-                                        background: '#fff',
+                                        border: selectedImage === image.imageUrl ? '2px solid var(--highlight)' : '2px solid transparent',
+                                        background: 'var(--modal-bg)',
                                         boxSizing: 'border-box',
                                         cursor: 'pointer',
                                     }}
@@ -182,24 +182,23 @@ const ProductDetail = ({ t, setCartCount }) => {
                     </div>
 
                     <div className="product-details-content">
-                        <h1 className="product-name">{product.name}</h1>
+                        <h1 className="product-name" style={{ color: 'var(--main-text)' }}>{product.name}</h1>
                         <div className="product-meta">
-                            <h2 className="section-title">{t('product_details_title')}</h2>
+                            <h2 className="section-title" style={{ color: 'var(--main-text)' }}>{t('product_details_title')}</h2>
                             <p className="price-info">
-                                <span>{t('price_label')}</span>:
+                                <span style={{ color: 'var(--main-text)' }}>{t('price_label')}</span>:
                                 <span className="current-price">{product.price.toLocaleString('vi-VN')}₫</span>
                             </p>
-                            <p><span>{t('category_label')}</span>: <span className="detail-value">{product.category?.name || 'Chưa phân loại'}</span></p>
-                            <p><span>{t('brand_label')}</span>: <span className="detail-value">{product.brand || 'Không có thương hiệu'}</span></p>
-                            <p><span>{t('origin_label')}</span>: <span className="detail-value">{product.origin || 'Không rõ xuất xứ'}</span></p>
-                            <p><span>{t('quality_label')}</span>: <span className="quality-rating">{product.condition}</span></p>
-                            <p><span>{t('shop_label')}</span>: <span className="seller-name">{product.account?.user?.name || 'Người bán ẩn danh'}</span></p>
-                            <p><span>{t('location_label')}</span>: <span className="location">{product.account?.user?.address || 'Không rõ vị trí'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('category_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.category?.name || 'Chưa phân loại'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('brand_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.brand || 'Không có thương hiệu'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('origin_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.origin || 'Không rõ xuất xứ'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('quality_label')}</span><span>:</span> <span className="quality-rating">{product.condition}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('shop_label')}</span><span>:</span> <span className="seller-name">{product.account?.user?.name || 'Người bán ẩn danh'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('location_label')}</span><span>:</span> <span className="location">{product.account?.user?.address || 'Không rõ vị trí'}</span></p>
                         </div>
                         <div className="product-description">
                             <p>
-                                <span className="description-heading">{t('description_heading')}</span>:
-                                <span className="description-text">{product.description}</span>
+                                <span className="description-heading" style={{ color: 'var(--main-text)' }}>{t('description_heading')}</span>: <span className="description-text" style={{ color: 'var(--main-text)' }}>{product.description}</span>
                             </p>
                         </div>
                         <div className="product-actions">
