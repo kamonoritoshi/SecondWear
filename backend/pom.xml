@@ -109,6 +109,11 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.15</version> <!-- Hoặc bản mới nhất -->
+		</dependency>
 	</dependencies>
 
 	<build>
