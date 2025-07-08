@@ -69,7 +69,7 @@ export const translations = {
         'total_label': 'Tổng',
         'payment_method_label': 'Phương thức thanh toán',
         'grand_total_label': 'Tổng cộng',
-        'product_label': 'sản phẩm',
+        'product_label': 'Sản phẩm',
         'checkout_button': 'Thanh toán',
         'select_payment_method_title': 'Chọn phương thức thanh toán',
         'payment_method_cod': 'Thanh toán khi nhận hàng',
@@ -99,7 +99,11 @@ export const translations = {
         'all_products_title': 'Tất cả sản phẩm',
         'my_account_label': 'Tài khoản của tôi',
         'logout_label': 'Đăng xuất',
-    },
+        //--Giỏ hàng--
+        'unit_price_label': 'Đơn giá',
+        'action_label': 'Thao tác',
+        'select_all_label': 'Chọn tất cả',
+    }, 
     'en': {
         // --- Existing Keys ---
         'homepage_title': 'Homepage - SecondWear',

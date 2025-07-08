@@ -6,10 +6,10 @@ import Header from './Header';
 import SideMenu from './SideMenu';
 import HomePage from './HomePage';
 import ProductsPage from './ProductsPage';
-import ProductDetail from './ProductDetail';
-import CartPage from './CartPage';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
+import WrappedProductDetail from './ProductDetail';
+import WrappedCartPage from './CartPage';
+import WrappedLoginPage from './LoginPage';
+import WrappedRegisterPage from './RegisterPage';
 import VerifyPage from './VerifyPage'; // (MỚI) Import trang xác thực
 import ProtectedRoute from './components/ProtectedRoute'; // Import route bảo vệ
 
@@ -60,9 +60,9 @@ function App() {
             {/* Các Route công khai */}
             <Route path="/" element={<HomePage t={t} />} />
             <Route path="/products" element={<ProductsPage t={t} />} />
-            <Route path="/products/:id" element={<ProductDetail t={t} />} />
-            <Route path="/login" element={<LoginPage t={t} />} />
-            <Route path="/register" element={<RegisterPage t={t} />} />
+            <Route path="/products/:id" element={<WrappedProductDetail t={t} />} />
+            <Route path="/login" element={<WrappedLoginPage t={t} />} />
+            <Route path="/register" element={<WrappedRegisterPage t={t} />} />
             <Route path="/verify" element={<VerifyPage t={t} />} />
 
             {/* Các Route cần đăng nhập mới được truy cập */}
@@ -70,7 +70,7 @@ function App() {
               path="/cart"
               element={
                 <ProtectedRoute>
-                  <CartPage t={t} />
+                  <WrappedCartPage t={t} />
                 </ProtectedRoute>
               }
             />

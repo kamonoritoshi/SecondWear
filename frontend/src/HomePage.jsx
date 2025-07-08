@@ -79,19 +79,19 @@ const HeroBanner = ({ t }) => (
 
 // --- Danh mục cố định, icon tĩnh ---
 const getCategoryList = (theme) => [
-  { name: 'Áo', icon: theme === 'dark' ? iconAoWhite : iconAoBlack },
-  { name: 'Quần', icon: theme === 'dark' ? iconQuanWhite : iconQuanBlack },
-  { name: 'Váy / Đầm', icon: theme === 'dark' ? iconVayWhite : iconVayBlack },
-  { name: 'Giày dép', icon: theme === 'dark' ? iconGiayWhite : iconGiayBlack },
-  { name: 'Túi xách / Ba lô', icon: theme === 'dark' ? iconTuiWhite : iconTuiBlack },
-  { name: 'Mũ', icon: theme === 'dark' ? iconMuWhite : iconMuBlack },
-  { name: 'Kính', icon: theme === 'dark' ? iconKinhWhite : iconKinhBlack },
-  { name: 'Trang sức', icon: theme === 'dark' ? iconTrangSucWhite : iconTrangSucBlack },
-  { name: 'Thắt lưng', icon: theme === 'dark' ? iconThatLungWhite : iconThatLungBlack },
-  { name: 'Đồ bơi', icon: theme === 'dark' ? iconDoBoiWhite : iconDoBoiBlack },
-  { name: 'Đồ ngủ / Ở nhà', icon: theme === 'dark' ? iconDoNguWhite : iconDoNguBlack },
-  { name: 'Khăn / Phụ kiện khác', icon: theme === 'dark' ? iconKhanWhite : iconKhanBlack },
-  { name: 'Khác', icon: theme === 'dark' ? defaultIconWhite : defaultIconBlack },
+  { name: 'Áo', icon: theme === 'dark' ? iconAoWhite : iconAoBlack, categoryId: 1 },
+  { name: 'Quần', icon: theme === 'dark' ? iconQuanWhite : iconQuanBlack, categoryId: 2 },
+  { name: 'Váy / Đầm', icon: theme === 'dark' ? iconVayWhite : iconVayBlack, categoryId: 3 },
+  { name: 'Giày dép', icon: theme === 'dark' ? iconGiayWhite : iconGiayBlack, categoryId: 4 },
+  { name: 'Túi xách / Ba lô', icon: theme === 'dark' ? iconTuiWhite : iconTuiBlack, categoryId: 5 },
+  { name: 'Mũ', icon: theme === 'dark' ? iconMuWhite : iconMuBlack, categoryId: 6 },
+  { name: 'Kính', icon: theme === 'dark' ? iconKinhWhite : iconKinhBlack, categoryId: 7 },
+  { name: 'Trang sức', icon: theme === 'dark' ? iconTrangSucWhite : iconTrangSucBlack, categoryId: 8 },
+  { name: 'Thắt lưng', icon: theme === 'dark' ? iconThatLungWhite : iconThatLungBlack, categoryId: 9 },
+  { name: 'Đồ bơi', icon: theme === 'dark' ? iconDoBoiWhite : iconDoBoiBlack, categoryId: 10 },
+  { name: 'Đồ ngủ / Ở nhà', icon: theme === 'dark' ? iconDoNguWhite : iconDoNguBlack, categoryId: 11 },
+  { name: 'Khăn / Phụ kiện khác', icon: theme === 'dark' ? iconKhanWhite : iconKhanBlack, categoryId: 12 },
+  { name: 'Khác', icon: theme === 'dark' ? defaultIconWhite : defaultIconBlack, categoryId: 13 },
 ];
 
 
@@ -141,6 +141,14 @@ const CategorySection = ({ t }) => {
       const next = prev + visibleCount;
       return next + visibleCount > total ? total - visibleCount : next;
     });
+  };
+
+  const handleCategoryClick = (cat) => {
+    // Lưu filter vào localStorage để ProductsPage nhận được
+    localStorage.setItem('filter_category', cat.categoryId);
+    localStorage.setItem('filter_page', '1');
+    // Có thể reset các filter khác nếu muốn
+    window.location.href = '/products';
   };
 
   return (
@@ -218,6 +226,7 @@ const CategorySection = ({ t }) => {
                     zIndex: 1,
                     fontFamily: 'Be Vietnam Pro, Arial, Helvetica, sans-serif',
                   }}
+                  onClick={() => handleCategoryClick(cat)}
                 >
                   <img
                     src={cat.icon}
@@ -480,12 +489,28 @@ const HomePage = ({ t }) => {
         </section>
 
         <div className="secondary-search-container" style={{ background: 'var(--section-bg)'}}>
-          <div className="search-bar secondary-search" style={{ background: 'var(--section-bg)'}}>
-            <input type="text" placeholder={t('search_placeholder')} style={{ background: 'var(--section-bg)'}}/>
-            <button className="search-button">
+          <form
+            className="search-bar secondary-search"
+            style={{ background: 'var(--section-bg)' }}
+            onSubmit={e => {
+              e.preventDefault();
+              const query = e.target.elements.secondarySearchInput.value.trim();
+              if (query) {
+                window.location.href = `/products?search=${encodeURIComponent(query)}`;
+              }
+            }}
+          >
+            <input
+              type="text"
+              name="secondarySearchInput"
+              placeholder={t('search_placeholder')}
+              style={{ background: 'var(--section-bg)' }}
+              autoComplete="off"
+            />
+            <button className="search-button" type="submit">
               <img src="/src/icons/black-search-icon.png" alt="Search" className="header-icon" />
             </button>
-          </div>
+          </form>
         </div>
 
         <section className="product-showcase suggestion-grid">

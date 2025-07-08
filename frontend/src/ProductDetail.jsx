@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { authFetch } from './services/api';
+// import { authFetch } from './services/api';
 import { API_BASE_URL } from './apiConfig';
 
 // Import các hình ảnh
@@ -81,42 +81,82 @@ const ProductDetail = ({ t, setCartCount }) => {
     }, [product]);
 
     const handleAddToCart = useCallback(async () => {
+        console.debug('[AddToCart] Triggered', {
+            isAuthenticated,
+            currentUser,
+            product,
+            selectedColor,
+            selectedSize,
+            quantity
+        });
         if (!isAuthenticated) {
             alert(t('please_login_to_add_to_cart'));
+            console.warn('[AddToCart] Not authenticated');
             navigate('/login');
             return;
         }
 
         if (!product || !selectedColor || !selectedSize) {
             alert("Vui lòng chọn đầy đủ thông tin sản phẩm.");
+            console.warn('[AddToCart] Missing product/color/size', { product, selectedColor, selectedSize });
             return;
         }
 
-        const orderPayload = {
-            account: { accountId: currentUser.accountId },
-            product: { productId: product.productId },
-            status: "In Cart",
-            totalAmount: product.price * quantity,
-            quantity: quantity,
-        };
-
+        // Lưu giỏ hàng vào localStorage theo email (nếu có)
         try {
-            const response = await authFetch('/api/orders', {
-                method: 'POST',
-                body: JSON.stringify(orderPayload)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Thêm vào giỏ hàng thất bại.");
+            const userEmail = currentUser?.email;
+            if (!userEmail) {
+                alert("Không xác định được tài khoản người dùng!");
+                console.error('[AddToCart] Missing user email', currentUser);
+                return;
             }
-
-            setCartCount(prev => prev + quantity);
+            const cartKey = `cart_${userEmail}`;
+            let cart = [];
+            const cartStr = localStorage.getItem(cartKey);
+            console.debug('[AddToCart] Read cartStr:', cartStr);
+            if (cartStr) {
+                try {
+                    cart = JSON.parse(cartStr);
+                } catch (e) {
+                    console.error('[AddToCart] JSON.parse error', e);
+                    cart = [];
+                }
+            }
+            // Kiểm tra sản phẩm đã có trong giỏ chưa (cùng productId, color, size)
+            const existingIndex = cart.findIndex(item =>
+                item.productId === product.productId &&
+                item.color === selectedColor &&
+                item.size === selectedSize
+            );
+            console.debug('[AddToCart] Existing index:', existingIndex, cart);
+            if (existingIndex !== -1) {
+                cart[existingIndex].quantity += quantity;
+                console.info('[AddToCart] Updated quantity:', cart[existingIndex]);
+            } else {
+                const newItem = {
+                    productId: product.productId,
+                    name: product.name,
+                    image: product.images && product.images.length > 0 ? product.images[0].imageUrl : '',
+                    price: product.price,
+                    color: selectedColor,
+                    size: selectedSize,
+                    quantity: quantity,
+                    maxQuantity: product.quantity,
+                    shopName: product.account?.user?.name || product.shopName || product.sellerName || "Shop ẩn danh"
+                };
+                cart.push(newItem);
+                console.info('[AddToCart] Added new item:', newItem);
+            }
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            console.debug('[AddToCart] Saved cart:', cartKey, cart);
+            if (typeof setCartCount === 'function') {
+                setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
+            }
             alert("Thêm vào giỏ hàng thành công!");
             setIsOptionsModalOpen(false);
-
         } catch (err) {
-            alert(err.message);
+            alert("Lỗi khi lưu giỏ hàng: " + err.message);
+            console.error('[AddToCart] Exception', err);
         }
     }, [isAuthenticated, currentUser, product, quantity, selectedColor, selectedSize, setCartCount, t, navigate]);
 
@@ -267,4 +307,11 @@ const ProductDetail = ({ t, setCartCount }) => {
     );
 };
 
-export default ProductDetail;
+import Footer from './Footer.jsx';
+
+export default function WrappedProductDetail(props) {
+  return <>
+    <ProductDetail {...props} />
+    <Footer />
+  </>;
+}

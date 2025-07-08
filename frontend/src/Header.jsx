@@ -129,9 +129,28 @@ const Header = ({
                         />
                     </Link>
                 </div>
-                <div className="search-bar" style={{ background: 'var(--button-bg)' }}>
-                    <input type="text" placeholder={t('search_placeholder')} />
-                    <button className="search-button" style={{ background: 'var(--button-bg)' }}><img src={currentTheme === 'dark' ? whiteSearch : blackSearch} alt="Search" className="header-icon" /></button>
+                <div className="search-bar" style={{ background: 'var(--button-bg)', display: 'flex', alignItems: 'center', borderRadius: 12, padding: '0 8px', height: 40, minWidth: 0, flex: 1, maxWidth: 400, margin: '0 16px' }}>
+                    <form
+                        onSubmit={e => {
+                            e.preventDefault();
+                            const query = e.target.elements.searchInput.value.trim();
+                            if (query) {
+                                window.location.href = `/products?search=${encodeURIComponent(query)}`;
+                            }
+                        }}
+                        style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                    >
+                        <input
+                            type="text"
+                            name="searchInput"
+                            placeholder={t('search_placeholder')}
+                            style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, padding: '8px 10px', minWidth: 0 }}
+                            autoComplete="off"
+                        />
+                        <button type="submit" className="search-button" style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                            <img src={currentTheme === 'dark' ? whiteSearch : blackSearch} alt="Search" className="header-icon" style={{ width: 22, height: 22 }} />
+                        </button>
+                    </form>
                 </div>
                 <div className="header-icons" ref={dropdownRef}>
                     <Link to="/cart" className="action-button">
