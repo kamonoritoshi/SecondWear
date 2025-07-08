@@ -184,6 +184,17 @@ button {
         payResult.textContent = `Lỗi kết nối: ${err}`;
       }
     }
+ // Hiển thị kết quả trả về từ PayOS nếu có
+    window.addEventListener("DOMContentLoaded", function () {
+      const result = localStorage.getItem('payos_result');
+      if (result) {
+        const div = document.createElement('div');
+        div.className = "section";
+        div.innerHTML = `<h2>Kết quả thanh toán từ PayOS:</h2><pre>${result}</pre>`;
+        document.body.appendChild(div);
+        localStorage.removeItem('payos_result');
+      }
+    });
   </script>
 </body>
 </html>

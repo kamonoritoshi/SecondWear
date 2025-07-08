@@ -1,9 +1,10 @@
 package com.sw.payos;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PayOSController {
 
+	private final PayOSConfig config;
     private final PayOSService payOSService;
     private final OrderRepository orderRepository;
 
@@ -35,19 +37,41 @@ public class PayOSController {
         }
 
         PayOSRequest request = new PayOSRequest();
-        request.setAmount(order.getTotalAmount().intValue()); // lấy từ đơn hàng
-        request.setOrderCode("SW_" + orderId+ "_" + System.currentTimeMillis());
+        request.setAmount(order.getTotalAmount().intValue());
+        request.setOrderCode(orderId); // Sử dụng orderId làm orderCode
         request.setDescription("Thanh toán đơn hàng #" + orderId);
-        request.setReturnUrl("http://localhost:3000/payment/result"); // hoặc frontend bạn
-        request.setCancelUrl("http://localhost:3000/payment/cancel");
-        request.setWebhookUrl("https://your-ngrok-url/api/payment/payos/callback");
-        request.setItems(List.of("SecondWear Order #" + orderId));
-
+        request.setReturnUrl(config.getReturnUrl()); // Thay bằng URL công khai
+        request.setCancelUrl(config.getCancelUrl()); // Thay bằng URL công khai
+        request.setItems(payOSService.buildItemsFromOrder(order));
+        request.setBuyerName(order.getAccount().getUser().getName());
+        request.setBuyerEmail(order.getAccount().getUser().getEmail());
+        request.setBuyerPhone(order.getAccount().getUser().getPhone());
+        
         try {
-            String checkoutUrl = payOSService.createPaymentLink(request);
+            String checkoutUrl = payOSService.createOrGetPaymentLink(request);
             return ResponseEntity.ok(checkoutUrl);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Tạo liên kết thanh toán thất bại: " + e.getMessage());
         }
+    }
+    
+    @GetMapping("/return")
+    public ResponseEntity<String> paymentReturn(@RequestParam Map<String, String> params) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<script>");
+        sb.append("localStorage.setItem('payos_result', `" + params.toString() + "`);");
+        sb.append("window.location.href = '/test_payos.html';");
+        sb.append("</script>");
+        return ResponseEntity.ok().body(sb.toString());
+    }
+
+    @GetMapping("/cancel")
+    public ResponseEntity<String> paymentCancel() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<script>");
+        sb.append("localStorage.setItem('payos_result', 'Thanh toán đã bị hủy bởi người dùng.');");
+        sb.append("window.location.href = '/test_payos.html';");
+        sb.append("</script>");
+        return ResponseEntity.ok().body(sb.toString());
     }
 }
