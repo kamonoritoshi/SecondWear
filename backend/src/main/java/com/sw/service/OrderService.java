@@ -100,5 +100,13 @@ public class OrderService {
         existing.setStatus(status);
         return oDAO.save(existing);
     }
+    
+    public List<Order> getOrdersBySeller(Long sellerId) {
+        return oDAO.findOrdersBySellerId(sellerId);
+    }
+    
+    public void save(Order order) {
+        oDAO.save(order);
+    }
 
 }

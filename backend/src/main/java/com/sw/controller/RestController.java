@@ -4,18 +4,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import com.sw.dao.AccountRepository;
 import com.sw.dao.OrderRepository;
 import com.sw.dao.ProductRepository;
+import com.sw.dto.SellerOrderDTO;
 import com.sw.entity.Account;
 import com.sw.entity.Category;
 import com.sw.entity.Complaint;
 import com.sw.entity.Order;
+import com.sw.entity.OrderItem;
 import com.sw.entity.Payment;
 import com.sw.entity.Product;
 import com.sw.entity.ProductImage;
@@ -25,6 +29,7 @@ import com.sw.entity.Role;
 import com.sw.entity.Shipping;
 import com.sw.entity.User;
 import com.sw.security.CustomUserDetails;
+import com.sw.security.JwtUtil;
 import com.sw.service.AccountService;
 import com.sw.service.CategoryService;
 import com.sw.service.ComplaintService;
@@ -35,6 +40,7 @@ import com.sw.service.ProductService;
 import com.sw.service.ResolutionService;
 import com.sw.service.ReviewService;
 import com.sw.service.RoleService;
+import com.sw.service.SellerOrderService;
 import com.sw.service.ShippingService;
 import com.sw.service.UserService;
 
@@ -44,7 +50,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -79,6 +87,10 @@ public class RestController {
 	private CategoryService categoryService;
 	@Autowired
 	private OrderRepository orderRepository;
+	@Autowired
+	private JwtUtil jwtUtil;
+	@Autowired
+	private AccountRepository accountRepo;
 
 	// Category REST API
 
@@ -162,6 +174,48 @@ public class RestController {
 	public ResponseEntity<Product> createProductByAdmin(@RequestBody Product product) {
 	    return ResponseEntity.ok(pService.createProduct(product));
 	}
+	
+	@GetMapping("/api/seller/products")
+    public List<Product> getSellerProducts(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        if (!userDetails.hasRole("SELLER")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập");
+        }
+
+        Long accountId = userDetails.getAccount().getAccountId();
+        return productRepo.findByAccount_AccountId(accountId);
+    }
+	
+	@PutMapping("/api/seller/products/{id}/quantity")
+	public ResponseEntity<?> updateProductQuantity(
+	        @PathVariable Long id,
+	        @RequestBody int newQuantity,
+	        @RequestHeader("Authorization") String token) {
+
+	    // 📌 Lấy tài khoản từ token
+	    String email = jwtUtil.extractUsername(token.substring(7));
+	    String role = jwtUtil.extractRole(token.substring(7));
+
+	    // 📌 Tìm sản phẩm theo id
+	    Product product = productRepo.findById(id)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm"));
+
+	    // 📌 Kiểm tra quyền: chỉ người bán của sản phẩm mới được cập nhật
+	    Account seller = accountRepo.findByEmailAndRole(email, role)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy người bán"));
+
+	    if (!product.getAccount().getAccountId().equals(seller.getAccountId())) {
+	        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật sản phẩm này");
+	    }
+
+	    // 📌 Cập nhật số lượng
+	    product.setQuantity(newQuantity);
+	    productRepo.save(product);
+
+	    return ResponseEntity.ok("Đã cập nhật số lượng mới: " + newQuantity);
+	}
+
 
 	// ProductImage REST API
 
@@ -380,6 +434,43 @@ public class RestController {
 		return ResponseEntity.ok(result);
 	}
 
+	@GetMapping("/api/seller/orders")
+    public ResponseEntity<List<Order>> getOrders(@AuthenticationPrincipal CustomUserDetails user) {
+        Long sellerId = user.getAccount().getAccountId();
+        List<Order> orders = oService.getOrdersBySeller(sellerId);
+        return ResponseEntity.ok(orders);
+    }
+
+    // ✅ Xem chi tiết 1 đơn hàng
+    @GetMapping("/api/seller/orders/{orderId}")
+    public ResponseEntity<Order> getOrderDetail(@PathVariable Long orderId) {
+        Order order = oService.getOrderById(orderId);
+        return order != null ? ResponseEntity.ok(order) : ResponseEntity.notFound().build();
+    }
+
+    // ✅ Cập nhật trạng thái 1 sản phẩm trong đơn hàng
+    @PutMapping("/api/seller/orders/{orderId}/items/{itemId}/status")
+    public ResponseEntity<?> updateOrderItemStatus(
+            @PathVariable Long orderId,
+            @PathVariable Long itemId,
+            @RequestBody String newStatus
+    ) {
+        Order order = oService.getOrderById(orderId);
+        if (order == null) return ResponseEntity.notFound().build();
+
+        OrderItem item = order.getItems().stream()
+                .filter(i -> i.getOrderItemId().equals(itemId))
+                .findFirst()
+                .orElse(null);
+
+        if (item == null) return ResponseEntity.notFound().build();
+
+        item.setStatus(newStatus);
+        oService.save(order); // cần viết thêm `save` trong service
+
+        return ResponseEntity.ok("Đã cập nhật trạng thái");
+    }
+	
 	// Payment REST API
 
 	@GetMapping("/api/payments")

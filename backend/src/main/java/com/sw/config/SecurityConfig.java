@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/**").permitAll() // Thêm dòng này
                         .requestMatchers("/api/categories/**").permitAll() // Thêm dòng này
                         .requestMatchers("/api/payment/return", "/api/payment/cancel", "/test_payos.html").permitAll()
+                        .requestMatchers("/api/seller/**").hasAuthority("seller")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

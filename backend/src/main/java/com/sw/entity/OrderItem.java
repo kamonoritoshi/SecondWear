@@ -39,4 +39,7 @@ public class OrderItem {
     private Integer quantity;
 
     private BigDecimal price; // giá tại thời điểm mua
+    
+    @Column(nullable = false)
+    private String status; // trạng thái riêng của từng sản phẩm trong đơn hàng
 }

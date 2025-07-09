@@ -127,4 +127,11 @@ const RegisterPage = ({ t }) => {
     );
 };
 
-export default RegisterPage;
+import Footer from './Footer.jsx';
+
+export default function WrappedRegisterPage(props) {
+  return <>
+    <RegisterPage {...props} />
+    <Footer />
+  </>;
+}

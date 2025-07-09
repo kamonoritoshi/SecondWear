@@ -93,4 +93,11 @@ const LoginPage = ({ t }) => {
     );
 };
 
-export default LoginPage;
+import Footer from './Footer.jsx';
+
+export default function WrappedLoginPage(props) {
+  return <>
+    <LoginPage {...props} />
+    <Footer />
+  </>;
+}
