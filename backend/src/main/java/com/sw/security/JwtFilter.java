@@ -1,8 +1,10 @@
 package com.sw.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -40,27 +42,36 @@ public class JwtFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         System.out.println("[JwtFilter] → Authorization header: " + authHeader);
         
-        String input = null; // sẽ chứa email|role
-        String jwt = null;
+        String token = null;
+        String email = null; // sẽ chứa email|role
+        String role = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            input = jwtUtil.extractUsername(jwt); // 📌 phải trả về "email|role"
-            System.out.println("[JwtFilter] → Extracted input from token: " + input);
+            token = authHeader.substring(7);
+            try {
+                if (jwtUtil.isTokenValid(token)) {
+                	email = jwtUtil.extractUsername(token); // chứa email
+                    role = jwtUtil.extractRole(token);      // lấy từ claim
+                }
+            } catch (Exception e) {
+                System.out.println("[JwtFilter] → Lỗi khi parse token: " + e.getMessage());
+            }
+            System.out.println("[JwtFilter] → role: " + role);
         }
 
-        if (input != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(input);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email + "|" + role);
             System.out.println("[JwtFilter] → Loaded user: " + userDetails.getUsername());
             
-            if (jwtUtil.isTokenValid(jwt)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    List.of(new SimpleGrantedAuthority(role)) // 🔥 quan trọng
+            );
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            System.out.println("[JwtFilter] → Authorities: " + authToken.getAuthorities());
+            System.out.println("[JwtFilter] → Auth in context: " + SecurityContextHolder.getContext().getAuthentication());
         }
 
         filterChain.doFilter(request, response);

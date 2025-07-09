@@ -1,0 +1,111 @@
+.p-6 {
+  padding: 1.5rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-gray-300 {
+  border-color: #d1d5db;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6;
+}
+
+.p-3 {
+  padding: 0.75rem;
+}
+
+.border-t {
+  border-top-width: 1px;
+}
+
+.w-16 {
+  width: 4rem;
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.object-cover {
+  object-fit: cover;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.hover\:bg-blue-600:hover {
+  background-color: #2563eb;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+}
+
+.quantity-btn {
+  background-color: #e5e7eb;
+  border: 1px solid #d1d5db;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.quantity-btn:hover {
+  background-color: #d1d5db;
+}
+
+.quantity-input {
+  width: 4rem;
+  padding: 0.25rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  text-align: center;
+  margin: 0 0.5rem;
+}

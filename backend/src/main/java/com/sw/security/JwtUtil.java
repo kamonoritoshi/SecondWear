@@ -22,9 +22,10 @@ public class JwtUtil {
     }
 	
 	// Sinh token dựa vào username (email)
-    public String generateToken(String email, long expirationMs) {
+    public String generateToken(String email, String role, long expirationMs) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(email + "|" + role)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -51,5 +52,9 @@ public class JwtUtil {
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token);
+    }
+    
+    public String extractRole(String token) {
+        return parseToken(token).getBody().get("role", String.class);
     }
 }

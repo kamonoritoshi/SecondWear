@@ -58,4 +58,8 @@ public class CustomUserDetails implements UserDetails{
     public Account getAccount() {
         return account;
     }
+    
+    public boolean hasRole(String roleName) {
+        return account.getRole() != null && account.getRole().getRoleName().equalsIgnoreCase(roleName);
+    }
 }

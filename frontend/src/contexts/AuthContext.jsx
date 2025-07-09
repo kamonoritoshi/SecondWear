@@ -17,15 +17,15 @@ export const AuthProvider = ({ children }) => {
                     const decodedToken = jwtDecode(token);
                     const currentTime = Date.now() / 1000;
 
-                    if (decodedToken.exp > currentTime) {
-                        // Tách email và role từ sub (dạng email|role)
-                        const [email, roleName] = decodedToken.sub.split('|');
+                    if (decodedToken.exp > currentTime && decodedToken.sub && decodedToken.role) {
+                        const email = decodedToken.sub;
+                        const role = decodedToken.role;
                         // Lấy name từ localStorage (nếu có) hoặc chỉ lấy email
                         const name = localStorage.getItem('userName');
                         setCurrentUser({
                             email,
                             name: name || undefined,
-                            role: { roleName },
+                            role: role.toLowerCase(),
                         });
                     } else {
                         logout();
@@ -61,12 +61,13 @@ export const AuthProvider = ({ children }) => {
             setToken(data.token);
             // Cập nhật ngay thông tin người dùng từ token và response
             const decodedToken = jwtDecode(data.token);
-            // Tách email và role từ sub (dạng email|role)
-            const [userEmail, userRole] = decodedToken.sub.split('|');
+            const email = decodedToken.sub;
+            const role = decodedToken.role;
+
             setCurrentUser({
-                email: userEmail,
+                email,
                 name: data.name,
-                role: { roleName: userRole },
+                role: role.toLowerCase(),
             });
             return data;
         } else {
