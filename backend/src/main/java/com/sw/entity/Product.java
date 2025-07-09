@@ -31,7 +31,9 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "product_id")
 	private Long productId;
-	
+	@Column(name = "approved")
+	private Boolean approved = false; // mặc định chưa duyệt
+
 	@ManyToOne
 	@JoinColumn(name = "account_id", nullable = false)
 	private Account account;
