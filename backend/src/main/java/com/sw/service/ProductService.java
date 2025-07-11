@@ -66,4 +66,13 @@ public class ProductService {
 	public List<Product> getProductsByCategory(Integer categoryId) {
 	    return pDAO.findByCategory_CategoryId(categoryId);
 	}
+	
+	public Product approve(Long id) {
+	    Product product = pDAO.findById(id)
+	        .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+
+	    product.setApproved(true);
+	    return pDAO.save(product);
+	}
+
 }

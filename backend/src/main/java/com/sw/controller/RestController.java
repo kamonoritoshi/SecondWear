@@ -147,7 +147,8 @@ public class RestController {
 			return ResponseEntity.notFound().build();
 		return ResponseEntity.ok(updated);
 	}
-
+	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/api/products/{id}")
 	public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
 		pService.deleteProduct(id);
@@ -214,6 +215,12 @@ public class RestController {
 	    productRepo.save(product);
 
 	    return ResponseEntity.ok("Đã cập nhật số lượng mới: " + newQuantity);
+	}
+	@PreAuthorize("hasRole('ADMIN')")
+	@PutMapping("/products/{id}/approve")
+	public ResponseEntity<Product> approveProduct(@PathVariable("id") Long id) {
+	    Product approved = pService.approve(id);
+	    return ResponseEntity.ok(approved);
 	}
 
 
