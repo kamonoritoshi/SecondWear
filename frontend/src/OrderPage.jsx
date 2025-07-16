@@ -86,7 +86,7 @@ export default function OrderPage() {
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>
+            <h3 className="modal-title">
               Chi tiết đơn hàng #{selectedOrder.orderCode || selectedOrder.orderId}
             </h3>
 

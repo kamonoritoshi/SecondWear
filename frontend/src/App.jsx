@@ -18,14 +18,19 @@ import WrappedRegisterPage from "./RegisterPage";
 import VerifyPage from "./VerifyPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedSellerRoute from "./components/ProtectedSellerRoute";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import SellerLayout from "./layouts/seller/SellerLayout";
-import Dashboard from "./pages/seller/Dashboard";
+import SellerDashboard from "./pages/seller/Dashboard";
 import ProductManagement from "./pages/seller/ProductManagement";
 import OrderManagement from "./pages/seller/OrderManagement";
 import InventoryManagement from "./pages/seller/InventoryManagement";
-import ProfilePage from './ProfilePage';
+import AdminLayout from "./layouts/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AccountManagement from "./pages/admin/AccountManagement";
+import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
+import ProfilePage from "./ProfilePage";
 import CheckoutPage from "./CheckoutPage";
-import SuccessPage from './SuccessPage';
+import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 
 // ✅ Tạo wrapper để sử dụng useLocation ngoài Router
@@ -47,11 +52,13 @@ const AppContent = () => {
   }, [theme]);
 
   // ✅ Ẩn Header và SideMenu nếu ở route /seller/*
-  const isSellerRoute = location.pathname.startsWith("/seller");
+  const isAdminOrSellerRoute =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/seller");
 
   return (
     <div className={`app-container ${isMenuOpen ? "menu-open" : ""}`}>
-      {!isSellerRoute && (
+      {!isAdminOrSellerRoute && (
         <>
           <Header
             t={t}
@@ -104,10 +111,23 @@ const AppContent = () => {
               </ProtectedSellerRoute>
             }
           >
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<SellerDashboard />} />
             <Route path="products" element={<ProductManagement />} />
             <Route path="inventory" element={<InventoryManagement />} />
             <Route path="orders" element={<OrderManagement />} />
+          </Route>
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminLayout />
+              </ProtectedAdminRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="accounts" element={<AccountManagement />} />
+            <Route path="orders" element={<OrderManagementAdmin />} />
           </Route>
         </Routes>
       </main>

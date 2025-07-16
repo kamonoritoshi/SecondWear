@@ -1,0 +1,26 @@
+.account-management {
+  padding: 20px;
+  background: var(--section-bg);
+  border-radius: 8px;
+  box-shadow: 0 0 10px var(--shadow);
+}
+
+.account-management h2 {
+  margin-bottom: 20px;
+}
+
+.account-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.account-table th,
+.account-table td {
+  padding: 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.account-table th {
+  background-color: var(--section-bg);
+}

@@ -775,13 +775,20 @@ body.dark-mode, html.dark-mode {
     transition: background-color 0.3s ease;
 }
 
+.buy-now-button {
+    background-color: var(--button-bg);
+    color: var(--highlight);
+    border: 1px solid #ff6f61;
+}
+
 .buy-now-button:hover {
-    background-color: #e05e55;
+    background-color: #ff6f61;
+    color: white;
 }
 
 .add-to-cart-button {
-    background-color: #f2f2f2;
-    color: #ff6f61;
+    background-color: var(--button-bg);
+    color: var(--highlight);
     border: 1px solid #ff6f61;
 }
 

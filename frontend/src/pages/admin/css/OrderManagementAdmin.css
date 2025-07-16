@@ -1,0 +1,35 @@
+.admin-orders {
+  padding: 20px;
+  background: var(--section-bg);
+  border-radius: 8px;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.orders-table th,
+.orders-table td {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.orders-table th {
+  background-color: var(--section-bg);
+  font-weight: bold;
+}
+
+.orders-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.orders-table tr:hover {
+  background-color: #f1f1f1;
+}
+.admin-orders h2 {
+  margin-bottom: 20px;
+  color: var(--main-text);
+}

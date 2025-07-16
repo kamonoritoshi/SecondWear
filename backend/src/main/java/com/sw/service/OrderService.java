@@ -111,5 +111,10 @@ public class OrderService {
     public void save(Order order) {
         orderRepository.save(order);
     }
+    
+    public List<Order> findTop10ByOrderByCreatedAtDesc() {
+        return orderRepository.findTop10ByOrderByOrderDateDesc();
+    }
+
 
 }

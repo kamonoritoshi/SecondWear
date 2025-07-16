@@ -82,10 +82,17 @@
 
 .edit-btn:hover {
   background: #2563eb;
+  color: white;
+}
+
+.delete-btn {
+  background-color: tomato !important;
+  color: white !important;
 }
 
 .delete-btn:hover {
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  background-color: #dc2626 !important;
+  color: white !important;
 }
 
 /* Phân trang */

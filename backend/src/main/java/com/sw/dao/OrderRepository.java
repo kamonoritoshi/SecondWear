@@ -25,4 +25,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findOrdersBySellerId(@Param("sellerId") Long sellerId);
     
     List<Order> findByAccount_AccountId(Long accountId);
+    
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status = :status")
+    double sumTotalAmountByStatus(@Param("status") String status);
+    
+    List<Order> findTop10ByOrderByOrderDateDesc();
 }
