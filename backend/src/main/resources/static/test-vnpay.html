@@ -1,98 +1,98 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Test Đăng nhập & Thanh toán VNPay</title>
-<style>
-body {
-	font-family: sans-serif;
-	max-width: 600px;
-	margin: auto;
-	padding: 20px;
-}
+  <meta charset="UTF-8" />
+  <title>Test Đăng nhập & Thanh toán VNPay</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
 
-input, select {
-	width: 100%;
-	margin: 8px 0;
-	padding: 8px;
-}
+    input, select {
+      width: 100%;
+      margin: 8px 0;
+      padding: 8px;
+    }
 
-button {
-	padding: 10px 20px;
-	margin: 10px 5px 20px 0;
-}
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px 20px 0;
+    }
 
-.result {
-	margin-top: 15px;
-	white-space: pre-wrap;
-	color: green;
-}
+    .result {
+      margin-top: 15px;
+      white-space: pre-wrap;
+      color: green;
+    }
 
-.error {
-	color: red;
-}
+    .error {
+      color: red;
+    }
 
-.section {
-	margin-top: 40px;
-	border-top: 1px solid #ccc;
-	padding-top: 20px;
-}
+    .section {
+      margin-top: 40px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
 
-.flex {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin: 8px 0;
-}
-</style>
+    .flex {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+    }
+  </style>
 </head>
 <body>
-	<h2>Đăng nhập</h2>
+  <h2>Đăng nhập</h2>
 
-	<label>Email:</label>
-	<input type="email" id="email" placeholder="test@example.com" />
+  <label>Email:</label>
+  <input type="email" id="email" placeholder="test@example.com" />
 
-	<label>Password:</label>
-	<input type="password" id="password" placeholder="Nhập mật khẩu" />
+  <label>Password:</label>
+  <input type="password" id="password" placeholder="Nhập mật khẩu" />
 
-	<label>Vai trò:</label>
-	<select id="roleName">
-		<option value="customer">Customer</option>
-		<option value="seller">Seller</option>
-		<option value="admin">Admin</option>
-	</select>
+  <label>Vai trò:</label>
+  <select id="roleName">
+    <option value="customer">Customer</option>
+    <option value="seller">Seller</option>
+    <option value="admin">Admin</option>
+  </select>
 
-	<div class="flex">
-		<input type="checkbox" id="rememberMe" /> <label for="rememberMe">Ghi
-			nhớ đăng nhập</label>
-	</div>
+  <div class="flex">
+    <input type="checkbox" id="rememberMe" />
+    <label for="rememberMe">Ghi nhớ đăng nhập</label>
+  </div>
 
-	<div>
-		<button onclick="login()">Đăng nhập</button>
-	</div>
+  <div>
+    <button onclick="login()">Đăng nhập</button>
+  </div>
 
-	<div id="loginResult" class="result"></div>
+  <div id="loginResult" class="result"></div>
 
-	<div class="section">
-		<h2>Danh sách đơn hàng đang xử lý</h2>
-		<button onclick="loadOrders()">Tải đơn hàng</button>
+  <div class="section">
+    <h2>Danh sách đơn hàng đang xử lý</h2>
+    <button onclick="loadOrders()">Tải đơn hàng</button>
 
-		<label for="orderSelect">Chọn đơn hàng:</label> <select
-			id="orderSelect">
-			<option value="">-- Vui lòng tải danh sách --</option>
-		</select>
+    <label for="orderSelect">Chọn đơn hàng:</label>
+    <select id="orderSelect">
+      <option value="">-- Vui lòng tải danh sách --</option>
+    </select>
 
-		<button onclick="paySelectedOrder()">Thanh toán VNPay</button>
+    <button onclick="paySelectedOrder()">Thanh toán VNPay</button>
 
-		<div id="payResult" class="result"></div>
-	</div>
+    <div id="payResult" class="result"></div>
+  </div>
 
-	<div class="section">
-		<h2>Kết quả thanh toán</h2>
-		<div id="paymentResult" class="result"></div>
-	</div>
+  <div class="section">
+    <h2>Kết quả thanh toán</h2>
+    <div id="paymentResult" class="result"></div>
+  </div>
 
-	<script>
+  <script>
     const BASE_AUTH = 'http://localhost:8080/api/auth';
     const BASE_PAYMENT = 'http://localhost:8080/api/payment';
     const BASE_ORDER = 'http://localhost:8080/api/orders';
@@ -101,13 +101,13 @@ button {
       const payload = {
         email: document.getElementById('email').value.trim(),
         password: document.getElementById('password').value.trim(),
-        rememberMe: document.getElementById('rememberMe').checked || false,
+        rememberMe: document.getElementById('rememberMe').checked,
         roleName: document.getElementById('roleName').value
       };
 
       const res = await fetch(`${BASE_AUTH}/login`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
@@ -116,12 +116,11 @@ button {
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('jwt', data.token);
-        loginResult.textContent = `Đăng nhập thành công!\nToken đã được lưu.`;
+        loginResult.textContent = `✅ Đăng nhập thành công! Token đã lưu.`;
         loginResult.className = "result";
-        console.log("JWT Token đang dùng:", data.token);
       } else {
         const text = await res.text();
-        loginResult.textContent = `Đăng nhập thất bại: ${text}`;
+        loginResult.textContent = `❌ Đăng nhập thất bại: ${text}`;
         loginResult.className = "result error";
       }
     }
@@ -137,6 +136,7 @@ button {
 
       if (res.ok) {
         const orders = await res.json();
+
         if (orders.length === 0) {
           const opt = document.createElement('option');
           opt.text = "Không có đơn hàng đang xử lý";
@@ -148,11 +148,11 @@ button {
         orders.forEach(order => {
           const opt = document.createElement('option');
           opt.value = order.orderId;
-          opt.text = `Đơn hàng #${order.orderId} - ${order.totalAmount} VND`;
+          opt.text = `Đơn #${order.orderId} - ${order.totalAmount} VND`;
           select.appendChild(opt);
         });
       } else {
-        alert("Không thể tải danh sách đơn hàng.");
+        alert("❌ Không thể tải danh sách đơn hàng.");
       }
     }
 
@@ -162,31 +162,28 @@ button {
       const payResult = document.getElementById('payResult');
 
       if (!orderId) {
-        alert("Vui lòng chọn đơn hàng.");
+        alert("⚠️ Vui lòng chọn đơn hàng.");
         return;
       }
 
-      const url = `${BASE_PAYMENT}/vnpay/create?orderId=${orderId}`;
-
       try {
-        const res = await fetch(url, {
+        const res = await fetch(`${BASE_PAYMENT}/vnpay/create?orderId=${orderId}`, {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        if (!res.ok) {
-          const text = await res.text();
-          payResult.textContent = `Lỗi tạo thanh toán: ${text}`;
-          return;
-        }
-
         const data = await res.json();
-        payResult.textContent = `Chuyển hướng đến VNPay...\n${data.paymentUrl}`;
-        setTimeout(() => window.location.href = data.paymentUrl, 1500);
+
+        if (res.ok) {
+          payResult.textContent = `Chuyển hướng đến VNPay...\n${data.paymentUrl}`;
+          setTimeout(() => {
+            window.location.href = data.paymentUrl;
+          }, 1500);
+        } else {
+          payResult.textContent = `❌ Không thể tạo thanh toán: ${data}`;
+        }
       } catch (err) {
-        payResult.textContent = `Lỗi kết nối: ${err}`;
+        payResult.textContent = `❌ Lỗi kết nối: ${err}`;
       }
     }
 
@@ -194,18 +191,18 @@ button {
       const params = new URLSearchParams(window.location.search);
       const txnRef = params.get("vnp_TxnRef");
       const responseCode = params.get("vnp_ResponseCode");
-
       const container = document.getElementById("paymentResult");
 
       if (txnRef && responseCode) {
         if (responseCode === "00") {
-          container.textContent = `✅ Thanh toán thành công! Đơn hàng: ${txnRef}`;
+          container.textContent = `✅ Thanh toán thành công cho đơn hàng #${txnRef}`;
         } else {
           container.textContent = `❌ Thanh toán thất bại. Mã lỗi: ${responseCode}`;
         }
       }
     }
 
+    // Gọi khi trang tải lần đầu để hiện kết quả VNPay
     displayVnPayResult();
   </script>
 </body>

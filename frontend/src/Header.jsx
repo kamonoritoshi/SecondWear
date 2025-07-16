@@ -319,7 +319,6 @@ const Header = ({
                   textDecoration: "none",
                   display: "block",
                   border: "none",
-                  background: "none",
                   transition: "background 0.18s",
                 }}
                 onClick={() => {
@@ -340,7 +339,6 @@ const Header = ({
                   textDecoration: "none",
                   display: "block",
                   border: "none",
-                  background: "none",
                   transition: "background 0.18s",
                 }}
                 onClick={() => {
@@ -411,7 +409,6 @@ const Header = ({
                   textDecoration: "none",
                   display: "block",
                   border: "none",
-                  background: "none",
                   transition: "background 0.18s",
                 }}
                 onClick={() => {
@@ -432,7 +429,6 @@ const Header = ({
                   textDecoration: "none",
                   display: "block",
                   border: "none",
-                  background: "none",
                   transition: "background 0.18s",
                 }}
                 onClick={() => {
@@ -521,14 +517,13 @@ const Header = ({
                       display: "block",
                       transition: "background 0.18s",
                       border: "none",
-                      background: "none",
                     }}
                   >
                     {" "}
                     {t("my_account_label")}{" "}
                   </Link>
                   <Link
-                    to="/my-orders"
+                    to="/orders"
                     className="dropdown-item"
                     style={{
                       fontSize: 15,
@@ -539,7 +534,6 @@ const Header = ({
                       display: "block",
                       transition: "background 0.18s",
                       border: "none",
-                      background: "none",
                     }}
                   >
                     {" "}
@@ -547,9 +541,9 @@ const Header = ({
                   </Link>
 
                   {/* Mục chuyển vai trò */}
-                  {currentUser?.role?.toLowerCase() === "seller" ? (
+                  {currentUser?.role?.toLowerCase() === "admin" ? (
                     <Link
-                      to="/seller/dashboard"
+                      to="/admin/dashboard"
                       className="dropdown-item"
                       style={{
                         fontSize: 15,
@@ -559,26 +553,35 @@ const Header = ({
                         textDecoration: "none",
                         display: "block",
                         transition: "background 0.18s",
+                      }}
+                    >
+                      Giao diện quản trị
+                    </Link>
+                  ) : (
+                    <div
+                      className="dropdown-item"
+                      onClick={() => {
+                        if (currentUser?.role?.toLowerCase() === "seller") {
+                          window.location.href = "/seller/dashboard";
+                        } else {
+                          alert(
+                            "Bạn không có quyền truy cập giao diện người bán."
+                          );
+                        }
+                      }}
+                      style={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        padding: "10px 22px",
+                        color: "var(--main-text)",
+                        textDecoration: "none",
+                        display: "block",
+                        transition: "background 0.18s",
+                        cursor: "pointer",
                       }}
                     >
                       Giao diện người bán
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/"
-                      className="dropdown-item"
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        padding: "10px 22px",
-                        color: "var(--main-text)",
-                        textDecoration: "none",
-                        display: "block",
-                        transition: "background 0.18s",
-                      }}
-                    >
-                      Giao diện người mua
-                    </Link>
+                    </div>
                   )}
 
                   <a
@@ -594,7 +597,6 @@ const Header = ({
                       display: "block",
                       transition: "background 0.18s",
                       border: "none",
-                      background: "none",
                     }}
                   >
                     {" "}
@@ -615,7 +617,6 @@ const Header = ({
                       display: "block",
                       transition: "background 0.18s",
                       border: "none",
-                      background: "none",
                     }}
                   >
                     {" "}
@@ -633,7 +634,6 @@ const Header = ({
                       display: "block",
                       transition: "background 0.18s",
                       border: "none",
-                      background: "none",
                     }}
                   >
                     {" "}

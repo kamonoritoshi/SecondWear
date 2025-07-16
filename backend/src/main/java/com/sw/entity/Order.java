@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -33,9 +35,10 @@ public class Order {
 	@Column(name = "order_id")
     private Long orderId;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+	@ManyToOne
+	@JoinColumn(name = "account_id", nullable = false)
+	@JsonIgnore // ✅ tránh vòng lặp khi serialize
+	private Account account;
 
     @Column(nullable = false)
     private String status;
@@ -47,7 +50,7 @@ public class Order {
     private BigDecimal totalAmount;
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference // ✅ để phía OrderItem có @JsonBackReference
     private List<OrderItem> items = new ArrayList<>();
 
     @PrePersist

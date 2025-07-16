@@ -12,10 +12,6 @@ import com.sw.entity.Account;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-
-    // Tìm đơn hàng theo tài khoản người dùng
-    List<Order> findByAccount(Account account);
-
     // Tìm đơn hàng theo trạng thái
     List<Order> findByStatus(String status);  //
 
@@ -27,4 +23,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     @Query("SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.account.accountId = :sellerId ORDER BY o.orderDate DESC")
     List<Order> findOrdersBySellerId(@Param("sellerId") Long sellerId);
+    
+    List<Order> findByAccount_AccountId(Long accountId);
+    
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status = :status")
+    double sumTotalAmountByStatus(@Param("status") String status);
+    
+    List<Order> findTop10ByOrderByOrderDateDesc();
 }

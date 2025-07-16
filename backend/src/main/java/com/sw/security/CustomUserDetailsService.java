@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 📌 Tìm trong DB
         Account account = accountRepository.findByEmailAndRole(email, role)
             .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản cho " + email + " với vai trò " + role));
-        System.out.println("[UserDetailsService] → Found account ID: " + account.getAccountId() + ", role: " + account.getRole());
+        System.out.println("[UserDetailsService] → Found account ID: " + account.getAccountId() + ", role: " + account.getRole().getRoleName());
 
 
         // 📌 Trả về đối tượng chứa Account

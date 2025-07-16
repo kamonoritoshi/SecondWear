@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import "./ProductManagement.css";
+import "./css/ProductManagement.css";
 
 const getCategoryList = () => [
   { name: "Áo", categoryId: 1 },

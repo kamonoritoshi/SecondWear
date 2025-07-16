@@ -1,0 +1,154 @@
+/* ========== Container & Wrapper ========== */
+.cart-page-container {
+  padding: 32px 16px;
+  background-color: var(--main-bg);
+  min-height: 100vh;
+}
+
+.cart-main-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: var(--section-bg);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+/* ========== Header ========== */
+.cart-header-title {
+  background: var(--section-bg) !important;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  
+}
+
+.cart-content {
+  background: var(--section-bg) !important;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+/* ========== Table ========== */
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  background-color: var(--section-bg) !important;
+}
+
+.cart-table th,
+.cart-table td {
+  text-align: center;
+  padding: 12px 8px;
+  vertical-align: middle;
+  background-color: var(--section-bg) !important;
+}
+
+.cart-table th {
+  color: #333;
+  font-weight: 600;
+}
+
+.cart-table td:first-child,
+.cart-table th:first-child {
+  width: 40px;
+}
+
+.cart-table td:nth-child(2) {
+  width: 80px;
+}
+
+.cart-table td:nth-child(3) {
+  text-align: left;
+}
+
+/* ========== Shop Group Header ========== */
+.shop-group-header {
+  display: flex;
+  align-items: center;
+  background-color: var(--section-bg) !important;
+  border-top: 1px solid var(--border);
+  padding: 12px 8px;
+  font-weight: bold;
+}
+
+.shop-group-header input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+.shop-group-header img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  margin-right: 6px;
+}
+
+/* ========== Product Image ========== */
+.cart-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin: auto;
+}
+
+/* ========== Quantity Input ========== */
+input[type="number"] {
+  width: 60px;
+  padding: 4px 6px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* ========== Delete Button ========== */
+button {
+  cursor: pointer;
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+}
+
+button:hover {
+  color: #ff4d4f;
+}
+
+/* ========== Footer ========== */
+.cart-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 16px;
+  background-color: var(--section-bg) !important;
+}
+
+.cart-footer button {
+  background-color: #ff6f61;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.cart-footer button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.cart-footer button:hover:not(:disabled) {
+  background-color: #ff6f61;
+}
+.cart-footer .total-price {
+  font-weight: bold;
+  color: #333;
+}

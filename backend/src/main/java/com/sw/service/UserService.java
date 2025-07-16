@@ -40,4 +40,8 @@ public class UserService {
     public void deleteUser(Long id) {
     	uDAO.deleteById(id);
     }
+    
+    public User getByAccountId(Long accountId) {
+        return uDAO.findUserByAccountId(accountId);
+    }
 }

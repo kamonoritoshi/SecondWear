@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './InventoryManagement.css';
+import './css/InventoryManagement.css';
 
 const InventoryManagement = () => {
   const [products, setProducts] = useState([]);
@@ -92,7 +92,7 @@ const InventoryManagement = () => {
               <td className="p-3">
                 <div className="quantity-control">
                   <button
-                    className="quantity-btn"
+                    className="quantity-btn" style={{ background: 'var(--section-bg)' }}
                     onClick={() => handleDecrease(p.productId)}
                   >
                     -
@@ -105,7 +105,7 @@ const InventoryManagement = () => {
                     min="0"
                   />
                   <button
-                    className="quantity-btn"
+                    className="quantity-btn" style={{ background: 'var(--section-bg)' }}
                     onClick={() => handleIncrease(p.productId)}
                   >
                     +
