@@ -23,13 +23,19 @@ import Dashboard from "./pages/seller/Dashboard";
 import ProductManagement from "./pages/seller/ProductManagement";
 import OrderManagement from "./pages/seller/OrderManagement";
 import InventoryManagement from "./pages/seller/InventoryManagement";
+import ProfilePage from './ProfilePage';
+import CheckoutPage from "./CheckoutPage";
+import SuccessPage from './SuccessPage';
+import OrderPage from "./OrderPage";
 
 // ✅ Tạo wrapper để sử dụng useLocation ngoài Router
 const AppContent = () => {
   const location = useLocation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
   const [language, setLanguage] = useState("vi");
 
   const t = (key) => translations[language]?.[key] || key;
@@ -37,6 +43,7 @@ const AppContent = () => {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark-mode", theme === "dark");
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   // ✅ Ẩn Header và SideMenu nếu ở route /seller/*
@@ -67,10 +74,17 @@ const AppContent = () => {
           {/* Các Route công khai */}
           <Route path="/" element={<HomePage t={t} />} />
           <Route path="/products" element={<ProductsPage t={t} />} />
-          <Route path="/products/:id" element={<WrappedProductDetail t={t} />} />
+          <Route
+            path="/products/:id"
+            element={<WrappedProductDetail t={t} />}
+          />
           <Route path="/login" element={<WrappedLoginPage t={t} />} />
           <Route path="/register" element={<WrappedRegisterPage t={t} />} />
           <Route path="/verify" element={<VerifyPage t={t} />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/checkout" element={<CheckoutPage t={t} />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/orders" element={<OrderPage />} />
 
           {/* Các Route cần đăng nhập */}
           <Route

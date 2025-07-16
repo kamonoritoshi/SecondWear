@@ -48,6 +48,7 @@ const ProductDetail = ({ t, setCartCount }) => {
                 if (!productRes.ok) throw new Error('Không tìm thấy sản phẩm.');
 
                 const productData = await productRes.json();
+                console.log('[ProductDetail] Dữ liệu sản phẩm:', productData);
                 setProduct(productData);
                 document.title = `${productData.name} - SecondWear`;
 

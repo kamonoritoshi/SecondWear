@@ -1,0 +1,33 @@
+.order-table-wrapper {
+  background: var(--section-bg);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 40px;
+}
+
+.order-table-wrapper h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--main-text);
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-table th,
+.order-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: var(--main-text);
+}
+
+.order-table th {
+  color: var(--secondary-text);
+  font-weight: 500;
+}

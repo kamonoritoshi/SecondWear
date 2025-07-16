@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sw.dao.AccountRepository;
 import com.sw.dao.RoleRepository;
@@ -26,7 +27,7 @@ import com.sw.util.CodeGenerator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@org.springframework.web.bind.annotation.RestController
+@RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {

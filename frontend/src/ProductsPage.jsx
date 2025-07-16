@@ -71,8 +71,8 @@ const ProductsPage = ({ t }) => {
   });
   const [priceRange, setPriceRange] = useState(() => {
     const saved = localStorage.getItem('filter_priceRange');
-    if (saved) try { return JSON.parse(saved); } catch { return [0, 10000000]; }
-    return [0, 10000000];
+    if (saved) try { return JSON.parse(saved); } catch { return [0, 5000000]; }
+    return [0, 5000000];
   });
   const [onlyDiscount, setOnlyDiscount] = useState(() => localStorage.getItem('filter_onlyDiscount') === 'true');
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -220,7 +220,7 @@ const ProductsPage = ({ t }) => {
           {/* Danh mục */}
           <div style={{ marginBottom: 14 }}>
             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block', color: 'var(--main-text, #222)' }}>Danh mục</label>
-            <select value={pendingFilter.selectedCategory} onChange={e => setPendingFilter(f => ({ ...f, selectedCategory: e.target.value }))} style={{ width: '100%', padding: 4, borderRadius: 4, border: '1px solid #ddd', background: '#fafbfc', color: 'var(--main-text, #222)' }}>
+            <select value={pendingFilter.selectedCategory} onChange={e => setPendingFilter(f => ({ ...f, selectedCategory: e.target.value }))} style={{ width: '100%', padding: 4, borderRadius: 4, border: '1px solid #ddd', background: 'var(--section-bg)', color: 'var(--main-text, #222)' }}>
               {CATEGORY_LIST.map(cat => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
@@ -275,9 +275,9 @@ const ProductsPage = ({ t }) => {
             >Lọc</button>
             <button
               onClick={() => {
-                setPendingFilter({ selectedCategory: '', priceRange: [0, 10000000], onlyDiscount: false });
+                setPendingFilter({ selectedCategory: '', priceRange: [0, 5000000], onlyDiscount: false });
                 setSelectedCategory('');
-                setPriceRange([0, 10000000]);
+                setPriceRange([0, 5000000]);
                 setOnlyDiscount(false);
                 setPage(1);
                 // Xóa filter khỏi localStorage
@@ -286,7 +286,7 @@ const ProductsPage = ({ t }) => {
                 localStorage.removeItem('filter_onlyDiscount');
                 localStorage.removeItem('filter_page');
               }}
-              style={{ padding: '6px 8px', borderRadius: 4, background: 'var(--main-accent, #f5f5f5)', border: '1px solid #ccc', cursor: 'pointer', color: 'var(--main-text, #222)', fontWeight: 500, fontSize: 14 }}
+              style={{ padding: '6px 8px', borderRadius: 4, background: 'var(--section-bg)', border: '1px solid #ccc', cursor: 'pointer', color: 'var(--main-text, #222)', fontWeight: 500, fontSize: 14 }}
             >Xóa bộ lọc</button>
           </div>
         </aside>

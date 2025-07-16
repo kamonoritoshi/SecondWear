@@ -36,6 +36,7 @@ public class Product {
 
 	@ManyToOne
 	@JoinColumn(name = "account_id", nullable = false)
+	@JsonIgnoreProperties({"orders"}) // ✅ để tránh vòng lặp sâu
 	private Account account;
 	
 	private String name;

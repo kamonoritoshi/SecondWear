@@ -2,8 +2,10 @@ package com.sw.security;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.sw.entity.Account;
@@ -20,8 +22,8 @@ public class CustomUserDetails implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// Tùy bạn muốn xử lý role như thế nào, đơn giản hóa ở đây
-		return Collections.emptyList();
+		String roleName = "ROLE_" + account.getRole().getRoleName(); 
+	    return List.of(new SimpleGrantedAuthority(roleName));
 	}
 	
 	@Override

@@ -14,10 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +38,9 @@ public class PayOSService {
     }
 
     public String createOrGetPaymentLink(PayOSRequest request) throws Exception {
-        if (request.getOrderCode() <= 0) {
-            request.setOrderCode(Math.abs(UUID.randomUUID().hashCode()));
-        }
-
         try {
             return tryCreatePaymentLink(request);
         } catch (RuntimeException ex) {
-            // Nếu lỗi đơn đã tồn tại
             if (ex.getMessage().contains("Đơn thanh toán đã tồn tại")) {
                 try {
                     String existingLink = getPaymentLinkByOrderCode(request.getOrderCode());
@@ -56,38 +48,34 @@ public class PayOSService {
                         return existingLink;
                     }
                 } catch (RuntimeException innerEx) {
-                    // Log lỗi lấy lại link nhưng không cần throw lại
-                    System.out.println("DEBUG: Lỗi lấy lại link cũ - " + innerEx.getMessage());
+                    System.out.println("⚠ DEBUG: Không lấy được link đơn cũ - " + innerEx.getMessage());
                 }
-
                 // Nếu không lấy được link → tạo lại đơn mới
-                int newOrderCode = Math.abs(UUID.randomUUID().hashCode());
+                long newOrderCode = Math.abs(UUID.randomUUID().getMostSignificantBits());
                 request.setOrderCode(newOrderCode);
                 return tryCreatePaymentLink(request);
             }
-
-            // Nếu lỗi không liên quan tới order đã tồn tại thì throw bình thường
             throw ex;
         }
     }
-    
+
     private String tryCreatePaymentLink(PayOSRequest request) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
-        Map<String, String> params = new TreeMap<>();
-        params.put("amount", String.valueOf(request.getAmount()));
-        params.put("cancelUrl", request.getCancelUrl());
-        params.put("description", request.getDescription());
-        params.put("orderCode", String.valueOf(request.getOrderCode()));
-        params.put("returnUrl", request.getReturnUrl());
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            if (sb.length() > 0) sb.append("&");
-            sb.append(entry.getKey()).append("=").append(entry.getValue());
-        }
-        String dataToSign = sb.toString();
+        Map<String, String> rawParams = new TreeMap<>();
+        rawParams.put("amount", String.valueOf(request.getAmount()));
+        rawParams.put("cancelUrl", request.getCancelUrl());
+        rawParams.put("description", request.getDescription());
+        rawParams.put("orderCode", String.valueOf(request.getOrderCode()));
+        rawParams.put("returnUrl", request.getReturnUrl());
+
+        String dataToSign = rawParams.entrySet().stream()
+            .map(entry -> entry.getKey() + "=" + entry.getValue())
+            .reduce((a, b) -> a + "&" + b)
+            .orElse("");
+
         String signature = generateSignature(dataToSign, config.getChecksumKey());
         request.setSignature(signature);
 
@@ -104,9 +92,10 @@ public class PayOSService {
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> body = response.getBody();
-            if (!"00".equals(body.get("code"))) {
+            if (!"00".equals(String.valueOf(body.get("code")))) {
                 throw new RuntimeException("Lỗi PayOS: " + body.get("desc"));
             }
+
             Map<String, Object> data = (Map<String, Object>) body.get("data");
             if (data == null || !data.containsKey("checkoutUrl")) {
                 throw new RuntimeException("Không tìm thấy checkoutUrl: " + data);
@@ -116,7 +105,6 @@ public class PayOSService {
             throw new RuntimeException("Tạo thanh toán thất bại: " + response.getBody());
         }
     }
-
 
     public String getPaymentLinkByOrderCode(long orderCode) {
         String url = config.getEndpoint() + "/" + orderCode;
@@ -133,28 +121,28 @@ public class PayOSService {
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> body = response.getBody();
-            if (!"00".equals(body.get("code"))) {
-                throw new RuntimeException("Lỗi PayOS: " + body.get("desc"));
+            if (!"00".equals(String.valueOf(body.get("code")))) {
+                throw new RuntimeException("Lỗi khi lấy link đơn cũ: " + body.get("desc"));
             }
 
             Map<String, Object> data = (Map<String, Object>) body.get("data");
-            if (data == null || !data.containsKey("checkoutUrl")) {
-            	System.out.println("DEBUG: PayOS Response Body (getPaymentLinkByOrderCode): " + response.getBody());
-                throw new RuntimeException("Không tìm thấy checkoutUrl từ đơn đã tồn tại.");
+            if (data != null && data.containsKey("checkoutUrl")) {
+                return data.get("checkoutUrl").toString();
+            } else {
+                throw new RuntimeException("Không tìm thấy checkoutUrl trong dữ liệu đơn cũ.");
             }
-            return data.get("checkoutUrl").toString();
         } else {
-            throw new RuntimeException("Không thể lấy thông tin đơn thanh toán: " + response.getBody());
+            throw new RuntimeException("Không thể lấy thông tin đơn cũ: " + response.getBody());
         }
     }
 
     public List<Item> buildItemsFromOrder(Order order) {
         return order.getItems().stream().map(orderItem -> {
-            Item item = new Item();
-            item.setName(orderItem.getProduct().getName());
-            item.setQuantity(orderItem.getQuantity());
-            item.setPrice(orderItem.getPrice().intValue());
-            return item;
+            return new Item(
+                orderItem.getProduct().getName(),
+                orderItem.getQuantity(),
+                orderItem.getPrice().intValue()
+            );
         }).toList();
     }
 }

@@ -8,105 +8,108 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sw.dao.OrderRepository;
+import com.sw.dao.ProductRepository;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
 import com.sw.entity.OrderItem;
+import com.sw.entity.Product;
 
 @Service
 public class OrderService {
 
     @Autowired
-    private OrderRepository oDAO;
-    
+    private OrderRepository orderRepository;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private ProductRepository productRepository;
 
     // Lấy tất cả đơn hàng
     public List<Order> getAllOrders() {
-        return oDAO.findAll();
+        return orderRepository.findAll();
     }
 
     // Lấy đơn hàng theo ID
     public Order getOrderById(Long id) {
-        return oDAO.findById(id).orElse(null);
+        return orderRepository.findById(id).orElse(null);
     }
 
     // Tạo đơn hàng mới
     public Order createOrder(Order order) {
-    	// Gắn lại quan hệ cho từng item
-        BigDecimal total = BigDecimal.ZERO;
-        for (OrderItem item : order.getItems()) {
-            item.setOrder(order);
+        List<OrderItem> items = order.getItems();
 
-            if (item.getProduct() != null && item.getQuantity() != null) {
-                BigDecimal price = item.getProduct().getPrice();
-                item.setPrice(price); // gắn giá sản phẩm tại thời điểm đặt
-                total = total.add(price.multiply(BigDecimal.valueOf(item.getQuantity())));
-            }
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (OrderItem item : items) {
+            Long productId = item.getProduct().getProductId(); // yêu cầu gửi lên đúng productId
+            Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + productId));
+
+            item.setPrice(product.getPrice()); // Gán giá từ DB
+            item.setOrder(order);              // Set back-reference
+            total = total.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
 
-        order.setOrderDate(LocalDateTime.now());
+        order.setItems(items);
         order.setTotalAmount(total);
-        order.setStatus(order.getStatus() == null ? "pending" : order.getStatus());
+        order.setStatus("Đang xử lý"); // mặc định
 
-        return oDAO.save(order); // Cascade sẽ tự lưu OrderItem
+        return orderRepository.save(order);
     }
 
     // Cập nhật đơn hàng
     public Order updateOrder(Long id, Order updatedOrder) {
-        Order existing = oDAO.findById(id).orElse(null);
+        Order existing = orderRepository.findById(id).orElse(null);
         if (existing == null) return null;
 
         existing.setAccount(updatedOrder.getAccount());
         existing.setStatus(updatedOrder.getStatus());
         existing.setTotalAmount(updatedOrder.getTotalAmount());
 
-        return oDAO.save(existing);
+        return orderRepository.save(existing);
     }
 
     // Xoá đơn hàng
     public void deleteOrder(Long id) {
-        oDAO.deleteById(id);
+        orderRepository.deleteById(id);
     }
 
     // Lấy đơn hàng theo accountId
     public List<Order> getOrdersByAccount(Long accountId) {
-        Account acc = accountService.getAccountById(accountId); // lấy thật từ DB
-        if (acc == null) return List.of();
-        return oDAO.findByAccount(acc);
+    	return orderRepository.findByAccount_AccountId(accountId);
     }
 
     // Lấy đơn hàng theo status (chuỗi)
     public List<Order> getOrdersByStatus(String status) {
-        return oDAO.findByStatus(status);
+        return orderRepository.findByStatus(status);
     }
 
     // Lấy đơn hàng theo account + status
     public List<Order> getOrdersByAccountAndStatus(Long accountId, String status) {
         Account acc = new Account();
         acc.setAccountId(accountId);
-        return oDAO.findByAccountAndStatus(acc, status);
+        return orderRepository.findByAccountAndStatus(acc, status);
     }
 
     // Lấy tất cả đơn hàng, mới nhất trước
     public List<Order> getOrdersSortedByDateDesc() {
-        return oDAO.findAllByOrderByOrderDateDesc();
+        return orderRepository.findAllByOrderByOrderDateDesc();
     }
     
     public Order updateOrderStatus(Long id, String status) {
-        Order existing = oDAO.findById(id).orElse(null);
+        Order existing = orderRepository.findById(id).orElse(null);
         if (existing == null) return null;
 
         existing.setStatus(status);
-        return oDAO.save(existing);
+        return orderRepository.save(existing);
     }
     
     public List<Order> getOrdersBySeller(Long sellerId) {
-        return oDAO.findOrdersBySellerId(sellerId);
+        return orderRepository.findOrdersBySellerId(sellerId);
     }
     
     public void save(Order order) {
-        oDAO.save(order);
+        orderRepository.save(order);
     }
 
 }

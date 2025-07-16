@@ -1,0 +1,15 @@
+/* Dashboard.css */
+.dashboard-container {
+  padding: 20px;
+}
+
+.dashboard-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.dashboard-charts,
+.dashboard-table {
+  margin-top: 30px;
+}
+

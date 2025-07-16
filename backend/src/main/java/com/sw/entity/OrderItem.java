@@ -3,6 +3,7 @@ package com.sw.entity;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,14 +28,15 @@ public class OrderItem {
 	@Column(name = "order_item_id")
     private Long orderItemId;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    @JsonBackReference
-    private Order order;
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	@JsonBackReference // ✅ cặp với @JsonManagedReference bên Order
+	private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	@JsonIgnoreProperties("account") // ✅ tránh vòng lặp Product → Account → Order
+	private Product product;
 
     private Integer quantity;
 
