@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { translations } from "./translations";
+
 // Import các components
 import Header from "./Header";
 import SideMenu from "./SideMenu";
@@ -33,7 +34,9 @@ import CheckoutPage from "./CheckoutPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 
-// ✅ Tạo wrapper để sử dụng useLocation ngoài Router
+// ✅ Import thêm trang Chính sách bảo mật
+import PrivacyPolicy from "./PrivacyPolicy";
+
 const AppContent = () => {
   const location = useLocation();
 
@@ -51,7 +54,6 @@ const AppContent = () => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // ✅ Ẩn Header và SideMenu nếu ở route /seller/*
   const isAdminOrSellerRoute =
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/seller");
@@ -80,6 +82,7 @@ const AppContent = () => {
         <Routes>
           {/* Các Route công khai */}
           <Route path="/" element={<HomePage t={t} />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/products" element={<ProductsPage t={t} />} />
           <Route
             path="/products/:id"
@@ -93,7 +96,7 @@ const AppContent = () => {
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/orders" element={<OrderPage />} />
 
-          {/* Các Route cần đăng nhập */}
+          {/* Route cần đăng nhập */}
           <Route
             path="/cart"
             element={
