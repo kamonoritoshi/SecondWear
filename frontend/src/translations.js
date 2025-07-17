@@ -2,6 +2,9 @@
 export const translations = {
     'vi': {
         // --- Keys có sẵn ---
+        'homepage_title': 'Trang chủ - SecondWear',
+        'hot_section_title': 'Xu hướng nổi bật',
+        'category_section_title': 'Danh mục sản phẩm',
         'page_title': 'Chi Tiết Sản Phẩm - SecondWear',
         'search_placeholder': 'Tìm kiếm sản phẩm...',
         'guest_label': 'Khách',
@@ -66,7 +69,7 @@ export const translations = {
         'total_label': 'Tổng',
         'payment_method_label': 'Phương thức thanh toán',
         'grand_total_label': 'Tổng cộng',
-        'product_label': 'sản phẩm',
+        'product_label': 'Sản phẩm',
         'checkout_button': 'Thanh toán',
         'select_payment_method_title': 'Chọn phương thức thanh toán',
         'payment_method_cod': 'Thanh toán khi nhận hàng',
@@ -74,9 +77,39 @@ export const translations = {
         'payment_method_momo': 'Thanh toán qua Ví điện tử Momo',
         'select_button': 'Chọn',
         'empty_cart_message': 'Giỏ hàng của bạn còn trống',
-    },
+        // --- THÊM KEYS MỚI CHO TRANG ĐĂNG KÝ VÀ XÁC THỰC ---
+        'register_title': 'Đăng Ký Tài Khoản',
+        'fullname_placeholder': 'Nhập họ và tên',
+        'email_placeholder': 'Nhập email của bạn',
+        'phone_placeholder': 'Nhập số điện thoại',
+        'address_placeholder': 'Nhập địa chỉ (số nhà, tên đường)',
+        'password_placeholder': 'Mật khẩu (ít nhất 6 ký tự)',
+        'confirm_password_placeholder': 'Nhập lại mật khẩu',
+        'register_button': 'Đăng Ký',
+        'already_have_account_prompt': 'Đã có tài khoản?',
+        'dont_have_account_prompt': 'Chưa có tài khoản?',
+        'login_link': 'Đăng nhập',
+        'password_mismatch_error': 'Mật khẩu và xác nhận mật khẩu không khớp.',
+        'verification_email_sent_message': 'Mã xác thực đã được gửi đến email của bạn!',
+
+        'verify_account_title': 'Xác thực tài khoản',
+        'verification_code_placeholder': 'Nhập mã xác thực gồm 6 ký tự',
+        'verify_button': 'Xác thực',
+        'verification_success_message': 'Xác thực thành công! Đang chuyển đến trang đăng nhập...',
+        'all_products_title': 'Tất cả sản phẩm',
+        'my_account_label': 'Tài khoản của tôi',
+        'logout_label': 'Đăng xuất',
+        //--Giỏ hàng--
+        'unit_price_label': 'Đơn giá',
+        'action_label': 'Thao tác',
+        'select_all_label': 'Chọn tất cả',
+    }, 
     'en': {
         // --- Existing Keys ---
+        'homepage_title': 'Homepage - SecondWear',
+        'hot_section_title': 'Hot Trends',
+        'category_section_title': 'Product Categories',
+        'dont_have_account_prompt': "Don't have an account?",
         'page_title': 'Product Details - SecondWear',
         'search_placeholder': 'Search products...',
         // ... (all other existing keys)

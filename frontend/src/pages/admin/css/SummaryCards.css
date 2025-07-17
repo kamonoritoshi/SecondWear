@@ -1,0 +1,27 @@
+.summary-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  flex: 1 1 200px;
+  background-color: var(--section-bg);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.summary-title {
+  font-size: 14px;
+  color: var(--main-text);
+}
+
+.summary-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--main-text);
+  margin-top: 8px;
+}

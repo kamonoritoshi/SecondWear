@@ -1,167 +1,207 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import productIcon from '/images/product.png';
-import voucherIcon from '/icons/voucher-icon.png';
-import paymentIcon from '/icons/payment-icon.png';
-import shopIcon from '/icons/shop-icon.png';
-import cashIcon from '/icons/cash-icon.png';
-import bankIcon from '/icons/bank-icon.png';
-import momoIcon from '/icons/momo-icon.png';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import shopIcon from './icons/shop-icon.png';
+import './css/CartPage.css'; // Import file CSS cho CartPage
 
 const CartPage = ({ t }) => {
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            shopName: "trungdeptrai111",
-            productName: "Outerrity Hoodie Double Zip Blue Fish",
-            imageUrl: "/images/product.png",
-            color: "Trắng",
-            size: "L",
-            price: 150000,
-            quantity: 1,
-            stock: 5,
-        },
-        // Thêm các sản phẩm khác vào đây nếu cần
-    ]);
-    const [selectedItems, setSelectedItems] = useState(new Set());
-    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('momo'); // Giá trị mặc định
-    const paymentMethods = {
-        'cod': { label: t('payment_method_cod'), icon: cashIcon },
-        'bank': { label: t('payment_method_bank'), icon: bankIcon },
-        'momo': { label: t('payment_method_momo'), icon: momoIcon },
-    };
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedItems, setSelectedItems] = useState(new Set());
 
-    const handleCartItemQuantityChange = (id, type) => {
-        setCartItems(currentItems =>
-            currentItems.map(item => {
-                if (item.id === id) {
-                    let newQuantity = item.quantity;
-                    if (type === 'decrease' && item.quantity > 1) newQuantity--;
-                    else if (type === 'increase' && item.quantity < item.stock) newQuantity++;
-                    return { ...item, quantity: newQuantity };
-                }
-                return item;
-            })
-        );
-    };
+  const navigate = useNavigate();
+  const { currentUser, isAuthenticated } = useAuth();
 
-    const handleToggleItemSelection = (id) => {
-        setSelectedItems(prev => {
-            const next = new Set(prev);
-            next.has(id) ? next.delete(id) : next.add(id);
-            return next;
-        });
-    };
+  const fetchCartItems = useCallback(() => {
+    if (!isAuthenticated || !currentUser?.email) {
+      setCartItems([]);
+      setLoading(false);
+      return;
+    }
+    try {
+      const cartKey = `cart_${currentUser.email}`;
+      const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+      setCartItems(cart);
+    } catch (err) {
+      setError("Lỗi khi đọc giỏ hàng: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [isAuthenticated, currentUser]);
 
-    const handleToggleShopSelection = (shopName) => {
-        const shopItemIds = cartItems.filter(item => item.shopName === shopName).map(item => item.id);
-        const allSelected = shopItemIds.every(id => selectedItems.has(id));
-        setSelectedItems(prev => {
-            const next = new Set(prev);
-            shopItemIds.forEach(id => allSelected ? next.delete(id) : next.add(id));
-            return next;
-        });
-    };
+  useEffect(() => {
+    fetchCartItems();
+  }, [fetchCartItems]);
 
-    const handleSelectPayment = (method) => {
-        setSelectedPaymentMethod(method);
-        setIsPaymentModalOpen(false);
-    };
+  const groupedByShop = useMemo(() => {
+    return cartItems.reduce((acc, item) => {
+      let shopName = item.shopName || item.sellerName || (item.product?.account?.user?.name) || 'Shop ẩn danh';
+      acc[shopName] = acc[shopName] || [];
+      acc[shopName].push(item);
+      return acc;
+    }, {});
+  }, [cartItems]);
 
-    const calculateTotal = () => cartItems.reduce((total, item) => selectedItems.has(item.id) ? total + item.price * item.quantity : total, 0);
-    const totalAmount = calculateTotal();
-    const totalSelectedItems = selectedItems.size;
+  const totalAmount = useMemo(() => {
+    return cartItems.reduce((total, item, idx) => {
+      if (selectedItems.has(idx)) {
+        return total + (item.price * item.quantity);
+      }
+      return total;
+    }, 0);
+  }, [cartItems, selectedItems]);
 
-    return (
-        <main className="cart-page-container">
-            <div className="cart-header-title">{t('cart_title')}</div>
-            <div className="cart-content">
-                {cartItems.length > 0 ? (
-                    <>
-                        <div className="cart-section shop-group">
-                            {/* Lặp qua từng sản phẩm và hiển thị thông tin cửa hàng trước */}
-                            {cartItems.map(item => (
-                                <div className="cart-item-wrapper" key={item.id}> {/* Thêm wrapper để tạo khung */}
-                                    <div className="shop-group-header">
-                                        <input
-                                            type="checkbox"
-                                            className="cart-checkbox shop-checkbox"
-                                            onChange={() => handleToggleShopSelection(item.shopName)}
-                                            checked={cartItems.filter(i => i.shopName === item.shopName).every(i => selectedItems.has(i.id))}
-                                        />
-                                        <img src={shopIcon} alt="Shop" className="shop-icon-small" />
-                                        <span>Cửa hàng: {item.shopName}</span>
-                                    </div>
-                                    <div className="cart-item">
-                                        <input
-                                            type="checkbox"
-                                            className="cart-checkbox product-checkbox"
-                                            checked={selectedItems.has(item.id)}
-                                            onChange={() => handleToggleItemSelection(item.id)}
-                                        />
-                                        <img src={item.imageUrl} alt={item.productName} className="cart-item-image" />
-                                        <div className="cart-item-details">
-                                            <p className="cart-item-name">{item.productName}</p>
-                                            <p className="cart-item-variant">{t('variant_label')}: {t('color_label')} {item.color}, {t('size_label')} {item.size}</p>
-                                            <p className="cart-item-stock">{t('quantity_label')}: {t('quantity_in_stock')} {item.stock}</p>
-                                        </div>
-                                        <div className="cart-item-price">{item.price.toLocaleString('vi-VN')}₫</div>
-                                        <div className="quantity-input-wrapper">
-                                            <button className="quantity-btn decrease" onClick={() => handleCartItemQuantityChange(item.id, 'decrease')}>-</button>
-                                            <input type="number" value={item.quantity} readOnly className="quantity-input" />
-                                            <button className="quantity-btn increase" onClick={() => handleCartItemQuantityChange(item.id, 'increase')}>+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+  const handleCheckout = useCallback(() => {
+    if (selectedItems.size === 0) {
+      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+      return;
+    }
+    const itemsToPurchase = cartItems.filter((_, idx) => selectedItems.has(idx));
+    navigate('/checkout', { state: { items: itemsToPurchase, total: totalAmount } });
+  }, [cartItems, selectedItems, totalAmount, navigate]);
 
-                        <div className="cart-section voucher-section">
-                            <img src={voucherIcon} alt="Voucher" className="cart-section-icon" />
-                            <span className="voucher-text">{t('voucher_label')}: <span className="voucher-highlight">1 {t('voucher_available')}</span></span>
-                            <a href="#" className="change-link">{t('change_link')}</a>
-                            <span className="cart-section-total-label">{t('total_label')}:</span>
-                            <span className="cart-section-total-value">{totalAmount.toLocaleString('vi-VN')}₫</span>
-                        </div>
-                        <div className="cart-section payment-section">
-                            <img src={paymentIcon} alt="Payment" className="cart-section-icon" />
-                            <span>{t('payment_method_label')}: {paymentMethods.momo.label}</span> {/* Sử dụng giá trị mặc định */}
-                            <a href="#" className="change-link" onClick={() => setIsPaymentModalOpen(true)}>{t('change_link')}</a>
-                        </div>
-                    </>
-                ) : (
-                    <div className="empty-cart-message">{t('empty_cart_message')}</div>
-                )}
-            </div>
-            {cartItems.length > 0 && (
-                <div className="cart-footer">
-                    <div className="cart-footer-total">
-                        {t('grand_total_label')} ({totalSelectedItems} {t('product_label')}): <span className="footer-total-amount">{totalAmount.toLocaleString('vi-VN')}₫</span>
-                    </div>
-                    <button className="checkout-button" disabled={totalSelectedItems === 0}>{t('checkout_button')}</button>
-                </div>
-            )}
+  const handleToggleItemSelection = (idx) => {
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
+      return next;
+    });
+  };
 
-            {isPaymentModalOpen && (
-                <div className="overlay-modal active" onClick={() => setIsPaymentModalOpen(false)}>
-                    <div className="modal-content payment-modal" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-modal-button" onClick={() => setIsPaymentModalOpen(false)}>X</button>
-                        <h3>{t('select_payment_method_title')}</h3>
-                        <ul className="payment-options-list">
-                            {Object.entries(paymentMethods).map(([key, method]) => (
-                                <li key={key} onClick={() => handleSelectPayment(key)}>
-                                    <img src={method.icon} alt={method.label} />
-                                    <span>{method.label}</span>
-                                    <button className="select-button">{t('select_button')}</button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            )}
-        </main>
-    );
+  const handleToggleShopSelection = (shopName) => {
+    const shopIndexes = cartItems
+      .map((item, idx) => ({ item, idx }))
+      .filter(({ item }) => (item.shopName || item.sellerName || item.product?.account?.user?.name || 'Shop ẩn danh') === shopName)
+      .map(({ idx }) => idx);
+    const allSelected = shopIndexes.every(idx => selectedItems.has(idx));
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      shopIndexes.forEach(idx => {
+        allSelected ? next.delete(idx) : next.add(idx);
+      });
+      return next;
+    });
+  };
+
+  const handleQuantityChange = (idx, newQuantity) => {
+    if (newQuantity < 1) return;
+    let maxStock = cartItems[idx]?.stock ?? cartItems[idx]?.product?.stock ?? 9999;
+    const safeQuantity = Math.min(Math.max(1, newQuantity), maxStock);
+    const updatedCart = cartItems.map((item, i) => i === idx ? { ...item, quantity: safeQuantity } : item);
+    setCartItems(updatedCart);
+    if (isAuthenticated && currentUser?.email) {
+      const cartKey = `cart_${currentUser.email}`;
+      localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+    }
+  };
+
+  const handleDeleteItem = (idx) => {
+    const updatedCart = cartItems.filter((_, i) => i !== idx);
+    setCartItems(updatedCart);
+    setSelectedItems(prev => {
+      const next = new Set([...prev].filter(i => i !== idx).map(i => i > idx ? i - 1 : i));
+      return next;
+    });
+    if (isAuthenticated && currentUser?.email) {
+      const cartKey = `cart_${currentUser.email}`;
+      localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+    }
+  };
+
+  if (loading) return <main><div>Đang tải giỏ hàng...</div></main>;
+  if (error) return <main><div>Lỗi: {error}</div></main>;
+
+  return (
+    <main className="cart-page-container">
+      <div className="cart-main-wrapper">
+        <div className="cart-header-title">{t('cart_title') || "Giỏ hàng"}</div>
+        <div className="cart-content">
+          {cartItems.length > 0 ? (
+            <>
+              <table className="cart-table">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox"
+                      checked={cartItems.length > 0 && cartItems.every((_, idx) => selectedItems.has(idx))}
+                      onChange={() => {
+                        const allSelected = cartItems.every((_, idx) => selectedItems.has(idx));
+                        setSelectedItems(allSelected ? new Set() : new Set(cartItems.map((_, idx) => idx)));
+                      }}
+                    /></th>
+                    <th colSpan={2}>Sản phẩm</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(groupedByShop).map(([shopName, items]) => {
+                    const shopIndexes = items.map(item => cartItems.indexOf(item));
+                    return (
+                      <React.Fragment key={shopName}>
+                        <tr>
+                          <td colSpan={7}>
+                            <div className="shop-group-header">
+                              <input
+                                type="checkbox"
+                                checked={shopIndexes.every(idx => selectedItems.has(idx))}
+                                onChange={() => handleToggleShopSelection(shopName)}
+                              />
+                              <img src={shopIcon} alt="shop" />
+                              <span>{shopName}</span>
+                            </div>
+                          </td>
+                        </tr>
+                        {items.map(item => {
+                          const idx = cartItems.indexOf(item);
+                          const price = item.price || item.product?.price || 0;
+                          const quantity = item.quantity || 1;
+                          const image = item.image || item.product?.images?.[0]?.imageUrl || "/images/placeholder.png";
+                          return (
+                            <tr key={idx}>
+                              <td><input type="checkbox" checked={selectedItems.has(idx)} onChange={() => handleToggleItemSelection(idx)} /></td>
+                              <td><img src={image} alt={item.name} className="cart-item-image" /></td>
+                              <td>{item.name || item.product?.name}</td>
+                              <td>{price.toLocaleString()}₫</td>
+                              <td>
+                                <input type="number" value={quantity} min={1} max={9999}
+                                  onChange={(e) => handleQuantityChange(idx, parseInt(e.target.value))} />
+                              </td>
+                              <td>{(price * quantity).toLocaleString()}₫</td>
+                              <td>
+                                <button onClick={() => handleDeleteItem(idx)}>🗑</button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+
+              <div className="cart-footer">
+                <div>Tổng cộng: <strong>{totalAmount.toLocaleString()}₫</strong></div>
+                <button onClick={handleCheckout} disabled={selectedItems.size === 0}>
+                  Thanh toán ({selectedItems.size} sản phẩm)
+                </button>
+              </div>
+            </>
+          ) : (
+            <div>Giỏ hàng của bạn đang trống</div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
 };
 
-export default CartPage;
-
+import Footer from './Footer.jsx';
+export default function WrappedCartPage(props) {
+  return <>
+    <CartPage {...props} />
+    <Footer />
+  </>;
+}

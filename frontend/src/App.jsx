@@ -1,99 +1,148 @@
-// src/App.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { translations } from './translations';
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import { translations } from "./translations";
 
 // Import các components
-import Header from './Header';
-import SideMenu from './SideMenu';
-import ProductDetail from './ProductDetail';
-import CartPage from './CartPage';
+import Header from "./Header";
+import SideMenu from "./SideMenu";
+import HomePage from "./HomePage";
+import ProductsPage from "./ProductsPage";
+import WrappedProductDetail from "./ProductDetail";
+import WrappedCartPage from "./CartPage";
+import WrappedLoginPage from "./LoginPage";
+import WrappedRegisterPage from "./RegisterPage";
+import VerifyPage from "./VerifyPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedSellerRoute from "./components/ProtectedSellerRoute";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import SellerLayout from "./layouts/seller/SellerLayout";
+import SellerDashboard from "./pages/seller/Dashboard";
+import ProductManagement from "./pages/seller/ProductManagement";
+import OrderManagement from "./pages/seller/OrderManagement";
+import InventoryManagement from "./pages/seller/InventoryManagement";
+import AdminLayout from "./layouts/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AccountManagement from "./pages/admin/AccountManagement";
+import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
+import ProfilePage from "./ProfilePage";
+import CheckoutPage from "./CheckoutPage";
+import SuccessPage from "./SuccessPage";
+import OrderPage from "./OrderPage";
 
-function App() {
-  // --- Nâng các state chung lên App.jsx ---
-  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const [showAccountMenu, setShowAccountMenu] = useState(false);
-  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(1); // Giả định có 1 sp trong giỏ
-  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem('language') || 'vi');
-  const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'light');
+// ✅ Import thêm trang Chính sách bảo mật
+import PrivacyPolicy from "./PrivacyPolicy";
 
-  // --- Các hàm chung ---
-  const t = useCallback((key) => {
-    return translations[currentLanguage]?.[key] || key;
-  }, [currentLanguage]);
+const AppContent = () => {
+  const location = useLocation();
 
-  const closeAllDropdowns = useCallback(() => {
-    setShowLanguageMenu(false);
-    setShowThemeMenu(false);
-    setShowAccountMenu(false);
-  }, []);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
+  const [language, setLanguage] = useState("vi");
 
-  const toggleDropdown = useCallback((menuSetter, currentMenuState, event) => {
-    event.stopPropagation();
-    closeAllDropdowns();
-    menuSetter(!currentMenuState);
-  }, [closeAllDropdowns]);
+  const t = (key) => translations[language]?.[key] || key;
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // --- Handlers ---
-  const handleAccountToggle = (event) => toggleDropdown(setShowAccountMenu, showAccountMenu, event);
-  const handleLanguageToggle = (event) => toggleDropdown(setShowLanguageMenu, showLanguageMenu, event);
-  const handleThemeToggle = (event) => toggleDropdown(setShowThemeMenu, showThemeMenu, event);
-  const handleToggleSideMenu = () => setIsSideMenuOpen(prevOpen => !prevOpen);
-  const handleCloseSideMenu = () => setIsSideMenuOpen(false);
-  const handleLanguageChange = (lang) => {
-    setCurrentLanguage(lang);
-    localStorage.setItem('language', lang);
-    closeAllDropdowns();
-  };
-  const handleThemeChange = (theme) => {
-    setCurrentTheme(theme);
-    localStorage.setItem('theme', theme);
-    closeAllDropdowns();
-  };
-
-  // --- useEffect cho các tác vụ toàn cục ---
   useEffect(() => {
-    document.body.className = currentTheme === 'dark' ? 'dark-mode' : '';
-    document.addEventListener('click', closeAllDropdowns);
-    return () => {
-      document.removeEventListener('click', closeAllDropdowns);
-    };
-  }, [currentTheme, closeAllDropdowns]);
+    document.documentElement.classList.toggle("dark-mode", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const isAdminOrSellerRoute =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/seller");
 
   return (
-    <BrowserRouter>
-      <div className="App" onClick={closeAllDropdowns}>
-        {/* Header và SideMenu được hiển thị trên mọi trang */}
-        <Header
-          t={t}
-          cartCount={cartCount}
-          currentTheme={currentTheme}
-          showLanguageMenu={showLanguageMenu}
-          showThemeMenu={showThemeMenu}
-          showAccountMenu={showAccountMenu}
-          handleToggleSideMenu={handleToggleSideMenu}
-          handleLanguageToggle={handleLanguageToggle}
-          handleThemeToggle={handleThemeToggle}
-          handleAccountToggle={handleAccountToggle}
-          handleLanguageChange={handleLanguageChange}
-          handleThemeChange={handleThemeChange}
-        />
-        <SideMenu
-          t={t}
-          isSideMenuOpen={isSideMenuOpen}
-          handleCloseSideMenu={handleCloseSideMenu}
-        />
+    <div className={`app-container ${isMenuOpen ? "menu-open" : ""}`}>
+      {!isAdminOrSellerRoute && (
+        <>
+          <Header
+            t={t}
+            currentTheme={theme}
+            setTheme={setTheme}
+            handleLanguageChange={setLanguage}
+          />
+          <SideMenu
+            isOpen={isMenuOpen}
+            onClose={toggleMenu}
+            t={t}
+            language={language}
+            setLanguage={setLanguage}
+          />
+        </>
+      )}
 
-        {/* Định nghĩa các route cho ứng dụng */}
+      <main className="main-content">
         <Routes>
-          <Route path="/" element={<ProductDetail t={t} setCartCount={setCartCount} />} />
-          <Route path="/cart" element={<CartPage t={t} />} />
-          {/* Thêm các Route khác ở đây */}
+          {/* Các Route công khai */}
+          <Route path="/" element={<HomePage t={t} />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/products" element={<ProductsPage t={t} />} />
+          <Route
+            path="/products/:id"
+            element={<WrappedProductDetail t={t} />}
+          />
+          <Route path="/login" element={<WrappedLoginPage t={t} />} />
+          <Route path="/register" element={<WrappedRegisterPage t={t} />} />
+          <Route path="/verify" element={<VerifyPage t={t} />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/checkout" element={<CheckoutPage t={t} />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/orders" element={<OrderPage />} />
+
+          {/* Route cần đăng nhập */}
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <WrappedCartPage t={t} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/seller"
+            element={
+              <ProtectedSellerRoute>
+                <SellerLayout />
+              </ProtectedSellerRoute>
+            }
+          >
+            <Route path="dashboard" element={<SellerDashboard />} />
+            <Route path="products" element={<ProductManagement />} />
+            <Route path="inventory" element={<InventoryManagement />} />
+            <Route path="orders" element={<OrderManagement />} />
+          </Route>
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminLayout />
+              </ProtectedAdminRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="accounts" element={<AccountManagement />} />
+            <Route path="orders" element={<OrderManagementAdmin />} />
+          </Route>
         </Routes>
-      </div>
-    </BrowserRouter>
+      </main>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 

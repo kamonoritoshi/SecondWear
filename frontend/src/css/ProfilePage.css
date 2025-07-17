@@ -1,0 +1,85 @@
+.profile-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  background: var(--section-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-title {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.profile-field {
+  margin-bottom: 16px;
+}
+
+.profile-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.profile-input {
+  width: 95%;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.profile-input:disabled {
+  color: #888;
+  background-color: #f0f0f0;
+}
+
+.profile-button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.profile-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.edit-button {
+  background-color: #2563eb;
+}
+
+.save-button {
+  background-color: #22c55e;
+}
+
+.cancel-button {
+  background-color: #9ca3af;
+}
+.profile-error {
+  color: #e3342f;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 20px auto;
+  border: 2px solid #ccc;
+  transition: transform 0.3s;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+}
