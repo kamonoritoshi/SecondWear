@@ -1,56 +1,50 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-const Footer = () => {
-  return (
-    <footer
-      className="main-footer"
-      style={{
-        backgroundColor: "var(--footer-bg)",
-        color: "var(--footer-text)",
-        padding: "40px 20px",
-        marginTop: "40px",
-      }}
-    >
-      <div className="footer-container">
-        <div className="footer-column">
-          <h4>Về SecondWear</h4>
-          <p>Website bán quần áo second-hand thân thiện với môi trường.</p>
-        </div>
-
-        <div className="footer-column">
-          <h4>Chính sách</h4>
-          <ul>
-            <li>
-              <Link to="/privacy-policy" className="footer-link">
-                Chính sách bảo mật
-              </Link>
-            </li>
-            <li>
-              <Link to="/terms" className="footer-link">
-                Điều khoản sử dụng
-              </Link>
-            </li>
-            <li>
-              <Link to="/faq" className="footer-link">
-                Câu hỏi thường gặp
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div className="footer-column">
-          <h4>Liên hệ</h4>
-          <p>Email: trung142p@gmail.com</p>
-          <p>Hotline: 0778 157 629</p>
-        </div>
+const Footer = () => (
+  <footer className="site-footer">
+    <div className="footer-container">
+      <div className="footer-column">
+        <h4>Liên hệ</h4>
+        <p>(84+) 778157629</p>
+        <p>trung142p@gmail.com</p>
       </div>
-
-      <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} SecondWear. All rights reserved.</p>
+      <div className="footer-column">
+        <h4>Thông tin</h4>
+        <ul>
+          <li>
+            <Link to="/privacy">Chính sách bảo mật</Link>
+          </li>
+          <li>
+            <Link to="/faq">FAQs</Link>
+          </li>
+          <li>
+            <Link to="/terms">Điều khoản</Link>
+          </li>
+          <li>
+            <Link to="/for-sellers">Kênh người bán</Link>
+          </li>
+        </ul>
       </div>
-    </footer>
-  );
-};
+      <div className="footer-column">
+        <h4>Dịch vụ khách hàng</h4>
+        <ul>
+          <li>
+            <Link to="/support">Trung Tâm Trợ Giúp</Link>
+          </li>
+          <li>
+            <Link to="/how-to-buy">Hướng Dẫn Mua Hàng/Đặt Hàng</Link>
+          </li>
+          <li>
+            <Link to="/returns">Trả Hàng/Hoàn Tiền</Link>
+          </li>
+          <li>
+            <Link to="/contact">Liên Hệ</Link>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;

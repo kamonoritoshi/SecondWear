@@ -150,68 +150,38 @@ const Header = ({
             ×
           </button>
           <ul
-  style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
->
-  {/* Mục: Sản phẩm */}
-  <li style={{ width: "100%" }}>
-    <Link
-      to="/products"
-      className="menu-link"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        background: "var(--side-menu-bg)",
-        border: "none",
-        borderRadius: 12,
-        padding: "14px 28px",
-        fontWeight: 700,
-        fontSize: 20,
-        cursor: "pointer",
-        color: "var(--main-text)",
-        width: "100%",
-        textAlign: "left",
-        transition: "background 0.2s",
-        boxSizing: "border-box",
-        textDecoration: "none",
-      }}
-      onClick={() => setTrayOpen(false)}
-    >
-      <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
-      {t ? t("menu_products") : "Sản phẩm"}
-    </Link>
-  </li>
-
-  {/* Mục: Chính sách bảo mật */}
-  <li style={{ width: "100%" }}>
-    <Link
-      to="/privacy-policy"
-      className="menu-link"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        background: "var(--side-menu-bg)",
-        border: "none",
-        borderRadius: 12,
-        padding: "14px 28px",
-        fontWeight: 700,
-        fontSize: 20,
-        cursor: "pointer",
-        color: "var(--main-text)",
-        width: "100%",
-        textAlign: "left",
-        transition: "background 0.2s",
-        boxSizing: "border-box",
-        textDecoration: "none",
-      }}
-      onClick={() => setTrayOpen(false)}
-    >
-      <span style={{ fontSize: 22, marginRight: 8 }}>📜</span>
-      {t ? t("privacy.title") : "Chính sách bảo mật"}
-    </Link>
-  </li>
-</ul>
+            style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
+          >
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/products"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
+                Sản phẩm
+              </Link>
+            </li>
+            {/* Thêm các mục menu khác nếu cần */}
+          </ul>
         </nav>
         <div className="logo">
           <Link to="/">
