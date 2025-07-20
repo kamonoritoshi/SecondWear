@@ -177,7 +177,7 @@ const Header = ({
                 }}
                 onClick={() => setTrayOpen(false)}
               >
-                <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
+                <span style={{ fontSize: 22, marginRight: 8 }}>🎽</span>
                 {t ? t("menu_products") : "Sản phẩm"}
               </Link>
             </li>
@@ -239,6 +239,36 @@ const Header = ({
               >
                 <span style={{ fontSize: 22, marginRight: 8 }}>📃</span>
                 {t ? t("Điều khoản sử dụng") : "Điều khoản sử dụng"}
+              </Link>
+            </li>
+
+            {/* Mục: Chính sách đổi trả */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/return-policy"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🔄</span>
+                {t ? t("Chính sách đổi trả") : "Chính sách đổi trả"}
               </Link>
             </li>
 
