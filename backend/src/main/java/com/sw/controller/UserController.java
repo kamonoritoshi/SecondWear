@@ -28,6 +28,7 @@ public class UserController {
 	public List<User> getAllUsers() {
 		return userService.getAllUsers();
 	}
+	
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable Long id) {
@@ -36,11 +37,13 @@ public class UserController {
 			return ResponseEntity.notFound().build();
 		return ResponseEntity.ok(user);
 	}
+	
 
 	@PostMapping
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		return ResponseEntity.ok(userService.createUser(user));
 	}
+	
 
 	@PutMapping("/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
@@ -49,12 +52,14 @@ public class UserController {
 			return ResponseEntity.notFound().build();
 		return ResponseEntity.ok(updated);
 	}
+	
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 		userService.deleteUser(id);
 		return ResponseEntity.noContent().build();
 	}
+	
 	
 	@GetMapping("/me")
 	public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -64,4 +69,5 @@ public class UserController {
 	        return ResponseEntity.notFound().build();
 	    return ResponseEntity.ok(user);
 	}
+	
 }

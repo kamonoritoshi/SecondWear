@@ -18,16 +18,20 @@ public class AdminController {
 	@Autowired
     private AdminStatisticsService statisticsService;
 	
+	
 	@Autowired
     private AccountRepository accountRepository;
 
+	
     @GetMapping("/statistics")
     public AdminStatisticsResponse getStatistics() {
         return statisticsService.getAdminStatistics();
     }
     
+    
     @GetMapping("/accounts")
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
+    
 }
