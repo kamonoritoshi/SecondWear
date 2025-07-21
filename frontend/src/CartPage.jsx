@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import shopIcon from './icons/shop-icon.png';
-import './css/CartPage.css'; // Import file CSS cho CartPage
+import './css/CartPage.css';
 
 const CartPage = ({ t }) => {
   const [cartItems, setCartItems] = useState([]);
@@ -24,11 +24,11 @@ const CartPage = ({ t }) => {
       const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
       setCartItems(cart);
     } catch (err) {
-      setError("Lỗi khi đọc giỏ hàng: " + err.message);
+      setError(t('cart_error_loading') + ": " + err.message);
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, currentUser]);
+  }, [isAuthenticated, currentUser, t]);
 
   useEffect(() => {
     fetchCartItems();
@@ -36,12 +36,12 @@ const CartPage = ({ t }) => {
 
   const groupedByShop = useMemo(() => {
     return cartItems.reduce((acc, item) => {
-      let shopName = item.shopName || item.sellerName || (item.product?.account?.user?.name) || 'Shop ẩn danh';
+      let shopName = item.shopName || item.sellerName || (item.product?.account?.user?.name) || t('cart_unknown_shop');
       acc[shopName] = acc[shopName] || [];
       acc[shopName].push(item);
       return acc;
     }, {});
-  }, [cartItems]);
+  }, [cartItems, t]);
 
   const totalAmount = useMemo(() => {
     return cartItems.reduce((total, item, idx) => {
@@ -54,12 +54,12 @@ const CartPage = ({ t }) => {
 
   const handleCheckout = useCallback(() => {
     if (selectedItems.size === 0) {
-      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+      alert(t('cart_select_one_alert'));
       return;
     }
     const itemsToPurchase = cartItems.filter((_, idx) => selectedItems.has(idx));
     navigate('/checkout', { state: { items: itemsToPurchase, total: totalAmount } });
-  }, [cartItems, selectedItems, totalAmount, navigate]);
+  }, [cartItems, selectedItems, totalAmount, navigate, t]);
 
   const handleToggleItemSelection = (idx) => {
     setSelectedItems(prev => {
@@ -72,7 +72,7 @@ const CartPage = ({ t }) => {
   const handleToggleShopSelection = (shopName) => {
     const shopIndexes = cartItems
       .map((item, idx) => ({ item, idx }))
-      .filter(({ item }) => (item.shopName || item.sellerName || item.product?.account?.user?.name || 'Shop ẩn danh') === shopName)
+      .filter(({ item }) => (item.shopName || item.sellerName || item.product?.account?.user?.name || t('cart_unknown_shop')) === shopName)
       .map(({ idx }) => idx);
     const allSelected = shopIndexes.every(idx => selectedItems.has(idx));
     setSelectedItems(prev => {
@@ -109,13 +109,13 @@ const CartPage = ({ t }) => {
     }
   };
 
-  if (loading) return <main><div>Đang tải giỏ hàng...</div></main>;
-  if (error) return <main><div>Lỗi: {error}</div></main>;
+  if (loading) return <main><div>{t('cart_loading')}</div></main>;
+  if (error) return <main><div>{t('cart_error')} {error}</div></main>;
 
   return (
     <main className="cart-page-container">
       <div className="cart-main-wrapper">
-        <div className="cart-header-title">{t('cart_title') || "Giỏ hàng"}</div>
+        <div className="cart-header-title">{t('cart_title')}</div>
         <div className="cart-content">
           {cartItems.length > 0 ? (
             <>
@@ -129,10 +129,10 @@ const CartPage = ({ t }) => {
                         setSelectedItems(allSelected ? new Set() : new Set(cartItems.map((_, idx) => idx)));
                       }}
                     /></th>
-                    <th colSpan={2}>Sản phẩm</th>
-                    <th>Đơn giá</th>
-                    <th>Số lượng</th>
-                    <th>Thành tiền</th>
+                    <th colSpan={2}>{t('cart_product')}</th>
+                    <th>{t('cart_price')}</th>
+                    <th>{t('cart_quantity')}</th>
+                    <th>{t('cart_total')}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -183,14 +183,14 @@ const CartPage = ({ t }) => {
               </table>
 
               <div className="cart-footer">
-                <div>Tổng cộng: <strong>{totalAmount.toLocaleString()}₫</strong></div>
+                <div>{t('cart_total_amount')}: <strong>{totalAmount.toLocaleString()}₫</strong></div>
                 <button onClick={handleCheckout} disabled={selectedItems.size === 0}>
-                  Thanh toán ({selectedItems.size} sản phẩm)
+                  {t('cart_checkout')} ({selectedItems.size} {t('cart_items')})
                 </button>
               </div>
             </>
           ) : (
-            <div>Giỏ hàng của bạn đang trống</div>
+            <div>{t("cart.empty")}</div>
           )}
         </div>
       </div>
@@ -198,10 +198,6 @@ const CartPage = ({ t }) => {
   );
 };
 
-import Footer from './Footer.jsx';
 export default function WrappedCartPage(props) {
-  return <>
-    <CartPage {...props} />
-    <Footer />
-  </>;
+  return <CartPage {...props} />;
 }

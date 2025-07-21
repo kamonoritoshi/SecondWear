@@ -10,6 +10,7 @@ import { translations } from "./translations";
 // Import các components
 import Header from "./Header";
 import SideMenu from "./SideMenu";
+import Footer from "./Footer";
 import HomePage from "./HomePage";
 import ProductsPage from "./ProductsPage";
 import WrappedProductDetail from "./ProductDetail";
@@ -35,7 +36,7 @@ import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 
 // ✅ Import thêm trang Chính sách bảo mật
-import PrivacyPolicy from "./PrivacyPolicy";
+import PrivacyPolicy from "./PolicyPage";
 import TermsOfUse from "./TermsOfUse";
 import ReturnPolicy from "./ReturnPolicy";
 import FAQPage from "./FAQPage";
@@ -97,7 +98,7 @@ const AppContent = () => {
           <Route path="/login" element={<WrappedLoginPage t={t} />} />
           <Route path="/register" element={<WrappedRegisterPage t={t} />} />
           <Route path="/verify" element={<VerifyPage t={t} />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage t={t} />} />
           <Route path="/checkout" element={<CheckoutPage t={t} />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/orders" element={<OrderPage />} />
@@ -140,6 +141,12 @@ const AppContent = () => {
           </Route>
         </Routes>
       </main>
+      <Footer
+        t={t}
+        currentTheme={theme}
+        setTheme={setTheme}
+        handleLanguageChange={setLanguage}
+      />
     </div>
   );
 };

@@ -150,68 +150,69 @@ const Header = ({
             ×
           </button>
           <ul
-  style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
->
-  {/* Mục: Sản phẩm */}
-  <li style={{ width: "100%" }}>
-    <Link
-      to="/products"
-      className="menu-link"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        background: "var(--side-menu-bg)",
-        border: "none",
-        borderRadius: 12,
-        padding: "14px 28px",
-        fontWeight: 700,
-        fontSize: 20,
-        cursor: "pointer",
-        color: "var(--main-text)",
-        width: "100%",
-        textAlign: "left",
-        transition: "background 0.2s",
-        boxSizing: "border-box",
-        textDecoration: "none",
-      }}
-      onClick={() => setTrayOpen(false)}
-    >
-      <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
-      {t ? t("menu_products") : "Sản phẩm"}
-    </Link>
-  </li>
+            style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
+          >
+            {/* Mục: Sản phẩm */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/products"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
+                {t ? t("menu_products") : "Sản phẩm"}
+              </Link>
+            </li>
 
-  {/* Mục: Chính sách bảo mật */}
-  <li style={{ width: "100%" }}>
-    <Link
-      to="/privacy-policy"
-      className="menu-link"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        background: "var(--side-menu-bg)",
-        border: "none",
-        borderRadius: 12,
-        padding: "14px 28px",
-        fontWeight: 700,
-        fontSize: 20,
-        cursor: "pointer",
-        color: "var(--main-text)",
-        width: "100%",
-        textAlign: "left",
-        transition: "background 0.2s",
-        boxSizing: "border-box",
-        textDecoration: "none",
-      }}
-      onClick={() => setTrayOpen(false)}
-    >
-      <span style={{ fontSize: 22, marginRight: 8 }}>📜</span>
-      {t ? t("privacy.title") : "Chính sách bảo mật"}
-    </Link>
-  </li>
-</ul>
+            {/* Mục: Chính sách bảo mật */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/privacy-policy"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>📜</span>
+                {t ? t("privacy.title") : "Chính sách bảo mật"}
+              </Link>
+            </li>
+          </ul>
+          <ul
             style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
           >
             {/* Mục: Sản phẩm */}
@@ -737,7 +738,7 @@ const Header = ({
                         transition: "background 0.18s",
                       }}
                     >
-                      Giao diện quản trị
+                      {t ? t('admin_page_label') : 'Giao diện quản trị'}
                     </Link>
                   ) : (
                     <div
@@ -762,7 +763,7 @@ const Header = ({
                         cursor: "pointer",
                       }}
                     >
-                      Giao diện người bán
+                      {t ? t('seller_page_label') : 'Giao diện người bán'}
                     </div>
                   )}
 
