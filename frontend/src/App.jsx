@@ -36,6 +36,9 @@ import OrderPage from "./OrderPage";
 
 // ✅ Import thêm trang Chính sách bảo mật
 import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfUse from "./TermsOfUse";
+import ReturnPolicy from "./ReturnPolicy";
+import FAQPage from "./FAQPage";
 
 const AppContent = () => {
   const location = useLocation();
@@ -83,6 +86,9 @@ const AppContent = () => {
           {/* Các Route công khai */}
           <Route path="/" element={<HomePage t={t} />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="/products" element={<ProductsPage t={t} />} />
           <Route
             path="/products/:id"
