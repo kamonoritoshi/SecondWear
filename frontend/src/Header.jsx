@@ -272,6 +272,66 @@ const Header = ({
               </Link>
             </li>
 
+            {/* Mục: Chính sách vận chuyển */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/shipping-policy"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🚛</span>
+                {t ? t("Chính sách vận chuyển") : "Chính sách vận chuyển"}
+              </Link>
+            </li>
+
+            {/* Mục: Bảo mật thanh toán */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/payment-security"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🛍️</span>
+                {t ? t("Bảo mật thanh toán") : "Bảo mật thanh toán"}
+              </Link>
+            </li>
+
             {/* Mục: Câu hỏi thường gặp */}
             <li style={{ width: "100%" }}>
               <Link
