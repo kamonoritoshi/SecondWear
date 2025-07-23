@@ -6,7 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.sw.dao.OrderRepository;
 import com.sw.entity.Order;
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +18,15 @@ import lombok.RequiredArgsConstructor;
 public class VNPayService {
 
     private final VNPayConfig config;
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    public void markOrderAsPaid(String orderId) {
+        Order order = orderRepository.findById(Long.parseLong(orderId))
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        order.setStatus("Hoàn thành");
+        orderRepository.save(order);
+    }
 
     public String createPaymentUrl(Order order) throws Exception {
         // Chỉ tạo link nếu đơn hàng đang ở trạng thái "Đang xử lý"

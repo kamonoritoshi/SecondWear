@@ -152,6 +152,7 @@ const Header = ({
           <ul
             style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
           >
+            {/* Mục: Sản phẩm */}
             <li style={{ width: "100%" }}>
               <Link
                 to="/products"
@@ -177,10 +178,9 @@ const Header = ({
                 onClick={() => setTrayOpen(false)}
               >
                 <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
-                Sản phẩm
+                {t ? t("menu_products") : "Sản phẩm"}
               </Link>
             </li>
-            {/* Thêm các mục menu khác nếu cần */}
           </ul>
         </nav>
         <div className="logo">
@@ -555,7 +555,7 @@ const Header = ({
                         transition: "background 0.18s",
                       }}
                     >
-                      Giao diện quản trị
+                      {t ? t('admin_page_label') : 'Giao diện quản trị'}
                     </Link>
                   ) : (
                     <div
@@ -580,7 +580,7 @@ const Header = ({
                         cursor: "pointer",
                       }}
                     >
-                      Giao diện người bán
+                      {t ? t('seller_page_label') : 'Giao diện người bán'}
                     </div>
                   )}
 

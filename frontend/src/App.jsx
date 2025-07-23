@@ -6,9 +6,12 @@ import {
   useLocation,
 } from "react-router-dom";
 import { translations } from "./translations";
+
 // Import các components
+import ScrollToTop from "./components/ScrollToTop";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
+import Footer from "./Footer";
 import HomePage from "./HomePage";
 import ProductsPage from "./ProductsPage";
 import WrappedProductDetail from "./ProductDetail";
@@ -30,10 +33,16 @@ import AccountManagement from "./pages/admin/AccountManagement";
 import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
 import ProfilePage from "./ProfilePage";
 import CheckoutPage from "./CheckoutPage";
+import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 
-// ✅ Tạo wrapper để sử dụng useLocation ngoài Router
+// ✅ Import thêm trang Chính sách bảo mật
+import PrivacyPolicy from "./PolicyPage";
+import TermsOfUse from "./TermsOfUse";
+import ReturnPolicy from "./ReturnPolicy";
+import FAQPage from "./FAQPage";
+
 const AppContent = () => {
   const location = useLocation();
 
@@ -51,7 +60,6 @@ const AppContent = () => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // ✅ Ẩn Header và SideMenu nếu ở route /seller/*
   const isAdminOrSellerRoute =
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/seller");
@@ -80,6 +88,10 @@ const AppContent = () => {
         <Routes>
           {/* Các Route công khai */}
           <Route path="/" element={<HomePage t={t} />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="/products" element={<ProductsPage t={t} />} />
           <Route
             path="/products/:id"
@@ -88,12 +100,13 @@ const AppContent = () => {
           <Route path="/login" element={<WrappedLoginPage t={t} />} />
           <Route path="/register" element={<WrappedRegisterPage t={t} />} />
           <Route path="/verify" element={<VerifyPage t={t} />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage t={t} />} />
           <Route path="/checkout" element={<CheckoutPage t={t} />} />
-          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/payment-fail" element={<PaymentFailPage />} />
+          <Route path="/payment-success" element={<SuccessPage />} />
           <Route path="/orders" element={<OrderPage />} />
 
-          {/* Các Route cần đăng nhập */}
+          {/* Route cần đăng nhập */}
           <Route
             path="/cart"
             element={
@@ -131,6 +144,14 @@ const AppContent = () => {
           </Route>
         </Routes>
       </main>
+      {!isAdminOrSellerRoute && (
+        <Footer
+          t={t}
+          currentTheme={theme}
+          setTheme={setTheme}
+          handleLanguageChange={setLanguage}
+        />
+      )}
     </div>
   );
 };
@@ -138,6 +159,7 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );
