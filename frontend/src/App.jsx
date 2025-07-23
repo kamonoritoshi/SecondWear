@@ -8,6 +8,7 @@ import {
 import { translations } from "./translations";
 
 // Import các components
+import ScrollToTop from "./components/ScrollToTop";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
 import Footer from "./Footer";
@@ -32,6 +33,7 @@ import AccountManagement from "./pages/admin/AccountManagement";
 import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
 import ProfilePage from "./ProfilePage";
 import CheckoutPage from "./CheckoutPage";
+import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 
@@ -100,7 +102,8 @@ const AppContent = () => {
           <Route path="/verify" element={<VerifyPage t={t} />} />
           <Route path="/profile" element={<ProfilePage t={t} />} />
           <Route path="/checkout" element={<CheckoutPage t={t} />} />
-          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/payment-fail" element={<PaymentFailPage />} />
+          <Route path="/payment-success" element={<SuccessPage />} />
           <Route path="/orders" element={<OrderPage />} />
 
           {/* Route cần đăng nhập */}
@@ -141,12 +144,14 @@ const AppContent = () => {
           </Route>
         </Routes>
       </main>
-      <Footer
-        t={t}
-        currentTheme={theme}
-        setTheme={setTheme}
-        handleLanguageChange={setLanguage}
-      />
+      {!isAdminOrSellerRoute && (
+        <Footer
+          t={t}
+          currentTheme={theme}
+          setTheme={setTheme}
+          handleLanguageChange={setLanguage}
+        />
+      )}
     </div>
   );
 };
@@ -154,6 +159,7 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );

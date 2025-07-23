@@ -4,12 +4,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class VNPayUtils {
 	public static String hmacSHA512(String key, String data) throws Exception {
@@ -41,5 +44,18 @@ public class VNPayUtils {
         String secureHash = hmacSHA512(hashSecret, hashData.toString());
 
         return vnpUrl + "?" + query + "&vnp_SecureHash=" + secureHash;
+    }
+    
+    public static Map<String, String> getResponseData(HttpServletRequest request) {
+        Map<String, String> fields = new HashMap<>();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String key = entry.getKey();
+            String[] values = entry.getValue();
+            if (values.length > 0) {
+                fields.put(key, values[0]);
+            }
+        }
+        return fields;
     }
 }

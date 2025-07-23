@@ -150,6 +150,7 @@ export const translations = {
         'profile_edit': 'Chỉnh sửa',
         'profile_save': 'Lưu',
         'profile_cancel': 'Hủy',
+        'no_products': 'Không có sản phẩm nào',
         // Product Detail
         'product_details_title': 'Chi tiết sản phẩm',
         'price_label': 'Giá',
@@ -184,6 +185,7 @@ export const translations = {
         'cart_total_amount': 'Tổng số tiền',
         'cart_checkout': 'Thanh toán',
         'cart_items': 'Sản phẩm trong giỏ hàng',
+        'cart_empty': 'Giỏ hàng của bạn đang trống',
         //Login Page
         'email_label': 'Email',
         'email_placeholder': 'Nhập email của bạn',
@@ -202,8 +204,10 @@ export const translations = {
         'confirm_password_placeholder': 'Nhập lại mật khẩu',
         'already_have_account_prompt': 'Đã có tài khoản?',
         'login_link': 'Đăng nhập',
+        'loading_products': 'Đang tải sản phẩm...',
     }, 
     'en': {
+        'loading_products': 'Loading products...',
         //Register Page
         'fullname_placeholder': 'Enter your full name',
         'phone_placeholder': 'Enter your phone number',
@@ -236,6 +240,7 @@ export const translations = {
         'cart_total_amount': 'Total Amount',
         'cart_checkout': 'Checkout',
         'cart_items': 'Items in Cart',
+        'cart_empty': 'Your cart is empty',
         // Product Detail
         'product_details_title': 'Product Details',
         'price_label': 'Price',
@@ -266,6 +271,7 @@ export const translations = {
         'profile_edit': 'Edit',
         'profile_save': 'Save',
         'profile_cancel': 'Cancel',
+        'no_products': 'No products found',
         // --- Các keys khác ---
         'admin_page_label': 'Admin Page',
         'seller_page_label': 'Seller Page',

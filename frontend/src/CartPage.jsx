@@ -190,7 +190,7 @@ const CartPage = ({ t }) => {
               </div>
             </>
           ) : (
-            <div>{t("cart.empty")}</div>
+            <div>{t("cart_empty")}</div>
           )}
         </div>
       </div>

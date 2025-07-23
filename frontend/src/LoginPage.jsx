@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 
@@ -12,6 +13,20 @@ const LoginPage = ({ t }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const remembered = localStorage.getItem("rememberedLogin");
+    if (remembered) {
+      const data = JSON.parse(remembered);
+      if (Date.now() < data.expiredAt) {
+        setEmail(data.email || "");
+        setRole(data.role || "customer");
+        setRememberMe(true);
+      } else {
+        localStorage.removeItem("rememberedLogin"); // Hết hạn thì xóa
+      }
+    }
+  }, []);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -24,6 +39,19 @@ const LoginPage = ({ t }) => {
     try {
       // Gửi cả 4 tham số vào hàm login
       await login(email, password, role, rememberMe);
+      if (rememberMe) {
+        const expiration = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 ngày
+        localStorage.setItem(
+          "rememberedLogin",
+          JSON.stringify({
+            email,
+            role,
+            expiredAt: expiration,
+          })
+        );
+      } else {
+        localStorage.removeItem("rememberedLogin"); // Xóa nếu không tick
+      }
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
@@ -86,7 +114,17 @@ const LoginPage = ({ t }) => {
                   : t("show_password") || "Hiện mật khẩu"
               }
             >
-              {showPassword ? <img src="/src/icons/password-hide.png" className="password-toggle-icon hide-icon"/> : <img src="/src/icons/password-view.png" className="password-toggle-icon hide-icon"/>}{" "}
+              {showPassword ? (
+                <img
+                  src="/src/icons/password-hide.png"
+                  className="password-toggle-icon hide-icon"
+                />
+              ) : (
+                <img
+                  src="/src/icons/password-view.png"
+                  className="password-toggle-icon hide-icon"
+                />
+              )}{" "}
               {/* Có thể thay bằng icon SVG nếu muốn */}
             </span>
           </div>

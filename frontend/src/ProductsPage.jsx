@@ -195,6 +195,7 @@ const ProductsPage = ({ t }) => {
     setPriceRange(pendingFilter.priceRange);
     setOnlyDiscount(pendingFilter.onlyDiscount);
     setPage(1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Filter and paginate products (unchanged)
@@ -214,7 +215,10 @@ const ProductsPage = ({ t }) => {
   }, [products, priceRange, onlyDiscount, page]);
 
   const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   useEffect(() => {
@@ -455,6 +459,7 @@ const ProductsPage = ({ t }) => {
                 localStorage.removeItem("filter_priceRange");
                 localStorage.removeItem("filter_onlyDiscount");
                 localStorage.removeItem("filter_page");
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               style={{
                 padding: "6px 8px",
