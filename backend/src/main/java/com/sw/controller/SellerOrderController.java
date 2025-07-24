@@ -1,6 +1,10 @@
 package com.sw.controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,4 +63,43 @@ public class SellerOrderController {
 
         return ResponseEntity.ok("Đã cập nhật trạng thái");
     }
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getSellerDashboard(@AuthenticationPrincipal CustomUserDetails user) {
+        Long sellerId = user.getAccount().getAccountId();
+        List<Order> orders = orderService.getOrdersBySeller(sellerId);
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate startOfMonth = today.withDayOfMonth(1);
+
+        double totalRevenue = 0;
+        double todayRevenue = 0;
+        double thisWeekRevenue = 0;
+        double thisMonthRevenue = 0;
+        int totalOrders = 0;
+
+        for (Order order : orders) {
+            if (!"COMPLETED".equalsIgnoreCase(order.getStatus())) continue;
+
+            double amount = order.getTotalAmount().doubleValue();
+            LocalDate orderDate = order.getOrderDate().toLocalDate(); // Đảm bảo có hàm này
+
+            totalRevenue += amount;
+            totalOrders++;
+
+            if (orderDate.equals(today)) todayRevenue += amount;
+            if (!orderDate.isBefore(startOfWeek)) thisWeekRevenue += amount;
+            if (!orderDate.isBefore(startOfMonth)) thisMonthRevenue += amount;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalOrders", totalOrders);
+        data.put("totalRevenue", totalRevenue);
+        data.put("todayRevenue", todayRevenue);
+        data.put("thisWeekRevenue", thisWeekRevenue);
+        data.put("thisMonthRevenue", thisMonthRevenue);
+
+        return ResponseEntity.ok(data);
+    }
+
 }
