@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "./contexts/AuthContext";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import "./css/SuccessPage.css";
 
 export default function SuccessPage() {
+  const { currentUser } = useAuth();
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
 
@@ -18,8 +20,8 @@ export default function SuccessPage() {
     const fetchOrderData = async () => {
       try {
         setLoading(true);
+        console.log("OrderId từ URL:", orderId);
 
-        // 1. Lấy thông tin đơn hàng
         const orderRes = await axios.get(`/api/orders/${orderId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -28,8 +30,8 @@ export default function SuccessPage() {
         setOrderInfo(order);
         console.log("Order Info:", order);
 
-        // 2. Lấy thông tin payment (nếu có)
-        let method = "COD";
+        // Fallback mặc định
+        let method = "---";
         let amount = order.total || 0;
 
         try {
@@ -37,21 +39,26 @@ export default function SuccessPage() {
             headers: { Authorization: `Bearer ${token}` },
           });
 
-          console.log("Payment Info:", paymentRes.data);
-          method = paymentRes.data.method || method;
-          amount = paymentRes.data.amount || amount;
+          if (paymentRes.data) {
+            console.log("Payment Info:", paymentRes.data);
+            method = paymentRes.data.method || method;
+            amount = paymentRes.data.amount || amount;
+          } else {
+            console.warn("Không có payment info cho orderId:", orderId);
+          }
         } catch (err) {
-          console.warn("Không có thông tin payment, fallback COD:", err);
+          console.warn(err);
         }
 
         setPaymentMethod(method);
         setTotal(amount);
 
-        // 3. Xoá giỏ hàng nếu là COD hoặc VNPay
+        // Xoá giỏ hàng nếu là COD hoặc VNPAY
         if (["COD", "VNPAY"].includes(method.toUpperCase())) {
-          localStorage.removeItem("cartItems");
+          if (currentUser?.email) {
+            localStorage.removeItem(`cart_${currentUser.email}`);
+          }
         }
-
       } catch (error) {
         console.error("Lỗi khi tải thông tin đơn hàng:", error);
       } finally {

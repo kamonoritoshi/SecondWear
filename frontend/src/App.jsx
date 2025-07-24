@@ -29,13 +29,17 @@ import OrderManagement from "./pages/seller/OrderManagement";
 import InventoryManagement from "./pages/seller/InventoryManagement";
 import AdminLayout from "./layouts/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
-import AccountManagement from "./pages/admin/AccountManagement";
+import AccountManagement from "./pages/admin/account/AccountManagement";
 import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
 import ProfilePage from "./ProfilePage";
 import CheckoutPage from "./CheckoutPage";
 import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
+import SellerRequests from "./pages/admin/account/SellerRequests";
+import SellerList from "./pages/admin/account/SellerList";
+import CustomerList from "./pages/admin/account/CustomerList";
+import PendingProducts from "./pages/admin/product/PendingProducts";
 
 // ✅ Import thêm trang Chính sách bảo mật
 import PrivacyPolicy from "./PolicyPage";
@@ -144,6 +148,10 @@ const AppContent = () => {
           >
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="accounts" element={<AccountManagement />} />
+            <Route path="seller-requests" element={<SellerRequests />} />
+            <Route path="sellers" element={<SellerList />} />
+            <Route path="customers" element={<CustomerList />} />
+            <Route path="products/pending" element={<PendingProducts />} />
             <Route path="orders" element={<OrderManagementAdmin />} />
           </Route>
         </Routes>

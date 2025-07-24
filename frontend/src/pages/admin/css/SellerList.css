@@ -1,0 +1,99 @@
+.account-page {
+  padding: 24px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.account-page h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.account-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.account-table th,
+.account-table td {
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.account-table th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.account-table td {
+  font-size: 14px;
+  color: #4b5563;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.account-table tr:last-child td {
+  border-bottom: none;
+}
+
+.account-table td:nth-child(5) {
+  font-weight: 600;
+}
+
+.status-active {
+  color: #16a34a;
+  background-color: #dcfce7;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 13px;
+}
+
+.status-inactive {
+  color: #b91c1c;
+  background-color: #fee2e2;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 13px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  margin-right: 6px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+.toggle-btn {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.toggle-btn:hover {
+  background-color: #d97706;
+  color: white;
+}

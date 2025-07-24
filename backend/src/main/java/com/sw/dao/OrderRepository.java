@@ -1,5 +1,6 @@
 package com.sw.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,22 +13,37 @@ import com.sw.entity.Account;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    // Tìm đơn hàng theo trạng thái
-    List<Order> findByStatus(String status);  //
+	// Tìm đơn hàng theo trạng thái
+	List<Order> findByStatus(String status); //
 
-    // Tìm đơn hàng theo tài khoản và trạng thái
-    List<Order> findByAccountAndStatus(Account account, String status); 
+	// Tìm đơn hàng theo tài khoản và trạng thái
+	List<Order> findByAccountAndStatus(Account account, String status);
 
-    // Lấy tất cả đơn hàng sắp xếp theo thời gian đặt hàng (mặc định là orderDate)
-    List<Order> findAllByOrderByOrderDateDesc();  //
-    
-    @Query("SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.account.accountId = :sellerId ORDER BY o.orderDate DESC")
-    List<Order> findOrdersBySellerId(@Param("sellerId") Long sellerId);
-    
-    List<Order> findByAccount_AccountId(Long accountId);
-    
-    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status = :status")
-    double sumTotalAmountByStatus(@Param("status") String status);
-    
-    List<Order> findTop10ByOrderByOrderDateDesc();
+	// Lấy tất cả đơn hàng sắp xếp theo thời gian đặt hàng (mặc định là orderDate)
+	List<Order> findAllByOrderByOrderDateDesc(); //
+
+	@Query("SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.account.accountId = :sellerId ORDER BY o.orderDate DESC")
+	List<Order> findOrdersBySellerId(@Param("sellerId") Long sellerId);
+
+	List<Order> findByAccount_AccountId(Long accountId);
+
+	@Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status = :status")
+	double sumTotalAmountByStatus(@Param("status") String status);
+
+	List<Order> findTop10ByOrderByOrderDateDesc();
+
+	@Query("SELECT MONTH(o.orderDate), SUM(o.totalAmount) "
+			+ "FROM Order o WHERE YEAR(o.orderDate) = :year AND o.status = 'Hoàn thành' "
+			+ "GROUP BY MONTH(o.orderDate) ORDER BY MONTH(o.orderDate)")
+	List<Object[]> sumRevenueByMonth(@Param("year") int year);
+	
+	@Query("SELECT o.status, COUNT(o.id) FROM Order o GROUP BY o.status")
+	List<Object[]> countOrdersByStatus();
+	
+	@Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = :status AND o.orderDate BETWEEN :start AND :end")
+	Double sumTotalAmountByStatusAndCreatedAtBetween(
+	    @Param("status") String status,
+	    @Param("start") LocalDateTime start,
+	    @Param("end") LocalDateTime end
+	);
 }

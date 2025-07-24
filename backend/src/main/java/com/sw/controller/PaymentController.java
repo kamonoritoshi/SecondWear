@@ -138,10 +138,13 @@ public class PaymentController {
 
 	@GetMapping("/order/{orderId}")
 	public ResponseEntity<Payment> getPaymentByOrder(@PathVariable Long orderId) {
+		System.out.println("Tìm payment theo orderId = " + orderId);
 	    Payment payment = paymentService.findByOrderId(orderId);
 	    if (payment != null) {
+	    	System.out.println("Tìm thấy payment: " + payment.getMethod() + " | " + payment.getAmount());
 	        return ResponseEntity.ok(payment);
 	    } else {
+	    	System.out.println("Không tìm thấy payment cho orderId = " + orderId);
 	        return ResponseEntity.notFound().build();
 	    }
 	}

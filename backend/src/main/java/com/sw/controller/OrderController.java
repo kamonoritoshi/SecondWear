@@ -7,9 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sw.dao.OrderRepository;
+import com.sw.dto.OrderWithPaymentDTO;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
-import com.sw.entity.OrderItem;
 import com.sw.security.CustomUserDetails;
 import com.sw.service.OrderService;
 
@@ -71,7 +69,7 @@ public class OrderController {
 
 	// Lấy đơn hàng theo tài khoản
 	@GetMapping("/me")
-    public List<Order> getMyOrders(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public List<OrderWithPaymentDTO> getMyOrders(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long accountId = userDetails.getAccount().getAccountId();
         return orderService.getOrdersByAccount(accountId);
     }
