@@ -105,6 +105,7 @@ public class PaymentController {
 	            case "COD":
 	                order.setStatus("Đang xử lý");
 	                orderRepository.save(order);
+	                paymentService.createPayment(order, "COD", "Chờ thanh toán", order.getTotalAmount());
 	                return ResponseEntity.ok(Map.of("paymentUrl", "/orders"));
 
 	            case "VNPAY":
@@ -135,5 +136,13 @@ public class PaymentController {
 	    }
 	}
 
-
+	@GetMapping("/order/{orderId}")
+	public ResponseEntity<Payment> getPaymentByOrder(@PathVariable Long orderId) {
+	    Payment payment = paymentService.findByOrderId(orderId);
+	    if (payment != null) {
+	        return ResponseEntity.ok(payment);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
 }

@@ -56,13 +56,29 @@
   background-color: #2563eb;
 }
 
+.edit-button:hover {
+  background-color: #1d55cd;
+  color: white;
+}
+
 .save-button {
   background-color: #22c55e;
+}
+
+.save-button:hover {
+  background-color: #1a9c4b;
+  color: white;
 }
 
 .cancel-button {
   background-color: #9ca3af;
 }
+
+.cancel-button:hover {
+  background-color: #7c8a99;
+  color: white;
+}
+
 .profile-error {
   color: #e3342f;
   margin-top: 10px;

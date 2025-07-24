@@ -6,12 +6,6 @@ import Header from "./Header";
 import Footer from "./Footer";
 import useAddToCart from "./hooks/useAddToCart";
 
-// Import toàn bộ icon từ thư mục src/icons
-// const categoryIcons = import.meta.glob('./icons/*.png', {
-//   eager: true,
-//   import: 'default',
-// });
-
 // Import icon đen/trắng cho từng loại
 import heroBanner from "./icons/hero-banner.png";
 import shopIcon from "./icons/shop-icon.png";
@@ -47,20 +41,20 @@ import iconKhanWhite from "/src/icons/white-scarf-icon.png";
 const HeroBanner = ({ t }) => (
   <section className="hero-section section-container">
     <div className="hero-banner-image">
-      <img src={heroBanner} alt="Eco-friendly Clothing" />
+      <img src={heroBanner} alt={t ? t('hero_banner_alt') : 'Eco-friendly Clothing'} />
     </div>
     <div className="section-container">
-      <h4 style={{ color: "var(--main-text)" }}>{t("hot_section_title")}</h4>
+      <h4 style={{ color: "var(--main-text)" }}>{t ? t('hot_section_title') : 'Ưu đãi hot'}</h4>
       <div className="hot-item">
-        <span className="hot-icon new">NEW</span>
+        <span className="hot-icon new">{t ? t('hot_item_new') : 'NEW'}</span>
         <span style={{ color: "var(--main-text)" }}>
-          Hàng mới nhất trong hôm nay
+          {t ? t('hot_item_new_text') : 'Hàng mới nhất trong hôm nay'}
         </span>
       </div>
       <div className="hot-item">
-        <span className="hot-icon sale">SALE</span>
+        <span className="hot-icon sale">{t ? t('hot_item_sale') : 'SALE'}</span>
         <span style={{ color: "var(--main-text)" }}>
-          Giảm giá trong hôm nay
+          {t ? t('hot_item_sale_text') : 'Giảm giá trong hôm nay'}
         </span>
       </div>
       <div className="hot-item">
@@ -78,92 +72,104 @@ const HeroBanner = ({ t }) => (
             verticalAlign: "middle",
           }}
         ></span>
-        <span style={{ color: "var(--main-text)" }}>Hàng từ shop uy tín</span>
+        <span style={{ color: "var(--main-text)" }}>
+          {t ? t('hot_item_trusted') : 'Hàng từ shop uy tín'}
+        </span>
       </div>
     </div>
   </section>
 );
 
-// --- Danh mục cố định, icon tĩnh ---
-const getCategoryList = (theme) => [
+// --- Danh mục cố định, hỗ trợ dịch ---
+const getCategoryList = (theme, t) => [
   {
-    name: "Áo",
+    name: t ? t('category_shirts') : 'Áo',
+    defaultName: 'Áo',
     icon: theme === "dark" ? iconAoWhite : iconAoBlack,
     categoryId: 1,
   },
   {
-    name: "Quần",
+    name: t ? t('category_pants') : 'Quần',
+    defaultName: 'Quần',
     icon: theme === "dark" ? iconQuanWhite : iconQuanBlack,
     categoryId: 2,
   },
   {
-    name: "Váy / Đầm",
+    name: t ? t('category_dresses') : 'Váy / Đầm',
+    defaultName: 'Váy / Đầm',
     icon: theme === "dark" ? iconVayWhite : iconVayBlack,
     categoryId: 3,
   },
   {
-    name: "Giày dép",
+    name: t ? t('category_shoes') : 'Giày dép',
+    defaultName: 'Giày dép',
     icon: theme === "dark" ? iconGiayWhite : iconGiayBlack,
     categoryId: 4,
   },
   {
-    name: "Túi xách / Ba lô",
+    name: t ? t('category_bags') : 'Túi xách / Ba lô',
+    defaultName: 'Túi xách / Ba lô',
     icon: theme === "dark" ? iconTuiWhite : iconTuiBlack,
     categoryId: 5,
   },
   {
-    name: "Mũ",
+    name: t ? t('category_hats') : 'Mũ',
+    defaultName: 'Mũ',
     icon: theme === "dark" ? iconMuWhite : iconMuBlack,
     categoryId: 6,
   },
   {
-    name: "Kính",
+    name: t ? t('category_glasses') : 'Kính',
+    defaultName: 'Kính',
     icon: theme === "dark" ? iconKinhWhite : iconKinhBlack,
     categoryId: 7,
   },
   {
-    name: "Trang sức",
+    name: t ? t('category_jewelry') : 'Trang sức',
+    defaultName: 'Trang sức',
     icon: theme === "dark" ? iconTrangSucWhite : iconTrangSucBlack,
     categoryId: 8,
   },
   {
-    name: "Thắt lưng",
+    name: t ? t('category_belts') : 'Thắt lưng',
+    defaultName: 'Thắt lưng',
     icon: theme === "dark" ? iconThatLungWhite : iconThatLungBlack,
     categoryId: 9,
   },
   {
-    name: "Đồ bơi",
+    name: t ? t('category_swimwear') : 'Đồ bơi',
+    defaultName: 'Đồ bơi',
     icon: theme === "dark" ? iconDoBoiWhite : iconDoBoiBlack,
     categoryId: 10,
   },
   {
-    name: "Đồ ngủ / Ở nhà",
+    name: t ? t('category_loungewear') : 'Đồ ngủ / Ở nhà',
+    defaultName: 'Đồ ngủ / Ở nhà',
     icon: theme === "dark" ? iconDoNguWhite : iconDoNguBlack,
     categoryId: 11,
   },
   {
-    name: "Khăn / Phụ kiện khác",
+    name: t ? t('category_accessories') : 'Khăn / Phụ kiện khác',
+    defaultName: 'Khăn / Phụ kiện khác',
     icon: theme === "dark" ? iconKhanWhite : iconKhanBlack,
     categoryId: 12,
   },
   {
-    name: "Khác",
+    name: t ? t('category_others') : 'Khác',
+    defaultName: 'Khác',
     icon: theme === "dark" ? defaultIconWhite : defaultIconBlack,
     categoryId: 13,
   },
 ];
 
-// Đã import useState, useEffect ở đầu file rồi, không cần import lại
-
 const CategorySection = ({ t }) => {
   const [startIndex, setStartIndex] = useState(0);
-  const [direction, setDirection] = useState(null); // null: không animate, 'left'/'right': animate
+  const [direction, setDirection] = useState(null);
   const [theme, setTheme] = useState("light");
   const visibleCount = 3;
-  const CATEGORY_LIST = getCategoryList(theme);
+  const CATEGORY_LIST = getCategoryList(theme, t);
   const total = CATEGORY_LIST.length;
 
-  // Lấy theme từ class html (đồng bộ với App)
   useEffect(() => {
     const observer = new MutationObserver(() => {
       setTheme(
@@ -184,17 +190,14 @@ const CategorySection = ({ t }) => {
     return () => observer.disconnect();
   }, []);
 
-  // Lấy 3 category liên tiếp, không vòng lặp, để disable nút ở đầu/cuối
   const getVisibleCategories = () => {
     if (total <= visibleCount) return CATEGORY_LIST;
     return CATEGORY_LIST.slice(startIndex, startIndex + visibleCount);
   };
 
-  // Kiểm tra disable nút
   const isAtStart = startIndex === 0;
   const isAtEnd = startIndex + visibleCount >= total;
 
-  // Lướt 3 category mỗi lần
   const handlePrev = () => {
     if (isAtStart) return;
     setDirection("left");
@@ -213,10 +216,8 @@ const CategorySection = ({ t }) => {
   };
 
   const handleCategoryClick = (cat) => {
-    // Lưu filter vào localStorage để ProductsPage nhận được
     localStorage.setItem("filter_category", cat.categoryId);
     localStorage.setItem("filter_page", "1");
-    // Có thể reset các filter khác nếu muốn
     window.location.href = "/products";
   };
 
@@ -224,7 +225,7 @@ const CategorySection = ({ t }) => {
     <section className="category-section">
       <div className="section-container">
         <h2 className="section-title" style={{ color: "var(--main-text)" }}>
-          {t("category_section_title")}
+          {t ? t('category_section_title') : 'Danh mục nổi bật'}
         </h2>
         <div
           style={{
@@ -253,7 +254,7 @@ const CategorySection = ({ t }) => {
               boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
               transition: "background 0.2s",
             }}
-            aria-label="Trước"
+            aria-label={t ? t('button_previous') : 'Trước'}
           >
             {"<"}
           </button>
@@ -272,9 +273,7 @@ const CategorySection = ({ t }) => {
             }}
           >
             <div
-              className={`category-slider-inner${
-                direction ? " " + direction : ""
-              }`}
+              className={`category-slider-inner${direction ? " " + direction : ""}`}
               style={{
                 display: "flex",
                 width: "100%",
@@ -288,7 +287,7 @@ const CategorySection = ({ t }) => {
             >
               {getVisibleCategories().map((cat, idx) => (
                 <div
-                  key={cat.name + idx}
+                  key={cat.categoryId + idx}
                   className="category-item"
                   style={{
                     flex: "1 0 0",
@@ -313,7 +312,7 @@ const CategorySection = ({ t }) => {
                 >
                   <img
                     src={cat.icon}
-                    alt={cat.name}
+                    alt={t ? t(cat.name) : cat.defaultName}
                     style={{
                       width: 100,
                       height: 100,
@@ -332,11 +331,10 @@ const CategorySection = ({ t }) => {
                       color: "var(--main-text)",
                       textAlign: "center",
                       letterSpacing: 0,
-                      fontFamily:
-                        "Be Vietnam Pro, Arial, Helvetica, sans-serif",
+                      fontFamily: "Be Vietnam Pro, Arial, Helvetica, sans-serif",
                     }}
                   >
-                    {cat.name}
+                    {t ? t(cat.name) : cat.defaultName}
                   </span>
                 </div>
               ))}
@@ -361,12 +359,11 @@ const CategorySection = ({ t }) => {
               boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
               transition: "background 0.2s",
             }}
-            aria-label="Sau"
+            aria-label={t ? t('button_next') : 'Sau'}
           >
             {">"}
           </button>
         </div>
-        {/* Animation slider cho category và font Việt hóa */}
         <link
           href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;800&display=swap"
           rel="stylesheet"
@@ -392,7 +389,7 @@ const CategorySection = ({ t }) => {
   );
 };
 
-const ProductCard = ({ product, onQuickAddToCart }) => (
+const ProductCard = ({ product, onQuickAddToCart, t }) => (
   <Link
     to={`/products/${product.productId}`}
     className="product-card"
@@ -429,7 +426,10 @@ const ProductCard = ({ product, onQuickAddToCart }) => (
             }
           }}
         >
-          <img src="/src/icons/white-cart-icon.png" alt="Add to cart" />
+          <img
+            src="/src/icons/white-cart-icon.png"
+            alt={t ? t('add_to_cart_alt') : 'Thêm vào giỏ'}
+          />
         </button>
       </div>
     </div>
@@ -442,19 +442,17 @@ const HomePage = ({ t }) => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [flashSaleProducts, setFlashSaleProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const onQuickAddToCart = useAddToCart();
-  // const [showProductsPage, setShowProductsPage] = useState(false); // Đã bỏ, không còn dùng
 
   const fetchPaginatedProducts = useCallback(async (pageNum) => {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/products/paged?page=${pageNum}&size=8`
       );
-      if (!response.ok) throw new Error("Không thể tải thêm sản phẩm.");
-
+      if (!response.ok) throw new Error(t ? t('error_fetch_products') : 'Không thể tải thêm sản phẩm.');
       const data = await response.json();
       setSuggestionProducts((prev) => [...prev, ...data.content]);
       if (data.last) {
@@ -463,11 +461,9 @@ const HomePage = ({ t }) => {
     } catch (err) {
       console.error("Failed to fetch more products:", err);
     }
-  }, []);
+  }, [t]);
 
-  // Lưu cache homepage vào localStorage, chỉ gọi API nếu cache quá 5 phút
   useEffect(() => {
-    //
     const cacheKey = "homepage_cache";
     const cacheStr = localStorage.getItem(cacheKey);
     let cache = null;
@@ -492,7 +488,7 @@ const HomePage = ({ t }) => {
       setCategories(cache.categories);
       if (cache.products.length <= 8) setHasMore(false);
       setLoading(false);
-      document.title = t("homepage_title");
+      document.title = t ? t('homepage_title') : 'Trang chủ';
       return;
     }
     const fetchInitialData = async () => {
@@ -503,7 +499,7 @@ const HomePage = ({ t }) => {
           fetch(`${API_BASE_URL}/api/categories`),
         ]);
         if (!productsRes.ok || !categoriesRes.ok)
-          throw new Error("Lỗi khi tải dữ liệu ban đầu.");
+          throw new Error(t ? t('error_fetch_initial') : 'Lỗi khi tải dữ liệu ban đầu.');
         const allProducts = await productsRes.json();
         const categoriesData = await categoriesRes.json();
         setFlashSaleProducts(allProducts.slice(0, 4));
@@ -513,7 +509,6 @@ const HomePage = ({ t }) => {
           setHasMore(false);
         }
         setCategories(categoriesData);
-        // Lưu cache mới với timestamp
         localStorage.setItem(
           cacheKey,
           JSON.stringify({
@@ -523,13 +518,13 @@ const HomePage = ({ t }) => {
           })
         );
       } catch (err) {
-        setError(err.message);
+        setError(t ? t('error_fetch_initial') : err.message);
       } finally {
         setLoading(false);
       }
     };
     fetchInitialData();
-    document.title = t("homepage_title");
+    document.title = t ? t('homepage_title') : 'Trang chủ';
   }, [t]);
 
   const handleShowMore = () => {
@@ -537,10 +532,6 @@ const HomePage = ({ t }) => {
     setPage(nextPage);
     fetchPaginatedProducts(nextPage);
   };
-
-  // Chuyển sang trang ProductsPage khi click vào sản phẩm
-  // (Cần dùng useNavigate để chuyển trang)
-  // Đã chuyển sang dùng <Link> nên không cần sửa thêm ở đây
 
   if (loading)
     return (
@@ -589,21 +580,15 @@ const HomePage = ({ t }) => {
   if (error)
     return (
       <main className="home-page-container">
-        <h2>Lỗi: {error}</h2>
+        <h2>{t ? t('error_label') : 'Lỗi'}: {error}</h2>
       </main>
     );
 
-  // Xử lý click menu Sản phẩm
-  // Hàm này không còn được sử dụng, có thể xoá để tránh cảnh báo lint
-
   return (
     <div className="homepage-wrapper" style={{ background: "var(--main-bg)" }}>
-      {/* Chỉ render Header nếu không có trong layout cha. Nếu Header đã được render ở ngoài, hãy xoá dòng dưới */}
-      {/* <Header t={t} onMenuClick={handleMenuClick} /> */}
-      {/* Luồng hiển thị mặc định, không còn chuyển trang sản phẩm tại đây */}
       <main className="home-page-container">
         <HeroBanner t={t} />
-        <CategorySection categories={categories} t={t} />
+        <CategorySection t={t} />
 
         <section className="product-showcase">
           <div className="section-container">
@@ -612,10 +597,10 @@ const HomePage = ({ t }) => {
                 className="section-title"
                 style={{ color: "var(--main-text)" }}
               >
-                Flash sale!!!
+                {t ? t('flash_sale_title') : 'Flash sale!!!'}
               </h2>
               <Link to="/flash-sale" className="view-all-link">
-                Xem tất cả
+                {t ? t('view_all') : 'Xem tất cả'}
               </Link>
             </div>
             <div className="product-grid">
@@ -626,6 +611,7 @@ const HomePage = ({ t }) => {
                   onQuickAddToCart={() => {
                     onQuickAddToCart(product, 1, product.color, product.size);
                   }}
+                  t={t}
                 />
               ))}
             </div>
@@ -652,14 +638,14 @@ const HomePage = ({ t }) => {
             <input
               type="text"
               name="secondarySearchInput"
-              placeholder={t("search_placeholder")}
+              placeholder={t ? t('search_placeholder') : 'Tìm kiếm sản phẩm...'}
               style={{ background: "var(--section-bg)" }}
               autoComplete="off"
             />
             <button className="search-button" type="submit">
               <img
                 src="/src/icons/black-search-icon.png"
-                alt="Search"
+                alt={t ? t('search_icon_alt') : 'Tìm kiếm'}
                 className="header-icon"
               />
             </button>
@@ -673,7 +659,7 @@ const HomePage = ({ t }) => {
                 className="section-title"
                 style={{ color: "var(--main-text)" }}
               >
-                Gợi ý hôm nay
+                {t ? t('suggestion_title') : 'Gợi ý hôm nay'}
               </h2>
             </div>
             <div className="product-grid">
@@ -681,6 +667,7 @@ const HomePage = ({ t }) => {
                 <ProductCard
                   key={`suggest-${product.productId}`}
                   product={product}
+                  t={t}
                 />
               ))}
             </div>
@@ -692,14 +679,13 @@ const HomePage = ({ t }) => {
                   onClick={handleShowMore}
                   style={{ background: "var(--button-bg)" }}
                 >
-                  Hiển thị thêm
+                  {t ? t('show_more') : 'Hiển thị thêm'}
                 </button>
               </div>
             )}
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };
