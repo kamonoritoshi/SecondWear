@@ -41,6 +41,8 @@ import OrderPage from "./OrderPage";
 import PrivacyPolicy from "./PolicyPage";
 import TermsOfUse from "./TermsOfUse";
 import ReturnPolicy from "./ReturnPolicy";
+import ShippingPolicy from "./ShippingPolicy";
+import PaymentSecurity from "./PaymentSecurity";
 import FAQPage from "./FAQPage";
 
 const AppContent = () => {
@@ -91,6 +93,8 @@ const AppContent = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-use" element={<TermsOfUse />} />
           <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          <Route path="/payment-security" element={<PaymentSecurity />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/products" element={<ProductsPage t={t} />} />
           <Route
