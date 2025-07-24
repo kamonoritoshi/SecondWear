@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './SideMenu.css'; // tạo CSS nếu cần
+import './SideMenu.css'; // Đảm bảo đã có file này để style menu
 
 const SideMenu = () => {
   const location = useLocation();
@@ -8,19 +8,22 @@ const SideMenu = () => {
 
   return (
     <div className="seller-side-menu">
-      <h2 className="menu-title">Seller Menu</h2>
-      <ul>
+      <h2 className="menu-title">Seller Control</h2>
+      <ul className="menu-list">
         <li className={isActive('/seller/dashboard') ? 'active' : ''}>
-          <Link to="/seller/dashboard">Dashboard</Link>
+          <Link to="/seller/dashboard">Tổng quan</Link>
         </li>
         <li className={isActive('/seller/products') ? 'active' : ''}>
-          <Link to="/seller/products">Quản lý sản phẩm</Link>
-        </li>
-        <li className={isActive('/seller/inventory') ? 'active' : ''}>
-          <Link to="/seller/inventory">Quản lý kho</Link>
+          <Link to="/seller/products">Sản phẩm</Link>
         </li>
         <li className={isActive('/seller/orders') ? 'active' : ''}>
-          <Link to="/seller/orders">Quản lý đơn hàng</Link>
+          <Link to="/seller/orders">Đơn hàng</Link>
+        </li>
+        <li className={isActive('/seller/statistics') ? 'active' : ''}>
+          <Link to="/seller/statistics">Thống kê</Link>
+        </li>
+        <li className={isActive('/seller/messages') ? 'active' : ''}>
+          <Link to="/seller/messages">Tin nhắn</Link>
         </li>
       </ul>
     </div>
