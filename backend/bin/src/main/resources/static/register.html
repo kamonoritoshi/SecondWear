@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Đăng ký</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    input, select { width: 100%; margin: 8px 0; padding: 8px; }
+    button { padding: 10px 20px; margin: 10px 5px 20px 0; }
+    .result { margin-top: 15px; white-space: pre-wrap; color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Đăng ký</h2>
+
+  <label>Email:</label>
+  <input type="email" id="email" required />
+
+  <label>Họ tên:</label>
+  <input type="text" id="fullName" required />
+
+  <label>Số điện thoại:</label>
+  <input type="text" id="phone" required />
+
+  <label>Địa chỉ cụ thể:</label>
+  <input type="text" id="address" required />
+
+  <label>Thành phố:</label>
+  <select id="city">
+    <option value="">-- Chọn thành phố --</option>
+    <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+    <option value="Hà Nội">Hà Nội</option>
+    <option value="Đà Nẵng">Đà Nẵng</option>
+    <option value="Cần Thơ">Cần Thơ</option>
+    <option value="Huế">Huế</option>
+    <option value="Khác">Khác</option>
+  </select>
+
+  <label>Mật khẩu:</label>
+  <input type="password" id="password" required />
+
+  <label>Xác nhận mật khẩu:</label>
+  <input type="password" id="confirmPassword" required />
+
+  <div>
+    <button onclick="register()">Đăng ký (Gửi mã)</button>
+  </div>
+
+  <hr />
+
+  <h3>Xác nhận mã</h3>
+  <label>Nhập mã xác nhận:</label>
+  <input type="text" id="verifyCode" required />
+
+  <div>
+    <button onclick="verify()">Xác nhận mã</button>
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const BASE_URL = 'http://localhost:8080/api/auth'; // chỉnh nếu cần
+
+    function validateRegisterInput(data) {
+    	  const fieldLabels = {
+    	    email: "Email",
+    	    fullName: "Họ tên",
+    	    phone: "Số điện thoại",
+    	    address: "Địa chỉ cụ thể",
+    	    city: "Thành phố",
+    	    password: "Mật khẩu",
+    	    confirmPassword: "Xác nhận mật khẩu"
+    	  };
+
+    	  for (const key in data) {
+    	    if (!data[key] || data[key].trim() === '') {
+    	      alert(`❌ Vui lòng nhập: ${fieldLabels[key]}`);
+    	      return false;
+    	    }
+    	  }
+
+    	  if (data.password !== data.confirmPassword) {
+    	    alert('❌ Mật khẩu và xác nhận không khớp');
+    	    return false;
+    	  }
+
+    	  return true;
+    }
+
+
+    async function register() {
+      const raw = {
+        email: document.getElementById('email').value.trim(),
+        fullName: document.getElementById('fullName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        city: document.getElementById('city').value,
+        password: document.getElementById('password').value,
+        confirmPassword: document.getElementById('confirmPassword').value
+      };
+
+      if (!validateRegisterInput(raw)) return;
+
+      const res = await fetch(`${BASE_URL}/register`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(raw)
+      });
+
+      const resultDiv = document.getElementById('result');
+      const text = await res.text();
+
+      alert(text);
+      if (res.ok) {
+        resultDiv.textContent = "✅ " + text;
+        resultDiv.className = "result";
+      } else {
+        resultDiv.textContent = "❌ " + text;
+        resultDiv.className = "result error";
+      }
+    }
+
+    async function verify() {
+      const email = document.getElementById('email').value.trim();
+      const code = document.getElementById('verifyCode').value.trim();
+
+      if (!email || !code) {
+        alert('❌ Vui lòng nhập email và mã xác nhận');
+        return;
+      }
+
+      const res = await fetch(`${BASE_URL}/verify`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, code })
+      });
+
+      const text = await res.text();
+      alert(text);
+      const resultDiv = document.getElementById('result');
+      if (res.ok) {
+        resultDiv.textContent = "✅ " + text;
+        resultDiv.className = "result";
+      } else {
+        resultDiv.textContent = "❌ " + text;
+        resultDiv.className = "result error";
+      }
+    }
+  </script>
+</body>
+</html>

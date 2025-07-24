@@ -8,13 +8,16 @@ const RegisterPage = ({ t }) => {
         email: '',
         phone: '',
         address: '',
-        city: 'TP. Hồ Chí Minh', // Bạn có thể làm trường này thành dropdown sau
+        city: 'TP. Hồ Chí Minh',
         password: '',
         confirmPassword: '',
         role: 'customer'
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -33,7 +36,6 @@ const RegisterPage = ({ t }) => {
         }
 
         try {
-            // Dữ liệu gửi đi phải có đủ các trường mà DTO của backend yêu cầu
             const payload = {
                 email: formData.email,
                 fullName: formData.fullName,
@@ -50,14 +52,14 @@ const RegisterPage = ({ t }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-            
+
             const responseText = await response.text();
 
             if (!response.ok) {
                 throw new Error(responseText || 'Đăng ký thất bại.');
             }
 
-            alert("Mã xác thực đã được gửi đến email của bạn! (Kiểm tra Console của Backend để xem mã)");
+            alert("Mã xác thực đã được gửi đến email của bạn!");
             navigate('/verify', { state: { email: formData.email } });
 
         } catch (err) {
@@ -75,42 +77,78 @@ const RegisterPage = ({ t }) => {
                     {error && <p className="error-message">{error}</p>}
                     
                     <div className="form-group">
-                        <label htmlFor="fullName" style={{ color: 'var(--main-text)' }}>Họ và tên</label>
-                        <input id="fullName" name="fullName" type="text" placeholder="Nhập họ và tên" onChange={handleChange} required />
+                        <label htmlFor="fullName" style={{ color: 'var(--main-text)' }}>{t('fullname_placeholder') || "Họ và tên"}</label>
+                        <input id="fullName" name="fullName" type="text" placeholder={t('fullname_placeholder') || "Họ và tên"} onChange={handleChange} required />
                     </div>
                     
                     <div className="form-group">
-                        <label htmlFor="email" style={{ color: 'var(--main-text)' }}>Email</label>
-                        <input id="email" name="email" type="email" placeholder="Nhập email" onChange={handleChange} required />
+                        <label htmlFor="email" style={{ color: 'var(--main-text)' }}>{t('email_placeholder') || "Email"}</label>
+                        <input id="email" name="email" type="email" placeholder={t('email_placeholder') || "Nhập email"} onChange={handleChange} required />
                     </div>
                     
                     <div className="form-group">
-                        <label htmlFor="phone" style={{ color: 'var(--main-text)' }}>Số điện thoại</label>
-                        <input id="phone" name="phone" type="tel" placeholder="Nhập số điện thoại" onChange={handleChange} required />
+                        <label htmlFor="phone" style={{ color: 'var(--main-text)' }}>{t('phone_placeholder') || "Số điện thoại"}</label>
+                        <input id="phone" name="phone" type="tel" placeholder={t('phone_placeholder') || "Nhập số điện thoại"} onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="address" style={{ color: 'var(--main-text)' }}>Địa chỉ (Số nhà, tên đường)</label>
-                        <input id="address" name="address" type="text" placeholder="Nhập địa chỉ cụ thể" onChange={handleChange} required />
+                        <label htmlFor="address" style={{ color: 'var(--main-text)' }}>{t('address_placeholder') || "Địa chỉ"}</label>
+                        <input id="address" name="address" type="text" placeholder={t('address_placeholder') || "Nhập địa chỉ cụ thể"} onChange={handleChange} required />
                     </div>
                     
                     <div className="form-group">
-                        <label htmlFor="role" style={{ color: 'var(--main-text)' }}>Bạn muốn đăng ký với vai trò?</label>
+                        <label htmlFor="role" style={{ color: 'var(--main-text)' }}>{t('role_label') || "Bạn muốn đăng ký với vai trò?"}</label>
                         <select id="role" name="role" value={formData.role} onChange={handleChange} required>
-                            <option value="customer">Người mua</option>
-                            <option value="seller">Người bán</option>
-                            <option value="admin">Quản trị viên</option>
+                            <option value="customer">{t('role_customer') || "Người mua"}</option>
+                            <option value="seller">{t('role_seller') || "Người bán"}</option>
                         </select>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password" style={{ color: 'var(--main-text)' }}>Mật khẩu</label>
-                        <input id="password" name="password" type="password" placeholder="Ít nhất 6 ký tự" onChange={handleChange} required />
+                    <div className="form-group password-group">
+                        <label htmlFor="password" style={{ color: 'var(--main-text)' }}>{t('password_label') || "Mật khẩu"}</label>
+                        <div className="password-wrapper">
+                            <input
+                                id="password"
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder={t('password_placeholder') || "Ít nhất 6 ký tự"}
+                                onChange={handleChange}
+                                required
+                            />
+                            <span
+                                className="toggle-password-icon"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                <img
+                                    src={showPassword ? '/src/icons/password-hide.png' : '/src/icons/password-view.png'}
+                                    alt="toggle"
+                                />
+                            </span>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword" style={{ color: 'var(--main-text)' }}>Xác nhận mật khẩu</label>
-                        <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" onChange={handleChange} required />
+                    {/* Xác nhận mật khẩu */}
+                    <div className="form-group password-group">
+                        <label htmlFor="confirmPassword" style={{ color: 'var(--main-text)' }}>{t('confirm_password_placeholder') || "Xác nhận mật khẩu"}</label>
+                        <div className="password-wrapper">
+                            <input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                placeholder={t('confirm_password_placeholder') || "Nhập lại mật khẩu"}
+                                onChange={handleChange}
+                                required
+                            />
+                            <span
+                                className="toggle-password-icon"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                <img
+                                    src={showConfirmPassword ? '/src/icons/password-hide.png' : '/src/icons/password-view.png'}
+                                    alt="toggle"
+                                />
+                            </span>
+                        </div>
                     </div>
 
                     <button type="submit" className="submit-button" disabled={loading}>
@@ -119,7 +157,7 @@ const RegisterPage = ({ t }) => {
                 </form>
                 <div className="auth-switch-link">
                     <p>
-                        {"Đã có tài khoản?"} <Link to="/login">{"Đăng nhập"}</Link>
+                        {t('already_have_account_prompt') || "Đã có tài khoản?"} <Link to="/login">{t('login_link') || "Đăng nhập"}</Link>
                     </p>
                 </div>
             </div>
@@ -127,11 +165,6 @@ const RegisterPage = ({ t }) => {
     );
 };
 
-import Footer from './Footer.jsx';
-
 export default function WrappedRegisterPage(props) {
-  return <>
-    <RegisterPage {...props} />
-    <Footer />
-  </>;
+    return <RegisterPage {...props} />;
 }

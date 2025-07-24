@@ -1,0 +1,63 @@
+/* Bảng yêu cầu seller */
+.seller-request-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.seller-request-table th,
+.seller-request-table td {
+  padding: 12px 16px;
+  font-size: 14px; /* tăng nhẹ để dễ nhìn hơn */
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.seller-request-table th {
+  background-color: #f0f4f8;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px; /* nhỏ hơn body để phân cấp rõ hơn */
+}
+
+.seller-request-table tr:hover {
+  background-color: #fafafa;
+}
+
+/* Nút hành động */
+.approve-btn,
+.reject-btn {
+  padding: 6px 12px;
+  margin-right: 6px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.approve-btn:hover {
+  background-color: #218838;
+  box-shadow: 0 0 6px rgba(40, 167, 69, 0.4);
+  color: white;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #c82333;
+  box-shadow: 0 0 6px rgba(220, 53, 69, 0.4);
+  color: white;
+}

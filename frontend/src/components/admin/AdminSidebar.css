@@ -12,7 +12,7 @@
 }
 
 .admin-sidebar li {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .admin-sidebar a {
@@ -21,9 +21,21 @@
   font-weight: 500;
 }
 
-.admin-sidebar a.active {
-  color: #3498db;
+.admin-sidebar .active {
+  font-weight: bold;
+  color: #007bff;
 }
+
 .admin-sidebar a:hover {
-  color: #2980b9;
+  color: #0064ce;
+}
+
+.sidebar-section {
+  font-size: 14px;
+  color: #999;
+  text-transform: uppercase;
+  margin-top: 16px;
+  margin-bottom: 4px;
+  padding-left: 8px;
+  cursor: pointer;
 }

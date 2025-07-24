@@ -1,17 +1,24 @@
 package com.sw.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sw.dao.OrderRepository;
+import com.sw.dao.PaymentRepository;
 import com.sw.dao.ProductRepository;
+import com.sw.dto.OrderWithPaymentDTO;
+import com.sw.dto.admin.OrderRateDTO;
+import com.sw.dto.admin.RevenueByMonthDTO;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
 import com.sw.entity.OrderItem;
+import com.sw.entity.Payment;
 import com.sw.entity.Product;
 
 @Service
@@ -20,9 +27,9 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private AccountService accountService;
-    @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     // Lấy tất cả đơn hàng
     public List<Order> getAllOrders() {
@@ -75,8 +82,17 @@ public class OrderService {
     }
 
     // Lấy đơn hàng theo accountId
-    public List<Order> getOrdersByAccount(Long accountId) {
-    	return orderRepository.findByAccount_AccountId(accountId);
+    public List<OrderWithPaymentDTO> getOrdersByAccount(Long accountId) {
+    	List<Order> orders = orderRepository.findByAccount_AccountId(accountId);
+        List<OrderWithPaymentDTO> result = new ArrayList<>();
+
+        for (Order order : orders) {
+            Payment payment = paymentRepository.findByOrder_OrderId(order.getOrderId());
+            String method = (payment != null) ? payment.getMethod() : "COD";
+            result.add(new OrderWithPaymentDTO(order, method));
+        }
+
+        return result;
     }
 
     // Lấy đơn hàng theo status (chuỗi)
@@ -116,5 +132,23 @@ public class OrderService {
         return orderRepository.findTop10ByOrderByOrderDateDesc();
     }
 
-
+    public List<RevenueByMonthDTO> getMonthlyRevenue() {
+        List<Object[]> results = orderRepository.sumRevenueByMonth(LocalDate.now().getYear());
+        return results.stream().map(row -> {
+            RevenueByMonthDTO dto = new RevenueByMonthDTO();
+            dto.setMonth((Integer) row[0]);
+            dto.setTotalRevenue((BigDecimal) row[1]);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+    
+    public List<OrderRateDTO> getOrderStatusRate() {
+        List<Object[]> results = orderRepository.countOrdersByStatus();
+        return results.stream().map(row -> {
+            OrderRateDTO dto = new OrderRateDTO();
+            dto.setStatus((String) row[0]);
+            dto.setCount((Long) row[1]);
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

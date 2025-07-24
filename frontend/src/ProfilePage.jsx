@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./css/ProfilePage.css";
 
-const ProfilePage = () => {
+const ProfilePage = ({ t }) => {
   const [account, setAccount] = useState(null);
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -61,11 +61,11 @@ const ProfilePage = () => {
 
   if (error) return <div className="profile-error">{error}</div>;
   if (!account || !user)
-    return <div className="profile-loading">Đang tải thông tin...</div>;
+    return <div className="profile-loading">{t ? t("profile_loading") : "Đang tải thông tin..."}</div>;
 
   return (
     <div className="profile-container">
-      <h2 className="profile-title">Thông tin cá nhân</h2>
+      <h2 className="profile-title">{t ? t("profile_title") : "Thông tin cá nhân"}</h2>
 
       <img
         src="/src/icons/black-user-icon.png"
@@ -74,12 +74,12 @@ const ProfilePage = () => {
       />
 
       <div className="profile-field">
-        <label className="profile-label">Email:</label>
+        <label className="profile-label">{t ? t("profile_email") : "Email:"}</label>
         <input value={formData.email} readOnly className="profile-input" />
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">Họ tên:</label>
+        <label className="profile-label">{t ? t("profile_full_name") : "Họ tên:"}</label>
         <input
           name="fullName"
           value={formData.fullName}
@@ -90,7 +90,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">Số điện thoại:</label>
+        <label className="profile-label">{t ? t("profile_phone") : "Số điện thoại:"}</label>
         <input
           name="phone"
           value={formData.phone}
@@ -101,7 +101,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">Địa chỉ:</label>
+        <label className="profile-label">{t ? t("profile_address") : "Địa chỉ:"}</label>
         <input
           name="address"
           value={formData.address}
@@ -116,18 +116,18 @@ const ProfilePage = () => {
           onClick={() => setEditing(true)}
           className="profile-button edit-button"
         >
-          Chỉnh sửa
+          {t ? t("profile_edit") : "Chỉnh sửa"}
         </button>
       ) : (
         <div className="profile-button-group">
           <button onClick={handleSave} className="profile-button save-button">
-            Lưu
+            {t ? t("profile_save") : "Lưu"}
           </button>
           <button
             onClick={() => setEditing(false)}
             className="profile-button cancel-button"
           >
-            Hủy
+            {t ? t("profile_cancel") : "Hủy"}
           </button>
         </div>
       )}

@@ -1,26 +1,131 @@
-.account-management {
-  padding: 20px;
-  background: var(--section-bg);
-  border-radius: 8px;
-  box-shadow: 0 0 10px var(--shadow);
+/* Bộ lọc */
+.filters {
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
 }
 
-.account-management h2 {
-  margin-bottom: 20px;
+.filters select,
+.filters input {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 180px;
+  transition: border-color 0.3s;
 }
 
+.filters select:focus,
+.filters input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.filters button {
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filters button:hover {
+  background-color: #0056b3;
+}
+
+/* Bảng tài khoản */
 .account-table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .account-table th,
 .account-table td {
-  padding: 12px;
-  border: 1px solid var(--border);
+  padding: 12px 14px;
+  font-size: 14px;
   text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
 .account-table th {
-  background-color: var(--section-bg);
+  background-color: #f0f4f8;
+  font-weight: 600;
+  color: #333;
+}
+
+.account-table tr:hover {
+  background-color: #fafafa;
+}
+
+/* Trạng thái */
+.active-label {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.inactive-label {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* Nút hành động */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.icon-button:hover {
+  background-color: #eee;
+}
+
+.icon-button.danger:hover {
+  background-color: #ffe5e5;
+}
+
+.icon-button.success:hover {
+  background-color: #e5ffe5;
+}
+
+
+/* Phân trang */
+.pagination {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 8px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: #007bff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.pagination button.active-page {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }

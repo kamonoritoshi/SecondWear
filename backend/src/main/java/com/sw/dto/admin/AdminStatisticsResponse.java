@@ -1,4 +1,4 @@
-package com.sw.dto;
+package com.sw.dto.admin;
 
 import lombok.Data;
 
@@ -7,5 +7,7 @@ public class AdminStatisticsResponse {
     private long totalAccounts;
     private long totalSellers;
     private long totalOrders;
+    private double todayRevenue;
+    private double monthRevenue;
     private double totalRevenue;
 }

@@ -1,5 +1,6 @@
 package com.sw.vnpay;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -10,19 +11,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.sw.dao.OrderRepository;
 import com.sw.entity.Order;
-
+import com.sw.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,7 +30,11 @@ import lombok.RequiredArgsConstructor;
 public class VNPayController {
 	private final VNPayConfig config;
 	@Autowired
-	private OrderRepository orderRepository;
+	private final OrderRepository orderRepository;
+	@Autowired
+	private final VNPayService vnpayService;
+	@Autowired
+	private final PaymentService paymentService;
 	
 	@GetMapping("/vnpay/create")
 	public ResponseEntity<?> createPayment(@RequestParam Long orderId, HttpServletRequest request) throws Exception {
@@ -69,9 +72,9 @@ public class VNPayController {
 	}
 	
 	@GetMapping("/vnpay-return")
-	public ResponseEntity<?> handleVnPayReturn(HttpServletRequest request) {
+	public void handleVnPayReturn(HttpServletRequest request, HttpServletResponse response) {
 	    try {
-	        Map<String, String> params = getAllRequestParams(request);
+	        Map<String, String> params = VNPayUtils.getResponseData(request);
 	        String vnp_SecureHash = params.remove("vnp_SecureHash");
 	        params.remove("vnp_SecureHashType");
 
@@ -92,7 +95,7 @@ public class VNPayController {
 	        String calculatedHash = VNPayUtils.hmacSHA512(config.getHashSecret(), hashData.toString());
 
 	        if (!calculatedHash.equalsIgnoreCase(vnp_SecureHash)) {
-	            return ResponseEntity.badRequest().body("Sai chữ ký (secure hash)");
+	        	response.sendRedirect("http://localhost:5173/payment-fail?error=invalid-signature");
 	        }
 
 	        String responseCode = params.get("vnp_ResponseCode");
@@ -103,18 +106,21 @@ public class VNPayController {
 	                        .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
 
 	        if ("00".equals(responseCode)) {
-	            order.setStatus("Hoàn thành");
-	            orderRepository.save(order);
-	            return ResponseEntity.ok("✅ Thanh toán thành công cho đơn hàng: " + txnRef);
+	        	vnpayService.markOrderAsPaid(String.valueOf(orderId));
+	        	if (paymentService.findByOrderId(orderId) == null) {
+	                paymentService.createPayment(order, "VNPAY", "Đã thanh toán", order.getTotalAmount());
+	            }
+	        	response.sendRedirect("http://localhost:5173/payment-success?orderId=" + orderId + "&status=00");
 	        } else {
-	            order.setStatus("Huỷ");
-	            orderRepository.save(order);
-	            return ResponseEntity.ok("❌ Thanh toán thất bại. Mã lỗi: " + responseCode);
+	        	response.sendRedirect("http://localhost:5173/payment-fail?orderId=" + orderId + "&status=" + responseCode);
 	        }
 
 	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Lỗi xử lý callback: " + e.getMessage());
+	    	try {
+	            response.sendRedirect("http://localhost:5173/payment-fail?error=" + URLEncoder.encode(e.getMessage(), "UTF-8"));
+	        } catch (IOException ex) {
+	            ex.printStackTrace();
+	        }
 	    }
 	}
 

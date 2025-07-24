@@ -1,11 +1,14 @@
 package com.sw.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sw.dao.PaymentRepository;
+import com.sw.entity.Order;
 import com.sw.entity.Payment;
 
 @Service
@@ -39,5 +42,19 @@ public class PaymentService {
 
     public void deletePayment(Long id) {
         paymentRepository.deleteById(id);
+    }
+    
+    public Payment findByOrderId(Long orderId) {
+        return paymentRepository.findByOrder_OrderId(orderId);
+    }
+    
+    public Payment createPayment(Order order, String method, String status, BigDecimal amount) {
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setMethod(method);
+        payment.setStatus(status);
+        payment.setAmount(amount);
+        payment.setPaymentDate(LocalDateTime.now());
+        return paymentRepository.save(payment);
     }
 }

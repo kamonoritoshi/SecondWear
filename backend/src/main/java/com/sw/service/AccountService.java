@@ -3,40 +3,77 @@ package com.sw.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.sw.dao.AccountRepository;
 import com.sw.entity.Account;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class AccountService {
 	@Autowired
-    private AccountRepository aDAO;
+    private AccountRepository accountRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	public List<Account> getAllAccounts() {
-        return aDAO.findAll();
+        return accountRepository.findAll();
     }
 
     public Account getAccountById(Long id) {
-        return aDAO.findById(id).orElse(null);
+        return accountRepository.findById(id).orElse(null);
     }
 
     public Account createAccount(Account account) {
-        return aDAO.save(account);
+        return accountRepository.save(account);
     }
 
     public Account updateAccount(Long id, Account updatedAccount) {
-        Account existing = aDAO.findById(id).orElse(null);
+        Account existing = accountRepository.findById(id).orElse(null);
         if (existing == null) return null;
 
         existing.setUser(updatedAccount.getUser());
         existing.setRole(updatedAccount.getRole());
         existing.setPassword(updatedAccount.getPassword());
         existing.setStatus(updatedAccount.getStatus());
-        return aDAO.save(existing);
+        return accountRepository.save(existing);
     }
 
     public void deleteAccount(Long id) {
-    	aDAO.deleteById(id);
+    	accountRepository.deleteById(id);
+    }
+    
+    public Page<Account> getAccountsFiltered(String role, String status, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("accountId").descending());
+
+        if ((role == null || role.isEmpty()) &&
+            (status == null || status.isEmpty()) &&
+            (keyword == null || keyword.isEmpty())) {
+            return accountRepository.findAll(pageable);
+        }
+
+        return accountRepository.findByFilters(role, status, keyword, pageable);
+    }
+    
+    @Transactional
+    public void updateAccountStatus(Long accountId, String newStatus) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+        account.setStatus(newStatus);
+        accountRepository.save(account);
+    }
+    
+    @Transactional
+    public void resetPassword(Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+
+        account.setPassword(passwordEncoder.encode("123456")); // Mật khẩu mặc định mới
+        accountRepository.save(account);
     }
 }

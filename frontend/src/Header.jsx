@@ -152,6 +152,7 @@ const Header = ({
           <ul
             style={{ listStyle: "none", margin: 0, padding: 0, width: "100%" }}
           >
+            {/* Mục: Sản phẩm */}
             <li style={{ width: "100%" }}>
               <Link
                 to="/products"
@@ -177,10 +178,188 @@ const Header = ({
                 onClick={() => setTrayOpen(false)}
               >
                 <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
-                Sản phẩm
+                {t ? t("menu_products") : "Sản phẩm"}
               </Link>
             </li>
-            {/* Thêm các mục menu khác nếu cần */}
+            {/* Mục: Chính sách bảo mật */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/privacy-policy"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>📜</span>
+                {t ? t("Chính sách bảo mật") : "Chính sách bảo mật"}
+              </Link>
+            </li>
+
+            {/* Mục: Điều khoản sử dụng */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/terms-of-use"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>📃</span>
+                {t ? t("Điều khoản sử dụng") : "Điều khoản sử dụng"}
+              </Link>
+            </li>
+
+            {/* Mục: Chính sách đổi trả */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/return-policy"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🔄</span>
+                {t ? t("Chính sách đổi trả") : "Chính sách đổi trả"}
+              </Link>
+            </li>
+
+            {/* Mục: Chính sách vận chuyển */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/shipping-policy"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🚛</span>
+                {t ? t("Chính sách vận chuyển") : "Chính sách vận chuyển"}
+              </Link>
+            </li>
+
+            {/* Mục: Bảo mật thanh toán */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/payment-security"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>🛍️</span>
+                {t ? t("Bảo mật thanh toán") : "Bảo mật thanh toán"}
+              </Link>
+            </li>
+
+            {/* Mục: Câu hỏi thường gặp */}
+            <li style={{ width: "100%" }}>
+              <Link
+                to="/faq"
+                className="menu-link"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--side-menu-bg)",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "14px 28px",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  cursor: "pointer",
+                  color: "var(--main-text)",
+                  width: "100%",
+                  textAlign: "left",
+                  transition: "background 0.2s",
+                  boxSizing: "border-box",
+                  textDecoration: "none",
+                }}
+                onClick={() => setTrayOpen(false)}
+              >
+                <span style={{ fontSize: 22, marginRight: 8 }}>❓</span>
+                {t ? t("Câu hỏi thường gặp") : "Câu hỏi thường gặp"}
+              </Link>
+            </li>
           </ul>
         </nav>
         <div className="logo">
@@ -555,7 +734,7 @@ const Header = ({
                         transition: "background 0.18s",
                       }}
                     >
-                      Giao diện quản trị
+                      {t ? t('admin_page_label') : 'Giao diện quản trị'}
                     </Link>
                   ) : (
                     <div
@@ -580,7 +759,7 @@ const Header = ({
                         cursor: "pointer",
                       }}
                     >
-                      Giao diện người bán
+                      {t ? t('seller_page_label') : 'Giao diện người bán'}
                     </div>
                   )}
 

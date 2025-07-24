@@ -75,14 +75,8 @@ const CheckoutPage = () => {
         alert("Đơn hàng của bạn đã được ghi nhận với hình thức COD.");
         localStorage.removeItem(`cart_${currentUser.email}`);
 
-        navigate("/success", {
-          state: {
-            orderCode: order.orderCode || order.orderId,
-            totalAmount: totalAmount,
-            paymentMethod: "COD",
-          },
-        });
-      } else {
+        navigate(`/payment-success?orderId=${order.orderId}`);
+      } else if (selectedMethod === "payos" || selectedMethod === "vnpay") {
         window.location.href = paymentUrl; // redirect đến PayOS
       }
     } catch (error) {
@@ -177,7 +171,18 @@ const CheckoutPage = () => {
               onChange={() => setSelectedMethod("payos")}
             />
             <span style={{ marginLeft: "8px" }}>
-              Thanh toán qua PayOS (ATM, Ví điện tử)
+              Thanh toán qua PayOS 
+            </span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="vnpay"
+              checked={selectedMethod === "vnpay"}
+              onChange={() => setSelectedMethod("vnpay")}
+            />
+            <span style={{ marginLeft: "8px" }}>
+              Thanh toán qua VNPay
             </span>
           </label>
         </div>
