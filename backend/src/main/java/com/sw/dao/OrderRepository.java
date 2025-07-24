@@ -3,6 +3,7 @@ package com.sw.dao;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,9 @@ import com.sw.entity.Account;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+	@EntityGraph(attributePaths = { "payment", "items.product.account.user", "account.user" })
+	List<Order> findAll();
+
 	// Tìm đơn hàng theo trạng thái
 	List<Order> findByStatus(String status); //
 
@@ -36,14 +40,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			+ "FROM Order o WHERE YEAR(o.orderDate) = :year AND o.status = 'Hoàn thành' "
 			+ "GROUP BY MONTH(o.orderDate) ORDER BY MONTH(o.orderDate)")
 	List<Object[]> sumRevenueByMonth(@Param("year") int year);
-	
+
 	@Query("SELECT o.status, COUNT(o.id) FROM Order o GROUP BY o.status")
 	List<Object[]> countOrdersByStatus();
-	
+
 	@Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = :status AND o.orderDate BETWEEN :start AND :end")
-	Double sumTotalAmountByStatusAndCreatedAtBetween(
-	    @Param("status") String status,
-	    @Param("start") LocalDateTime start,
-	    @Param("end") LocalDateTime end
-	);
+	Double sumTotalAmountByStatusAndCreatedAtBetween(@Param("status") String status,
+			@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

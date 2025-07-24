@@ -30,7 +30,7 @@ import InventoryManagement from "./pages/seller/InventoryManagement";
 import AdminLayout from "./layouts/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AccountManagement from "./pages/admin/account/AccountManagement";
-import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
+import OrderManagementAdmin from "./pages/admin/order/OrderManagement";
 import ProfilePage from "./ProfilePage";
 import CheckoutPage from "./CheckoutPage";
 import PaymentFailPage from "./PaymentFailPage";
@@ -40,6 +40,8 @@ import SellerRequests from "./pages/admin/account/SellerRequests";
 import SellerList from "./pages/admin/account/SellerList";
 import CustomerList from "./pages/admin/account/CustomerList";
 import PendingProducts from "./pages/admin/product/PendingProducts";
+import ViolatedProducts from "./pages/admin/product/ViolatedProducts";
+import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin";
 
 // ✅ Import thêm trang Chính sách bảo mật
 import PrivacyPolicy from "./PolicyPage";
@@ -152,7 +154,9 @@ const AppContent = () => {
             <Route path="sellers" element={<SellerList />} />
             <Route path="customers" element={<CustomerList />} />
             <Route path="products/pending" element={<PendingProducts />} />
+            <Route path="products/violations" element={<ViolatedProducts />} />
             <Route path="orders" element={<OrderManagementAdmin />} />
+            <Route path="disputes" element={<DisputeManagementAdmin />} />
           </Route>
         </Routes>
       </main>

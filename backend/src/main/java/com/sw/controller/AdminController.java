@@ -1,6 +1,7 @@
 package com.sw.controller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sw.dao.OrderRepository;
 import com.sw.dto.admin.AdminStatisticsResponse;
+import com.sw.dto.admin.OrderAdminDTO;
 import com.sw.dto.admin.OrderRateDTO;
 import com.sw.dto.admin.RecentOrderDTO;
 import com.sw.dto.admin.RevenueByMonthDTO;
@@ -96,5 +98,38 @@ public class AdminController {
 	public ResponseEntity<?> resetPassword(@PathVariable Long id) {
 		accountService.resetPassword(id);
 		return ResponseEntity.ok("Đặt lại mật khẩu thành công.");
+	}
+	
+	// Order
+	
+	@GetMapping("/orders")
+	public ResponseEntity<List<OrderAdminDTO>> getAllOrders() {
+	    List<Order> orders = orderRepository.findAll();
+
+	    List<OrderAdminDTO> dtos = orders.stream().map(order -> {
+	        String customerName = order.getAccount() != null ? order.getAccount().getUser().getName() : "Ẩn danh";
+
+	        // Lấy danh sách tên người bán từ từng item
+	        String sellerNames = order.getItems().stream()
+	            .map(item -> item.getProduct().getAccount().getUser().getName())
+	            .filter(Objects::nonNull)
+	            .distinct()
+	            .collect(Collectors.joining(", "));
+
+	        // ✅ Lấy trạng thái thanh toán từ bảng Payment
+	        String paymentStatus = order.getPayment() != null ? order.getPayment().getStatus() : "Chưa thanh toán";
+
+	        return new OrderAdminDTO(
+	                order.getOrderId(),
+	                customerName,
+	                sellerNames,
+	                order.getOrderDate(),
+	                order.getTotalAmount(),
+	                order.getStatus(),
+	                paymentStatus
+	        );
+	    }).collect(Collectors.toList());
+
+	    return ResponseEntity.ok(dtos);
 	}
 }
