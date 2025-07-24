@@ -23,11 +23,11 @@ import OrderPage from "./OrderPage";
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
 import SellerDashboard from "./pages/seller/Dashboard";
-import ProductManagement from "./pages/seller/ProductList";
+import ProductManagement from "./pages/seller/ProductList"; // Giữ theo nhánh bạn
 import ProductForm from "./pages/seller/ProductForm";
-import OrderManagement from "./pages/seller/OrderList";
+import OrderManagement from "./pages/seller/OrderList"; // Giữ theo nhánh bạn
 import SellerStatistics from "./pages/seller/Statistics";
-import MessageList from "./pages/seller/MessageList"
+import MessageList from "./pages/seller/MessageList";
 
 // Trang Admin
 import AdminLayout from "./layouts/admin/AdminLayout";
@@ -38,6 +38,8 @@ import SellerList from "./pages/admin/account/SellerList";
 import CustomerList from "./pages/admin/account/CustomerList";
 import PendingProducts from "./pages/admin/product/PendingProducts";
 import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
+import ViolatedProducts from "./pages/admin/product/ViolatedProducts"; // Giữ thêm từ nhánh huy
+import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin"; // Giữ thêm từ nhánh huy
 
 // Chính sách & thông tin thêm
 import PrivacyPolicy from "./PolicyPage";
@@ -119,9 +121,8 @@ const AppContent = () => {
             <Route path="productsform" element={<ProductForm />} />
             <Route path="orders" element={<OrderManagement />} />
             <Route path="statistics" element={<SellerStatistics />} />
-            <Route path="messages" element={<MessageList />} /> {/* ✅ THÊM DÒNG NÀY */}
+            <Route path="messages" element={<MessageList />} />
           </Route>
-
 
           {/* --- Admin Routes --- */}
           <Route path="/admin" element={
@@ -135,7 +136,9 @@ const AppContent = () => {
             <Route path="sellers" element={<SellerList />} />
             <Route path="customers" element={<CustomerList />} />
             <Route path="products/pending" element={<PendingProducts />} />
+            <Route path="products/violations" element={<ViolatedProducts />} />
             <Route path="orders" element={<OrderManagementAdmin />} />
+            <Route path="disputes" element={<DisputeManagementAdmin />} />
           </Route>
         </Routes>
       </main>

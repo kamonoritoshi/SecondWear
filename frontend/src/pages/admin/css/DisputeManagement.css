@@ -1,0 +1,83 @@
+.dispute-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+}
+
+.dispute-table th,
+.dispute-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.dispute-table th {
+  background: #f7f9fc;
+  font-weight: 600;
+}
+
+button.view-detail,
+button.warn,
+button.resolve,
+button.close {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: #fff;
+}
+
+button.view-detail {
+  background: #4caf50;
+}
+button.view-detail:hover {
+  background: #3e8e41;
+}
+
+button.warn {
+  background: #ff9800;
+}
+button.warn:hover {
+  background: #e68900;
+}
+
+button.resolve {
+  background: #2196f3;
+}
+button.resolve:hover {
+  background: #1a7fd0;
+}
+
+button.close {
+  background: #f44336;
+}
+button.close:hover {
+  background: #d32f2f;
+}
+
+.dispute-detail {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.dispute-detail h3 {
+  margin-bottom: 15px;
+}
+
+.dispute-detail p {
+  margin: 6px 0;
+}
+
+.action-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
