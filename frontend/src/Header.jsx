@@ -177,11 +177,10 @@ const Header = ({
                 }}
                 onClick={() => setTrayOpen(false)}
               >
-                <span style={{ fontSize: 22, marginRight: 8 }}>🎽</span>
+                <span style={{ fontSize: 22, marginRight: 8 }}>🛒</span>
                 {t ? t("menu_products") : "Sản phẩm"}
               </Link>
             </li>
-
             {/* Mục: Chính sách bảo mật */}
             <li style={{ width: "100%" }}>
               <Link
@@ -735,7 +734,7 @@ const Header = ({
                         transition: "background 0.18s",
                       }}
                     >
-                      Giao diện quản trị
+                      {t ? t('admin_page_label') : 'Giao diện quản trị'}
                     </Link>
                   ) : (
                     <div
@@ -760,7 +759,7 @@ const Header = ({
                         cursor: "pointer",
                       }}
                     >
-                      Giao diện người bán
+                      {t ? t('seller_page_label') : 'Giao diện người bán'}
                     </div>
                   )}
 

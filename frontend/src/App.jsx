@@ -8,8 +8,10 @@ import {
 import { translations } from "./translations";
 
 // Import các components
+import ScrollToTop from "./components/ScrollToTop";
 import Header from "./Header";
 import SideMenu from "./SideMenu";
+import Footer from "./Footer";
 import HomePage from "./HomePage";
 import ProductsPage from "./ProductsPage";
 import WrappedProductDetail from "./ProductDetail";
@@ -31,11 +33,12 @@ import AccountManagement from "./pages/admin/AccountManagement";
 import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
 import ProfilePage from "./ProfilePage";
 import CheckoutPage from "./CheckoutPage";
+import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 
 // ✅ Import thêm trang Chính sách bảo mật
-import PrivacyPolicy from "./PrivacyPolicy";
+import PrivacyPolicy from "./PolicyPage";
 import TermsOfUse from "./TermsOfUse";
 import ReturnPolicy from "./ReturnPolicy";
 import ShippingPolicy from "./ShippingPolicy";
@@ -101,9 +104,10 @@ const AppContent = () => {
           <Route path="/login" element={<WrappedLoginPage t={t} />} />
           <Route path="/register" element={<WrappedRegisterPage t={t} />} />
           <Route path="/verify" element={<VerifyPage t={t} />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage t={t} />} />
           <Route path="/checkout" element={<CheckoutPage t={t} />} />
-          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/payment-fail" element={<PaymentFailPage />} />
+          <Route path="/payment-success" element={<SuccessPage />} />
           <Route path="/orders" element={<OrderPage />} />
 
           {/* Route cần đăng nhập */}
@@ -144,6 +148,14 @@ const AppContent = () => {
           </Route>
         </Routes>
       </main>
+      {!isAdminOrSellerRoute && (
+        <Footer
+          t={t}
+          currentTheme={theme}
+          setTheme={setTheme}
+          handleLanguageChange={setLanguage}
+        />
+      )}
     </div>
   );
 };
@@ -151,6 +163,7 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );

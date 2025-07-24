@@ -90,10 +90,10 @@ const PrivacyPolicy = () => {
 
         {showLanguageOptions && (
           <div className="language-options">
-            <a href="/SecondWear_PrivacyPolicy_vi.pdf" download>
+            <a href="/SecondWear_Policy_vi.pdf" download>
               🇻🇳 Chính sách bảo mật (Tiếng Việt)
             </a>
-            <a href="/SecondWear_PrivacyPolicy_en.pdf" download>
+            <a href="/SecondWear_Policy_en.pdf" download>
               🇬🇧 Privacy Policy (English)
             </a>
           </div>

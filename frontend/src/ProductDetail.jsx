@@ -98,7 +98,7 @@ const ProductDetail = ({ t, setCartCount }) => {
         }
 
         if (!product || !selectedColor || !selectedSize) {
-            alert("Vui lòng chọn đầy đủ thông tin sản phẩm.");
+            alert(t('please_select_all_product_info'));
             console.warn('[AddToCart] Missing product/color/size', { product, selectedColor, selectedSize });
             return;
         }
@@ -287,8 +287,7 @@ const ProductDetail = ({ t, setCartCount }) => {
                             </div>
                         </div>
                         <div className="option-group quantity-control">
-                            <p>{t('quantity_label')}:</p>
-                            <div className="quantity-input-wrapper">
+                            <p>{t('quantity_label')}:</p>                            <div className="quantity-input-wrapper">
                                 <button className="quantity-btn" onClick={() => handleQuantityChange('decrease')}>-</button>
                                 <input type="number" value={quantity} min="1" readOnly className="quantity-input" />
                                 <button className="quantity-btn" onClick={() => handleQuantityChange('increase')}>+</button>
@@ -308,11 +307,8 @@ const ProductDetail = ({ t, setCartCount }) => {
     );
 };
 
-import Footer from './Footer.jsx';
-
 export default function WrappedProductDetail(props) {
   return <>
     <ProductDetail {...props} />
-    <Footer />
   </>;
 }
