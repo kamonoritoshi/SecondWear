@@ -37,7 +37,7 @@ import SellerRequests from "./pages/admin/account/SellerRequests";
 import SellerList from "./pages/admin/account/SellerList";
 import CustomerList from "./pages/admin/account/CustomerList";
 import PendingProducts from "./pages/admin/product/PendingProducts";
-import OrderManagementAdmin from "./pages/admin/OrderManagementAdmin";
+import OrderManagementAdmin from "./pages/admin/order/OrderManagement";
 import ViolatedProducts from "./pages/admin/product/ViolatedProducts"; // Giữ thêm từ nhánh huy
 import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin"; // Giữ thêm từ nhánh huy
 

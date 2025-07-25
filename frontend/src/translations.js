@@ -42,6 +42,34 @@ export const translations = {
         'size_table_heading_height': 'Chiều cao mẫu (cm)',
         'size_table_heading_weight': 'Cân nặng mẫu (kg)',
 
+        // --- Keys cho Menu (Cũ và Mới) ---
+        'menu_title': 'Menu',
+        'menu_home': 'Trang chủ',
+        'menu_products': 'Sản phẩm',
+        'menu_categories': 'Danh mục',
+        'menu_my_orders': 'Đơn hàng của tôi',
+        'menu_sell_product': 'Đăng bán sản phẩm',
+        'menu_contact': 'Liên hệ',
+
+        // --- BỔ SUNG KEYS MỚI CHO TRAY MENU ---
+        'menu_section_policy': 'Chính sách',
+        'menu_policy_privacy': 'Chính sách bảo mật',
+        'menu_policy_terms': 'Điều khoản sử dụng',
+        'menu_policy_return': 'Chính sách đổi trả',
+        'menu_policy_shipping': 'Chính sách vận chuyển',
+        'menu_policy_payment': 'Bảo mật thanh toán',
+
+        'menu_section_support': 'Hỗ trợ khách hàng',
+        'menu_support_faq': 'Câu hỏi thường gặp',
+        'menu_support_guide': 'Hướng dẫn sử dụng',
+        'menu_support_contact': 'Liên hệ hỗ trợ',
+
+        'menu_section_legal': 'Thông tin pháp lý',
+        'menu_legal_about': 'Công bố doanh nghiệp',
+        'menu_legal_careers': 'Tuyển dụng',
+        'menu_legal_blog': 'Blog',
+        // --- KẾT THÚC BỔ SUNG ---
+
         // --- Keys mới cho trang Giỏ hàng ---
         'cart_page_title': 'Giỏ Hàng - SecondWear',
         'variant_label': 'Phân loại',
@@ -205,7 +233,7 @@ export const translations = {
         'already_have_account_prompt': 'Đã có tài khoản?',
         'login_link': 'Đăng nhập',
         'loading_products': 'Đang tải sản phẩm...',
-    }, 
+    },
     'en': {
         'loading_products': 'Loading products...',
         //Register Page
@@ -241,6 +269,25 @@ export const translations = {
         'cart_checkout': 'Checkout',
         'cart_items': 'Items in Cart',
         'cart_empty': 'Your cart is empty',
+
+        // --- ADDING NEW KEYS FOR TRAY MENU ---
+        'menu_section_policy': 'Policies',
+        'menu_policy_privacy': 'Privacy Policy',
+        'menu_policy_terms': 'Terms of Use',
+        'menu_policy_return': 'Return Policy',
+        'menu_policy_shipping': 'Shipping Policy',
+        'menu_policy_payment': 'Payment Security',
+
+        'menu_section_support': 'Customer Support',
+        'menu_support_faq': 'Frequently Asked Questions',
+        'menu_support_guide': 'User Guide',
+        'menu_support_contact': 'Contact Support',
+
+        'menu_section_legal': 'Legal Information',
+        'menu_legal_about': 'About Us',
+        'menu_legal_careers': 'Careers',
+        'menu_legal_blog': 'Blog',
+        // --- END OF ADDITIONS ---
         // Product Detail
         'product_details_title': 'Product Details',
         'price_label': 'Price',
@@ -328,7 +375,7 @@ export const translations = {
         'category_accessories': 'Accessories',
         'category_loungewear': 'Loungewear',
         'category_swimwear': 'Swimwear',
-        'category_belts': 'Belts',  
+        'category_belts': 'Belts',
         'category_jewelry': 'Jewelry',
         'category_glasses': 'Glasses',
         'category_hats': 'Hats',
@@ -373,135 +420,5 @@ export const translations = {
         'payment_method_momo': 'Momo E-Wallet',
         'select_button': 'Select',
         'empty_cart_message': 'Your shopping cart is empty',
-    },
-    'ja': {
-        // --- Existing Keys ---
-        'page_title': '商品詳細 - セカンドウェア',
-        'search_placeholder': '商品を検索...',
-        // ... (all other existing keys)
-        'size_table_heading_weight': 'モデル体重 (kg)',
-
-        // --- New Keys for Cart Page ---
-        'cart_page_title': 'ショッピングカート - セカンドウェア',
-        'cart_title': 'ショッピングカート',
-        'variant_label': 'バリエーション',
-        'voucher_label': 'クーポンを選択',
-        'voucher_available': '利用可能',
-        'change_link': '(クリックして変更)',
-        'total_label': '合計',
-        'payment_method_label': 'お支払い方法',
-        'grand_total_label': '総合計',
-        'product_label': '点の商品',
-        'checkout_button': 'チェックアウト',
-        'select_payment_method_title': 'お支払い方法を選択',
-        'payment_method_cod': '代金引換',
-        'payment_method_bank': '銀行アプリ決済',
-        'payment_method_momo': 'Momo電子マネー',
-        'select_button': '選択',
-        'empty_cart_message': 'ショッピングカートは空です',
-    },
-    'zh': { // Tiếng Trung Quốc
-        // --- Existing Keys ---
-        'page_title': '产品详情 - 二手服装店',
-        'search_placeholder': '搜索商品...',
-        // ... (all other existing keys)
-        'dark_theme_label': '深色主题',
-
-        // --- New Keys for Cart Page ---
-        'cart_page_title': '购物车 - 二手服装店',
-        'cart_title': '购物车',
-        'variant_label': '规格',
-        'voucher_label': '选择优惠券',
-        'voucher_available': '可用',
-        'change_link': '(点击更改)',
-        'total_label': '总计',
-        'payment_method_label': '支付方式',
-        'grand_total_label': '总金额',
-        'product_label': '件商品',
-        'checkout_button': '去结算',
-        'select_payment_method_title': '选择支付方式',
-        'payment_method_cod': '货到付款',
-        'payment_method_bank': '银行App转账',
-        'payment_method_momo': 'Momo电子钱包',
-        'select_button': '选择',
-        'empty_cart_message': '您的购物车是空的',
-    },
-    'ko': { // Tiếng Hàn Quốc
-        // --- Existing Keys ---
-        'page_title': '제품 상세 - 세컨드웨어',
-        'search_placeholder': '상품 검색...',
-        // ... (all other existing keys)
-        'dark_theme_label': '어두운 테마',
-
-        // --- New Keys for Cart Page ---
-        'cart_page_title': '장바구니 - 세컨드웨어',
-        'cart_title': '장바구니',
-        'variant_label': '옵션',
-        'voucher_label': '쿠폰 선택',
-        'voucher_available': '사용 가능',
-        'change_link': '(클릭하여 변경)',
-        'total_label': '합계',
-        'payment_method_label': '결제 방법',
-        'grand_total_label': '총계',
-        'product_label': '개의 상품',
-        'checkout_button': '결제하기',
-        'select_payment_method_title': '결제 방법 선택',
-        'payment_method_cod': '착불 결제',
-        'payment_method_bank': '은행 앱 이체',
-        'payment_method_momo': 'Momo 전자지갑',
-        'select_button': '선택',
-        'empty_cart_message': '장바구니가 비어 있습니다',
-    },
-    'ru': { // Tiếng Nga
-        // --- Existing Keys ---
-        'page_title': 'Подробности о товаре - SecondWear',
-        'search_placeholder': 'Поиск товаров...',
-        // ... (all other existing keys)
-        'dark_theme_label': 'Темная тема',
-
-        // --- New Keys for Cart Page ---
-        'cart_page_title': 'Корзина - SecondWear',
-        'cart_title': 'Корзина',
-        'variant_label': 'Вариант',
-        'voucher_label': 'Выберите ваучер',
-        'voucher_available': 'доступно',
-        'change_link': '(Нажмите для изменения)',
-        'total_label': 'Итого',
-        'payment_method_label': 'Способ оплаты',
-        'grand_total_label': 'Общая сумма',
-        'product_label': 'товар(ов)',
-        'checkout_button': 'Оформить заказ',
-        'select_payment_method_title': 'Выберите способ оплаты',
-        'payment_method_cod': 'Оплата при получении',
-        'payment_method_bank': 'Банковский перевод через приложение',
-        'payment_method_momo': 'Электронный кошелек Momo',
-        'select_button': 'Выбрать',
-        'empty_cart_message': 'Ваша корзина пуста',
-    },
-    'ar': { // Tiếng Ả Rập
-        // --- Existing Keys ---
-        'page_title': 'تفاصيل المنتج - سيكوندوير',
-        'search_placeholder': 'البحث عن المنتجات...',
-        // ... (all other existing keys)
-        'dark_theme_label': 'الوضع الداكن',
-
-        // --- New Keys for Cart Page ---
-        'cart_page_title': 'سلة التسوق - سيكوندوير',
-        'cart_title': 'سلة التسوق',
-        'variant_label': 'الصنف',
-        'voucher_label': 'اختر قسيمة',
-        'voucher_available': 'متاح',
-        'change_link': '(اضغط للتغيير)',
-        'total_label': 'المجموع',
-        'payment_method_label': 'طريقة الدفع',
-        'grand_total_label': 'المجموع الإجمالي',
-        'product_label': 'منتج(ات)',
-        'checkout_button': 'الدفع',
-        'select_payment_method_title': 'اختر طريقة الدفع',
-        'payment_method_cod': 'الدفع عند الاستلام',
-        'payment_method_bank': 'تحويل عبر تطبيق البنك',
-        'payment_method_momo': 'محفظة مومو الإلكترونية',
-        'select_button': 'اختر',
-        'empty_cart_message': 'سلة التسوق الخاصة بك فارغة',
-    },
+    }
 };

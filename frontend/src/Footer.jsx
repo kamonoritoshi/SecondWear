@@ -71,9 +71,7 @@ const Footer = ({ t }) => {
             </li>
             <li>
               <Link to="/payment-security" className="footer-link">
-                {t
-                  ? t("policy_payment_security")
-                  : "Bảo mật thanh toán"}
+                {t ? t("policy_payment_security") : "Bảo mật thanh toán"}
               </Link>
             </li>
           </ul>
