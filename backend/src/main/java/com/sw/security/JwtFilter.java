@@ -32,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        
 
         System.out.println("[JwtFilter] → URI: " + request.getRequestURI());
         
@@ -42,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String email = null; // sẽ chứa email|role
         String role = null;
 
+        
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
@@ -72,4 +74,5 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+    
 }

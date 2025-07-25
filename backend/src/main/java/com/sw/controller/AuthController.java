@@ -53,6 +53,7 @@ public class AuthController {
 	    if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
 	    }
+	    
         
         // ⏱ Token duration tùy thuộc vào rememberMe
         long expiration = request.isRememberMe() ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
@@ -61,6 +62,7 @@ public class AuthController {
         System.out.println("Trả về name: " + acc.getUser().getName());
         return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getName()));
     }
+    
     
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDTO request) {
@@ -95,6 +97,7 @@ public class AuthController {
         registrationService.save(pending);
         return ResponseEntity.ok("Đã gửi mã xác nhận đến email.");
     }
+    
     
     @PostMapping("/verify")
     public ResponseEntity<String> verify(@RequestBody VerifyRequest request) {
@@ -132,4 +135,5 @@ public class AuthController {
 
         return ResponseEntity.ok("Đăng ký thành công");
     }
+    
 }

@@ -80,6 +80,7 @@ public class OrderController {
 	public List<Order> getOrdersByStatus(@RequestParam String status) {
 		return orderService.getOrdersByStatus(status);
 	}
+	
 
 	// Lấy đơn hàng theo tài khoản và trạng thái
 	// http://localhost:8080/accounts/54/status?status=Đang xử lý
@@ -88,12 +89,14 @@ public class OrderController {
 		return orderService.getOrdersByAccountAndStatus(accountId, status);
 	}
 
+	
 	// Lấy tất cả đơn hàng mới nhất trước
 	@GetMapping("/sorted/latest")
 	public List<Order> getAllOrdersSortedByDateDesc() {
 		return orderService.getOrdersSortedByDateDesc();
 	}
 
+	
 	@GetMapping("/processing")
 	public ResponseEntity<?> getProcessingOrders(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		Account account = userDetails.getAccount();
@@ -113,4 +116,5 @@ public class OrderController {
 
 		return ResponseEntity.ok(result);
 	}
+	
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sw.dao.AccountRepository;
 import com.sw.dao.OrderRepository;
 import com.sw.dto.admin.AdminStatisticsResponse;
 import com.sw.dto.admin.OrderAdminDTO;
@@ -29,17 +30,23 @@ import com.sw.service.OrderService;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
 	@Autowired
 	private AdminStatisticsService statisticsService;
+
 	@Autowired
 	private OrderService orderService;
+
 	@Autowired
 	private OrderRepository orderRepository;
+
 	@Autowired
 	private AccountService accountService;
 
-	// Dashboard
+	@Autowired
+	private AccountRepository accountRepository; // ✅ Thêm nếu cần dùng
 
+	// Dashboard
 	@GetMapping("/statistics")
 	public AdminStatisticsResponse getStatistics() {
 		return statisticsService.getAdminStatistics();
@@ -61,7 +68,7 @@ public class AdminController {
 		return orders.stream().map(order -> {
 			RecentOrderDTO dto = new RecentOrderDTO();
 			dto.setOrderId(order.getOrderId());
-			dto.setCustomerName(order.getAccount().getUser().getName()); // hoặc .getUsername()
+			dto.setCustomerName(order.getAccount().getUser().getName());
 			dto.setStatus(order.getStatus());
 			dto.setOrderDate(order.getOrderDate());
 			dto.setTotalAmount(order.getTotalAmount());
@@ -69,31 +76,34 @@ public class AdminController {
 		}).collect(Collectors.toList());
 	}
 
-	// Account
+	// Account - Tùy chọn: giữ lại hoặc xóa nếu không cần
+	@GetMapping("/accounts/all")
+	public List<Account> getAllAccounts() {
+		return accountRepository.findAll();
+	}
 
-	// Lấy danh sách tài khoản (có lọc)
 	@GetMapping("/accounts")
-	public Page<Account> getAccounts(@RequestParam(required = false) String role,
-			@RequestParam(required = false) String status, @RequestParam(required = false) String keyword,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+	public Page<Account> getAccounts(
+			@RequestParam(required = false) String role,
+			@RequestParam(required = false) String status,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size) {
 		return accountService.getAccountsFiltered(role, status, keyword, page, size);
 	}
 
-	// Vô hiệu hóa tài khoản
 	@PutMapping("/accounts/{id}/disable")
 	public ResponseEntity<?> disableAccount(@PathVariable Long id) {
 		accountService.updateAccountStatus(id, "inactive");
 		return ResponseEntity.ok().build();
 	}
 
-	// Khôi phục tài khoản
 	@PutMapping("/accounts/{id}/enable")
 	public ResponseEntity<?> enableAccount(@PathVariable Long id) {
 		accountService.updateAccountStatus(id, "active");
 		return ResponseEntity.ok().build();
 	}
 
-	// Đặt lại mật khẩu
 	@PutMapping("/accounts/{id}/reset-password")
 	public ResponseEntity<?> resetPassword(@PathVariable Long id) {
 		accountService.resetPassword(id);
@@ -133,3 +143,4 @@ public class AdminController {
 	    return ResponseEntity.ok(dtos);
 	}
 }
+
