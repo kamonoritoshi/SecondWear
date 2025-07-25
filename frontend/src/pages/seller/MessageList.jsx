@@ -18,7 +18,7 @@ export default function MessageList() {
 
   return (
     <div className="message-list-container">
-      <h1>Tin nhắn khách hàng</h1>
+      <h1>TIN NHẮN KHÁCH HÀNG</h1>
       {messages.length === 0 ? (
         <p>Đang tải dữ liệu...</p>
       ) : (

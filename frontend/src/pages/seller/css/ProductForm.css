@@ -1,43 +1,120 @@
 .product-form-container {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+  border: 1px solid #eee;
 }
 
 .product-form-container h1 {
-  font-size: 24px;
-  margin-bottom: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #222;
+  font-weight: 600;
 }
 
 .product-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
 }
 
 .product-form label {
-  font-weight: bold;
+  font-weight: 600;
+  color: #333;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
-.product-form input,
-.product-form select {
-  padding: 8px;
+.product-form input[type="text"],
+.product-form input[type="number"],
+.product-form select,
+.product-form textarea {
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
   width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+  background-color: #fafafa;
+}
+
+.product-form input[type="text"]:focus,
+.product-form input[type="number"]:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  outline: none;
+}
+
+.product-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.product-form input[type="file"] {
+  margin-top: 8px;
+}
+
+.product-form img {
+  margin-top: 14px;
+  border-radius: 8px;
+  width: 130px;
+  height: auto;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.product-form .checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.product-form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #007bff;
+  cursor: pointer;
 }
 
 .submit-btn {
-  background: #007bff;
+  margin-top: 20px;
+  padding: 14px 20px;
+  background-color: #28a745;
   color: white;
-  padding: 10px;
   border: none;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .submit-btn:hover {
-  background: #0056b3;
+  background-color: #218838;
+}
+
+@media screen and (max-width: 480px) {
+  .product-form-container {
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .product-form-container h1 {
+    font-size: 22px;
+  }
+
+  .submit-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
 }

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Outlet,
+  useOutletContext,
+} from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -23,10 +30,10 @@ import OrderPage from "./OrderPage";
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
 import SellerDashboard from "./pages/seller/Dashboard";
-import ProductManagement from "./pages/seller/ProductList"; // Giữ theo nhánh bạn
+import ProductList from "./pages/seller/ProductList";
 import ProductForm from "./pages/seller/ProductForm";
-import OrderManagement from "./pages/seller/OrderList"; // Giữ theo nhánh bạn
-import SellerStatistics from "./pages/seller/Statistics";
+import OrderManagement from "./pages/seller/OrderList";
+import Statistics from './pages/seller/Statistics';
 import MessageList from "./pages/seller/MessageList";
 
 // Trang Admin
@@ -38,10 +45,10 @@ import SellerList from "./pages/admin/account/SellerList";
 import CustomerList from "./pages/admin/account/CustomerList";
 import PendingProducts from "./pages/admin/product/PendingProducts";
 import OrderManagementAdmin from "./pages/admin/order/OrderManagement";
-import ViolatedProducts from "./pages/admin/product/ViolatedProducts"; // Giữ thêm từ nhánh huy
-import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin"; // Giữ thêm từ nhánh huy
+import ViolatedProducts from "./pages/admin/product/ViolatedProducts";
+import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin";
 
-// Chính sách & thông tin thêm
+// Chính sách
 import PrivacyPolicy from "./PolicyPage";
 import TermsOfUse from "./TermsOfUse";
 import ReturnPolicy from "./ReturnPolicy";
@@ -75,14 +82,25 @@ const AppContent = () => {
     <div className={`app-container ${isMenuOpen ? "menu-open" : ""}`}>
       {!isAdminOrSellerRoute && (
         <>
-          <Header t={t} currentTheme={theme} setTheme={setTheme} handleLanguageChange={setLanguage} />
-          <SideMenu isOpen={isMenuOpen} onClose={toggleMenu} t={t} language={language} setLanguage={setLanguage} />
+          <Header
+            t={t}
+            currentTheme={theme}
+            setTheme={setTheme}
+            handleLanguageChange={setLanguage}
+          />
+          <SideMenu
+            isOpen={isMenuOpen}
+            onClose={toggleMenu}
+            t={t}
+            language={language}
+            setLanguage={setLanguage}
+          />
         </>
       )}
 
       <main className="main-content">
         <Routes>
-          {/* --- Public Pages --- */}
+          {/* Public */}
           <Route path="/" element={<HomePage t={t} />} />
           <Route path="/products" element={<ProductsPage t={t} />} />
           <Route path="/products/:id" element={<WrappedProductDetail t={t} />} />
@@ -95,7 +113,7 @@ const AppContent = () => {
           <Route path="/payment-success" element={<SuccessPage />} />
           <Route path="/orders" element={<OrderPage />} />
 
-          {/* --- Policies --- */}
+          {/* Chính sách */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-use" element={<TermsOfUse />} />
           <Route path="/return-policy" element={<ReturnPolicy />} />
@@ -103,33 +121,43 @@ const AppContent = () => {
           <Route path="/payment-security" element={<PaymentSecurity />} />
           <Route path="/faq" element={<FAQPage />} />
 
-          {/* --- Protected User Route --- */}
-          <Route path="/cart" element={
-            <ProtectedRoute>
-              <WrappedCartPage t={t} />
-            </ProtectedRoute>
-          } />
+          {/* Bảo vệ user */}
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <WrappedCartPage t={t} />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* --- Seller Routes --- */}
-          <Route path="/seller" element={
-            <ProtectedSellerRoute>
-              <SellerLayout />
-            </ProtectedSellerRoute>
-          }>
+          {/* Seller */}
+          <Route
+            path="/seller"
+            element={
+              <ProtectedSellerRoute>
+                <SellerLayout currentTheme={theme} />
+              </ProtectedSellerRoute>
+            }
+          >
             <Route path="dashboard" element={<SellerDashboard />} />
-            <Route path="products" element={<ProductManagement />} />
-            <Route path="productsform" element={<ProductForm />} />
+            <Route path="products" element={<ProductList />} />
+            <Route path="products/add" element={<ProductForm />} />
+            <Route path="products/edit/:id" element={<ProductForm />} />
             <Route path="orders" element={<OrderManagement />} />
-            <Route path="statistics" element={<SellerStatistics />} />
+            <Route path="statistics" element={<Statistics />} />
             <Route path="messages" element={<MessageList />} />
           </Route>
 
-          {/* --- Admin Routes --- */}
-          <Route path="/admin" element={
-            <ProtectedAdminRoute>
-              <AdminLayout />
-            </ProtectedAdminRoute>
-          }>
+          {/* Admin */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminLayout />
+              </ProtectedAdminRoute>
+            }
+          >
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="accounts" element={<AccountManagement />} />
             <Route path="seller-requests" element={<SellerRequests />} />
