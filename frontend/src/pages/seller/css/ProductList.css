@@ -1,12 +1,17 @@
 .product-list-container {
   padding: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
 }
 
 .product-list-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  gap: 10px;
 }
 
 .product-list-header h1 {
@@ -31,9 +36,11 @@
 
 .product-table {
   width: 100%;
+  min-width: 900px; /* ✅ Đảm bảo không bị co khi mở F12 hoặc thu phóng */
   border-collapse: collapse;
   background: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
 }
 
 .product-table th,
@@ -41,7 +48,6 @@
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
-  font-size: 14px;
 }
 
 .product-table th {
@@ -49,24 +55,35 @@
   font-weight: bold;
 }
 
+.product-table td {
+  padding: 0;
+  width: 80px;
+  height: 80px;
+  vertical-align: middle;
+  line-height: 0;
+}
+
 .product-image {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 4px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
 }
 
 .action-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .btn-edit {
-  background: #ffc107;
+  background: #5fa9ed;
   border: none;
   padding: 6px 12px;
-  color: #333;
+  color: #ffffff;
   font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
@@ -74,7 +91,7 @@
 }
 
 .btn-edit:hover {
-  background: #e0a800;
+  background: #55fd95;
 }
 
 .btn-delete {
@@ -90,4 +107,55 @@
 
 .btn-delete:hover {
   background: #a71d2a;
+}
+
+/* ✅ Responsive cho màn nhỏ + F12 + zoom */
+@media screen and (max-width: 1024px) {
+  .product-table {
+    min-width: 800px;
+  }
+
+  .product-table th,
+  .product-table td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+
+  .product-image {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .product-table {
+    min-width: 600px;
+  }
+
+  .product-list-container {
+    padding: 10px;
+  }
+
+  .product-table th,
+  .product-table td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .product-image {
+    width: 60px;
+    height: 60px;
+  }
 }

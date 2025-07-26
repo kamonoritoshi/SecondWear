@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/categories/**").permitAll() // Thêm dòng này
                         .requestMatchers("/api/payment/return", "/api/payment/cancel", "/test_payos.html").permitAll()
                         .requestMatchers("/api/seller/**").hasAuthority("ROLE_seller")
+                        .requestMatchers("/api/seller/revenue/**").permitAll()
+
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_admin")
                         .requestMatchers("/api/orders/**").authenticated()
                         .requestMatchers("/api/accounts/me").authenticated()

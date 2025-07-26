@@ -12,16 +12,18 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Category")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "products"}) 
 public class Category {
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "category_id")
+    @Column(name = "category_id")
     private Long categoryId;
 
     private String name;
@@ -29,3 +31,4 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 }
+

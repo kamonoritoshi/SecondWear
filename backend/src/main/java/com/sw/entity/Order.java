@@ -20,6 +20,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,36 +29,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "[Order]")
+@Table(name = "[Order]") // vẫn giữ [Order] nếu DB dùng tên này
 public class Order {
-	@Id
+    
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "order_id")
+    @Column(name = "order_id")
     private Long orderId;
 
-	@ManyToOne
-	@JoinColumn(name = "account_id", nullable = false)
-	@JsonIgnore // ✅ tránh vòng lặp khi serialize
-	private Account account;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    @JsonIgnore // ❌ KHÔNG gửi account (tránh vòng lặp)
+    private Account account;
 
     @Column(nullable = false)
     private String status;
-    
+
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
-    
+
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnore // ❌ ẩn Payment nếu không cần FE
     private Payment payment;
-    
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // ✅ để phía OrderItem có @JsonBackReference
+    @JsonManagedReference // ✅ FE sẽ nhận danh sách OrderItem nếu cần
     private List<OrderItem> items = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         orderDate = LocalDateTime.now();
-    } 
+    }
 }

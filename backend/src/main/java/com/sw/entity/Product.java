@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,14 +36,15 @@ public class Product {
 
 	@ManyToOne
 	@JoinColumn(name = "account_id", nullable = false)
-	@JsonIgnoreProperties({"orders"}) // ✅ để tránh vòng lặp sâu
+	@JsonIgnore  // 👉 Thêm dòng này
 	private Account account;
-	 
+
 	private String name;
 	
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonIgnoreProperties("product") // ✅ thay vì @JsonManagedReference
 	private List<ProductImage> images = new ArrayList<>();
+
 	
     private String description;
     private String condition;
