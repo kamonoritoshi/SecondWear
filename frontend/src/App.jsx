@@ -61,6 +61,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedSellerRoute from "./components/ProtectedSellerRoute";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 
+// Chat
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const AppContent = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -185,11 +189,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <AppContent />
-    </Router>
+    <>
+      <Router>
+        <ScrollToTop />
+        <AppContent />
+      </Router>
+      <ToastContainer />
+    </>
   );
 }
+
 
 export default App;

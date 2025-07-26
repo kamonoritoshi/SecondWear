@@ -21,16 +21,17 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 	
-	// Sinh token dựa vào username (email)
-    public String generateToken(String email, String role, long expirationMs) {
-        return Jwts.builder()
-                .setSubject(email + "|" + role)
-                .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+	public String generateToken(String email, String role, Long accountId, long expirationMs) {
+	    return Jwts.builder()
+	            .setSubject(email)
+	            .claim("role", role)
+	            .claim("accountId", accountId) // ✅ thêm vào
+	            .setIssuedAt(new Date())
+	            .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+	            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+	            .compact();
+	}
+
     
  // Lấy email từ token
     public String extractUsername(String token) {

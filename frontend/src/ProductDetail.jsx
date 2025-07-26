@@ -11,6 +11,10 @@ import likeIcon from './icons/like-icon.png';
 import likedIcon from './icons/liked-icon.png';
 import reportIcon from './icons/report-icon.png';
 
+import ChatBox from './ChatBox';
+import { toast } from 'react-toastify';
+
+
 const ProductDetail = ({ t, setCartCount }) => {
     const { id: productId } = useParams();
     const navigate = useNavigate();
@@ -34,6 +38,10 @@ const ProductDetail = ({ t, setCartCount }) => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
 
+    // ✅ Chatbox state
+    const [showChat, setShowChat] = useState(false);
+    const [roomId, setRoomId] = useState(null);
+
     useEffect(() => {
         const fetchProductData = async () => {
             if (!productId) {
@@ -41,25 +49,38 @@ const ProductDetail = ({ t, setCartCount }) => {
                 setLoading(false);
                 return;
             }
+
             setLoading(true);
             try {
-                const productRes = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+                const token = localStorage.getItem('jwtToken'); // ✅ lấy token
+                console.log('[ProductDetail] jwtToken:', token);
+
+                const productRes = await fetch(`${API_BASE_URL}/api/products/${productId}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // ✅ truyền vào header
+                    }
+                });
 
                 if (!productRes.ok) throw new Error('Không tìm thấy sản phẩm.');
 
                 const productData = await productRes.json();
-                console.log('[ProductDetail] Dữ liệu sản phẩm:', productData);
+                console.log('[ProductDetail] Dữ liệu sản phẩm: ', productData);
+
+                if (productData.imageUrls && productData.imageUrls.length > 0) {
+                    const images = productData.imageUrls.map((url, index) => ({
+                        imageId: index,
+                        imageUrl: url
+                    }));
+                    setProductImages(images);
+                    setSelectedImage(images[0].imageUrl);
+                }
+
                 setProduct(productData);
                 document.title = `${productData.name} - SecondWear`;
 
                 setSelectedColor(productData.color);
                 setSelectedSize(productData.size);
-
-                // Sau khi có productData, ta mới biết là có cần fetch ảnh hay không
-                if (productData.images && productData.images.length > 0) {
-                    setProductImages(productData.images);
-                    setSelectedImage(productData.images[0].imageUrl);
-                }
 
             } catch (err) {
                 setError(err.message);
@@ -70,6 +91,51 @@ const ProductDetail = ({ t, setCartCount }) => {
 
         fetchProductData();
     }, [productId]);
+
+    const handleStartChat = async () => {
+        const token = localStorage.getItem("jwtToken");
+        const buyerId = localStorage.getItem("accountId"); // ✅ lấy từ localStorage
+
+        if (!token) {
+            toast.error("Bạn cần đăng nhập để chat với shop");
+            return;
+        }
+
+        if (!product || !product.accountId) {
+            toast.error("Không lấy được thông tin người bán.");
+            console.warn("❗ Sản phẩm hoặc người bán chưa sẵn sàng:", product);
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${product.accountId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`, // ✅ đúng biến token
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) throw new Error("Không tạo được phòng chat");
+
+            const data = await res.json();
+            console.log("[Chat] RoomID:", data.roomId);
+            setRoomId(data.roomId);
+            setShowChat(true);
+        } catch (e) {
+            console.error("[Chat] Error:", e);
+            alert("Lỗi khi bắt đầu cuộc trò chuyện");
+        }
+    };
+
+
+    const handleCloseChat = () => {
+        setShowChat(false);
+        setRoomId(null);
+    };
 
     const handleQuantityChange = useCallback((type) => {
         if (!product || !product.quantity) return;
@@ -178,7 +244,7 @@ const ProductDetail = ({ t, setCartCount }) => {
                     <img src={reportIcon} alt={t('report_button_label')} className="header-icon" />
                 </button>
                 <section className="product-main-info">
-                    <div className="product-image-gallery" style={{ border: 'none'}}>
+                    <div className="product-image-gallery" style={{ border: 'none' }}>
                         <div className="main-image-container" style={{ width: 400, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--modal-bg)', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
                             <img
                                 src={selectedImage || '/images/placeholder.png'}
@@ -227,15 +293,23 @@ const ProductDetail = ({ t, setCartCount }) => {
                         <div className="product-meta">
                             <h2 className="section-title" style={{ color: 'var(--main-text)' }}>{t('product_details_title')}</h2>
                             <p className="price-info">
-                                <span style={{ color: 'var(--main-text)' }}>{t('price_label')}</span>:
+                                <span style={{ color: 'var(--main-text)' }}>{t('price_label')}</span>: <span></span>
                                 <span className="current-price">{product.price.toLocaleString('vi-VN')}₫</span>
                             </p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('category_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.category?.name || 'Chưa phân loại'}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('brand_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.brand || 'Không có thương hiệu'}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('origin_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.origin || 'Không rõ xuất xứ'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}>
+                                <span>{t('category_label')}</span><span>:</span> <span></span>
+                                <span className="detail-value" style={{ color: 'var(--main-text)' }}>
+                                    {product.categoryName || 'Chưa phân loại'}
+                                </span>
+                            </p>
+
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('brand_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.brand || 'Không có thương hiệu'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('origin_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.origin || 'Không rõ xuất xứ'}</span></p>
                             <p style={{ color: 'var(--main-text)' }}><span>{t('quality_label')}</span><span>:</span> <span className="quality-rating">{product.condition}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('shop_label')}</span><span>:</span> <span className="seller-name">{product.account?.user?.name || 'Người bán ẩn danh'}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('location_label')}</span><span>:</span> <span className="location">{product.account?.user?.address || 'Không rõ vị trí'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('shop_label')}</span><span>:</span> <span></span><span className="seller-name">{product.shopName || 'Người bán ẩn danh'}</span></p>
+                            <button className="chat-button" onClick={handleStartChat}>{t('chat_with_seller')}</button>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('location_label')}</span><span>:</span> <span></span><span className="location"> {product.shopAddress || 'Không rõ vị trí'}</span>                            </p>
+
                         </div>
                         <div className="product-description">
                             <p>
@@ -243,15 +317,23 @@ const ProductDetail = ({ t, setCartCount }) => {
                             </p>
                         </div>
                         <div className="product-actions">
-                            <button className="like-toggle" onClick={handleLikeToggle}>
+                            <button className="like-toggle" onClick={() => setIsLiked(prev => !prev)}>
                                 <img src={isLiked ? likedIcon : likeIcon} alt="Like" />
                             </button>
-                            <button className="buy-now-button" onClick={openOptionsModal}>{t('buy_now_button_label')}</button>
-                            <button className="add-to-cart-button" onClick={openOptionsModal}>{t('add_to_cart_button_label')}</button>
+                            <button className="buy-now-button" onClick={() => setIsOptionsModalOpen(true)}>{t('buy_now_button_label')}</button>
+                            <button className="add-to-cart-button" onClick={() => setIsOptionsModalOpen(true)}>{t('add_to_cart_button_label')}</button>
                         </div>
                     </div>
                 </section>
             </main>
+            {showChat && roomId && (
+                <ChatBox
+                    roomId={roomId}
+                    sender={currentUser?.email || 'unknown'}
+                    onClose={handleCloseChat}
+                    theme="light"
+                />
+            )}
 
             {isOptionsModalOpen && (
                 <div className="overlay-modal active" onClick={closeOptionsModal}>
@@ -308,7 +390,7 @@ const ProductDetail = ({ t, setCartCount }) => {
 };
 
 export default function WrappedProductDetail(props) {
-  return <>
-    <ProductDetail {...props} />
-  </>;
+    return <>
+        <ProductDetail {...props} />
+    </>;
 }

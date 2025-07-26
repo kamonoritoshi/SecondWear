@@ -48,8 +48,11 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             try {
                 if (jwtUtil.isTokenValid(token)) {
-                	email = jwtUtil.extractUsername(token); // chứa email
-                    role = jwtUtil.extractRole(token);      // lấy từ claim
+                	//email = jwtUtil.extractUsername(token); // chứa email
+                    //role = jwtUtil.extractRole(token);      // lấy từ claim
+                    
+                    email = jwtUtil.extractUsername(token); // => là email rồi
+                    role = jwtUtil.extractRole(token); // (vẫn giữ nếu cần)
                 }
             } catch (Exception e) {
                 System.out.println("[JwtFilter] → Lỗi khi parse token: " + e.getMessage());
@@ -58,7 +61,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email + "|" + role);
+            // UserDetails userDetails = userDetailsService.loadUserByUsername(email + "|" + role);
+        	UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             System.out.println("[JwtFilter] → Loaded user: " + userDetails.getUsername());
             
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

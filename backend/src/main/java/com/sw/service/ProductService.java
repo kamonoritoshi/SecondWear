@@ -25,12 +25,9 @@ public class ProductService {
 	}
 
 	public Product getProductById(Long id) {
-		Product p = pDAO.findById(id).orElse(null);
-	    if (p != null) {
-	        p.getImages().size(); // ép load ảnh
-	    }
-	    return p;
+	    return pDAO.findByIdWithAll(id).orElse(null);
 	}
+
 
 	public Product createProduct(Product product) {
 		return pDAO.save(product);

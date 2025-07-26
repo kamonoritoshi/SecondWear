@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.sw.dto.ProductDetailsDTO;
 import com.sw.entity.Product;
 import com.sw.service.ProductService;
 
@@ -27,12 +28,48 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDetailsDTO> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         if (product == null)
             return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(product);
+
+        Long categoryId = (product.getCategory() != null) ? product.getCategory().getCategoryId() : null;
+        String categoryName = (product.getCategory() != null) ? product.getCategory().getName() : "Không rõ";
+        Long accountId = (product.getAccount() != null) ? product.getAccount().getAccountId() : null;
+
+        
+        String shopName = "Ẩn danh";
+        String shopAddress = "Không rõ vị trí";
+        if (product.getAccount() != null && product.getAccount().getUser() != null) {
+            shopName = product.getAccount().getUser().getName();
+            shopAddress = product.getAccount().getUser().getAddress();
+        }
+
+        ProductDetailsDTO dto = new ProductDetailsDTO(
+        	    product.getProductId(),
+        	    product.getName(),
+        	    product.getDescription(),
+        	    product.getCondition(),
+        	    product.getSize(),
+        	    product.getColor(),
+        	    product.getPrice(),
+        	    product.getStatus(),
+        	    product.getQuantity(),
+        	    product.getBrand(),
+        	    product.getOrigin(),
+        	    product.getApproved(),
+        	    categoryId,
+        	    categoryName,
+        	    product.getImages().stream().map(img -> img.getImageUrl()).toList(),
+        	    shopName,
+        	    shopAddress,              // 👈 thêm dòng này
+        	    accountId
+        	);
+        dto.setAccountId(accountId);
+
+        return ResponseEntity.ok(dto);
     }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
