@@ -1,127 +1,160 @@
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-} from "chart.js";
+import { useOutletContext } from "react-router-dom";
+import RevenueChart from "./RevenueChart";
+import OrderRatePieChart from "./OrderRatePieChart";
 import "./css/Dashboard.css";
+import axios from "axios";
 
-// Đăng ký ChartJS modules cho Bar Chart
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+export default function SellerDashboard() {
+  const { currentTheme } = useOutletContext();
+  const isDark = currentTheme === "dark";
+  console.log("🟢 SellerDashboard - isDark:", isDark);
 
-export default function Dashboard() {
-  const [stats, setStats] = useState({
-    products: 0,
-    pendingOrders: 0,
-    revenueToday: 0,
-    unreadMessages: 0
+  const [dashboardData, setDashboardData] = useState({
+    totalOrders: 0,
+    totalRevenue: 0,
+    todayRevenue: 0,
+    thisWeekRevenue: 0,
+    thisMonthRevenue: 0,
   });
 
+  const [revenueByWeek, setRevenueByWeek] = useState([]);
+  const [orderRates, setOrderRates] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
-  const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setStats({
-        products: 15,
-        pendingOrders: 3,
-        revenueToday: 1250000,
-        unreadMessages: 5
-      });
+    const headers = {
+      Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+    };
 
-      setRecentOrders([
-        { id: 101, customer: "Nguyễn Văn A", status: "Chờ xử lý", total: 250000 },
-        { id: 102, customer: "Trần Thị B", status: "Đang vận chuyển", total: 500000 },
-        { id: 103, customer: "Lê Văn C", status: "Giao thành công", total: 750000 }
-      ]);
+    const fetchData = async () => {
+      try {
+        const [dashboardRes, recentRes, weekRes, rateRes] = await Promise.all([
+          axios.get("/api/seller/orders/dashboard", { headers }),
+          axios.get("/api/seller/orders/recent", { headers }),
+          axios.get("/api/seller/orders/revenue/weekly", { headers }),
+          axios.get("/api/seller/orders/rate", { headers }),
+        ]);
 
-      // Dữ liệu giả cho Bar Chart
-      setChartData({
-        labels: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
-        datasets: [
-          {
-            label: "Doanh thu (VND)",
-            data: [500000, 800000, 700000, 1200000, 1500000, 1000000, 2000000],
-            backgroundColor: "rgba(0, 123, 255, 0.7)",
-            borderRadius: 6
-          }
-        ]
-      });
-    }, 1000);
+        setDashboardData(dashboardRes.data);
+        setRecentOrders(Array.isArray(recentRes.data) ? recentRes.data : []);
+        setRevenueByWeek(
+          Array.isArray(weekRes.data)
+            ? weekRes.data.map((item) => ({
+                week: item.week,
+                totalRevenue: item.totalRevenue,
+              }))
+            : []
+        );
+        setOrderRates(Array.isArray(rateRes.data) ? rateRes.data : []);
+      } catch (err) {
+        console.error("❌ Lỗi khi tải dashboard:", err);
+      }
+    };
+
+    fetchData();
   }, []);
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Hoàn thành":
+        return "status status-success";
+      case "Hủy":
+        return "status status-danger";
+      case "Đang xử lý":
+        return "status status-warning";
+      case "Đã giao":
+        return "status status-info";
+      default:
+        return "status";
+    }
+  };
+
   return (
-    <div className="dashboard-container">
-      <h1>Dashboard</h1>
+    <div className="seller-dashboard">
+      <h2>📊 THỐNG KÊ NGƯỜI BÁN</h2>
 
-      {/* Cards */}
-      <div className="dashboard-cards">
-        <div className="card"><h3>Sản phẩm</h3><span>{stats.products}</span></div>
-        <div className="card"><h3>Đơn hàng chờ</h3><span>{stats.pendingOrders}</span></div>
-        <div className="card"><h3>Doanh thu hôm nay</h3><span>{stats.revenueToday.toLocaleString()} VND</span></div>
-        <div className="card"><h3>Tin nhắn mới</h3><span>{stats.unreadMessages}</span></div>
+      <div className="summary-cards">
+        <div className="card">
+          <h4>Tổng đơn hàng</h4>
+          <p>{dashboardData.totalOrders}</p>
+        </div>
+        <div className="card">
+          <h4>Tổng doanh thu</h4>
+          <p>{dashboardData.totalRevenue.toLocaleString()} VND</p>
+        </div>
+        <div className="card">
+          <h4>Hôm nay</h4>
+          <p>{dashboardData.todayRevenue.toLocaleString()} VND</p>
+        </div>
+        <div className="card">
+          <h4>Tháng này</h4>
+          <p>{dashboardData.thisMonthRevenue.toLocaleString()} VND</p>
+        </div>
       </div>
 
-      {/* Biểu đồ Bar */}
-      <div className="dashboard-chart">
-        <h2>Biểu đồ doanh thu 7 ngày gần đây</h2>
-        {chartData ? (
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: { display: true, position: "bottom" },
-                title: { display: false }
-              },
-              scales: {
-                y: {
-                  ticks: {
-                    callback: (value) => value.toLocaleString() + " VND"
-                  }
-                }
-              }
-            }}
+      <div className="dashboard-grid">
+        <div className="dashboard-section">
+          <h3>Doanh thu theo tuần</h3>
+          <RevenueChart
+            key={isDark ? "dark" : "light"}
+            data={revenueByWeek}
+            isDark={isDark}
           />
-        ) : (
-          <p>Đang tải biểu đồ...</p>
-        )}
+        </div>
+        <div className="dashboard-section">
+          <h3>Tỷ lệ đơn hàng</h3>
+          <OrderRatePieChart
+            key={isDark ? "dark" : "light"}
+            data={orderRates}
+            isDark={isDark}
+          />
+        </div>
       </div>
 
-      {/* Đơn hàng gần đây */}
-      <div className="dashboard-section">
-        <h2>Đơn hàng gần đây</h2>
-        {recentOrders.length === 0 ? (
-          <p>Đang tải dữ liệu...</p>
-        ) : (
-          <table className="recent-orders">
+      <div className="dashboard-section full-width">
+        <h3>Đơn hàng gần đây</h3>
+        <div className="table-responsive">
+          <table className="order-table">
             <thead>
               <tr>
-                <th>Mã ĐH</th>
+                <th>ID</th>
                 <th>Khách hàng</th>
-                <th>Trạng thái</th>
                 <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Ngày đặt</th>
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map(order => (
-                <tr key={order.id}>
-                  <td>{order.id}</td>
-                  <td>{order.customer}</td>
-                  <td>{order.status}</td>
-                  <td>{order.total.toLocaleString()} VND</td>
+              {recentOrders.length > 0 ? (
+                recentOrders.map((order) => (
+                  <tr key={order.orderId}>
+                    <td data-label="ID">{order.orderId}</td>
+                    <td data-label="Khách hàng">{order.customerName}</td>
+                    <td data-label="Tổng tiền">
+                      {order.totalAmount.toLocaleString()} VND
+                    </td>
+                    <td data-label="Trạng thái">
+                      <span className={getStatusClass(order.status)}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td data-label="Ngày đặt">
+                      {new Date(order.orderDate).toLocaleDateString("vi-VN")}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    Không có đơn hàng nào
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
-        )}
+        </div>
       </div>
     </div>
   );
 }
-

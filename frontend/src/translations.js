@@ -235,6 +235,7 @@ export const translations = {
         'loading_products': 'Đang tải sản phẩm...',
     },
     'en': {
+        'menu_home': 'Home',
         'loading_products': 'Loading products...',
         //Register Page
         'fullname_placeholder': 'Enter your full name',

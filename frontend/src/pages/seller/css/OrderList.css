@@ -1,12 +1,17 @@
 .order-list-container {
   padding: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
 }
 
 .order-table {
   width: 100%;
+  min-width: 900px; /* Quan trọng: giúp table không bị co lại khi zoom/F12 */
   border-collapse: collapse;
   background: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
 }
 
 .order-table th,
@@ -14,7 +19,7 @@
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
-  font-size: 14px;
+  white-space: nowrap;
 }
 
 .order-table th {
@@ -39,4 +44,173 @@ select {
 
 .btn-view:hover {
   background: #117a8b;
+}
+
+/* Trạng thái màu */
+.status-done {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.status-processing {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.status-cancelled {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.status-delivered {
+  color: #2196f3;
+  font-weight: bold;
+}
+
+/* Nút thao tác */
+.order-table button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.status-btn-processing {
+  background-color: #ff9800;
+}
+
+button.status-btn-delivered {
+  background-color: #2196f3;
+}
+
+button.status-btn-done {
+  background-color: #4caf50;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* ✅ Responsive layout cho màn nhỏ và khi bật F12 */
+@media screen and (max-width: 1024px) {
+  .order-table {
+    min-width: 800px;
+  }
+
+  .order-table th,
+  .order-table td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .btn-view,
+  .order-table button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .order-table {
+    min-width: 600px;
+  }
+
+  .order-list-container {
+    padding: 10px;
+  }
+
+  .order-table th,
+  .order-table td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .btn-view,
+  .order-table button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+/* ===== Theme Tối (Dark Theme) ===== */
+.dark-theme {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.dark-theme .order-list-container {
+  background-color: #121212;
+}
+
+.dark-theme .order-table {
+  background: #1e1e1e;
+  color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .order-table th {
+  background: #2c2c2c;
+  color: #ffffff;
+  border-color: #444;
+}
+
+.dark-theme .order-table td {
+  border-color: #444;
+}
+
+.dark-theme select {
+  background-color: #2c2c2c;
+  color: #ffffff;
+  border: 1px solid #666;
+}
+
+.dark-theme .btn-view {
+  background: #138496;
+  color: #fff;
+}
+
+.dark-theme .btn-view:hover {
+  background: #0d6673;
+}
+
+/* Trạng thái màu giữ nguyên để dễ nhận biết */
+.status-done {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.status-processing {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.status-cancelled {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.status-delivered {
+  color: #2196f3;
+  font-weight: bold;
+}
+
+.dark-theme .order-table button {
+  color: white;
+}
+
+.dark-theme button.status-btn-processing {
+  background-color: #ff9800;
+}
+
+.dark-theme button.status-btn-delivered {
+  background-color: #2196f3;
+}
+
+.dark-theme button.status-btn-done {
+  background-color: #4caf50;
+}
+
+.dark-theme button:hover {
+  opacity: 0.9;
 }

@@ -1,6 +1,7 @@
 package com.sw.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,8 +29,9 @@ public class ProductImage {
 	@Column(name = "image_url")
     private String imageUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    @JsonBackReference
-    private Product product;
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	@JsonIgnoreProperties("images") // ✅ tránh vòng lặp khi trả Product → Image → Product → ...
+	private Product product;
+
 }

@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import com.sw.dao.AccountRepository;
+import com.sw.dao.CategoryRepository;
 import com.sw.dao.ProductRepository;
+import com.sw.dto.ProductDTO;
 import com.sw.entity.Account;
+import com.sw.entity.Category;
 import com.sw.entity.Product;
 import com.sw.security.CustomUserDetails;
 import com.sw.security.JwtUtil;
@@ -28,15 +31,74 @@ public class SellerProductController {
 	private ProductRepository productRepository;
 	@Autowired
 	private AccountRepository accountRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
+	
 	@Autowired
 	private JwtUtil jwtUtil;
 
 	@GetMapping
 	public List<Product> getSellerProducts(Authentication authentication) {
-		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-		Long accountId = userDetails.getAccount().getAccountId();
-		return productRepository.findByAccount_AccountId(accountId);
+	    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	    Long accountId = userDetails.getAccount().getAccountId();
+	    return productRepository.findByAccount_AccountId(accountId);
 	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getProductById(@PathVariable Long id, Authentication authentication) {
+	    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	    Long accountId = userDetails.getAccount().getAccountId();
+
+	    Product product = productRepository.findById(id)
+	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm"));
+
+	    if (!product.getAccount().getAccountId().equals(accountId)) {
+	        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền xem sản phẩm này");
+	    }
+
+	    return ResponseEntity.ok(product);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateProduct(
+	        @PathVariable Long id,
+	        @RequestBody ProductDTO dto,
+	        Authentication authentication) {
+
+	    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	    Long accountId = userDetails.getAccount().getAccountId();
+
+	    Product existing = productRepository.findById(id)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm"));
+
+	    if (!existing.getAccount().getAccountId().equals(accountId)) {
+	        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không có quyền sửa sản phẩm này");
+	    }
+
+	    // Lấy category từ DB
+	    Category category = categoryRepository.findById(dto.getCategoryId())
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Danh mục không hợp lệ"));
+
+	    // Cập nhật dữ liệu
+	    existing.setName(dto.getName());
+	    existing.setDescription(dto.getDescription());
+	    existing.setCondition(dto.getCondition());
+	    existing.setSize(dto.getSize());
+	    existing.setColor(dto.getColor());
+	    existing.setPrice(dto.getPrice());
+	    existing.setStatus(dto.getStatus());
+	    existing.setQuantity(dto.getQuantity());
+	    existing.setBrand(dto.getBrand());
+	    existing.setOrigin(dto.getOrigin());
+	    existing.setApproved(dto.getApproved() != null ? dto.getApproved() : false);
+	    existing.setCategory(category);
+
+	    productRepository.save(existing);
+
+	    return ResponseEntity.ok("✅ Đã cập nhật sản phẩm");
+	}
+
 
 	@PutMapping("/{id}/quantity")
 	public ResponseEntity<?> updateProductQuantity(@PathVariable Long id, @RequestBody int newQuantity,
