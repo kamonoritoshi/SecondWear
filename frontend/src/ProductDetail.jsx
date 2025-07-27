@@ -11,6 +11,9 @@ import likeIcon from './icons/like-icon.png';
 import likedIcon from './icons/liked-icon.png';
 import reportIcon from './icons/report-icon.png';
 
+import ChatBox from './ChatBox';
+import { toast } from 'react-toastify';
+
 const ProductDetail = ({ t, setCartCount }) => {
     const { id: productId } = useParams();
     const navigate = useNavigate();
@@ -33,6 +36,11 @@ const ProductDetail = ({ t, setCartCount }) => {
     const [quantity, setQuantity] = useState(1);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+
+    // ✅ Chatbox state
+    const [showChat, setShowChat] = useState(false);
+    const [roomId, setRoomId] = useState(null);
+
 
     useEffect(() => {
         const fetchProductData = async () => {
@@ -70,6 +78,51 @@ const ProductDetail = ({ t, setCartCount }) => {
 
         fetchProductData();
     }, [productId]);
+
+    const handleStartChat = async () => {
+        const token = localStorage.getItem("jwtToken");
+        const buyerId = localStorage.getItem("accountId"); // ✅ lấy từ localStorage
+
+        if (!token) {
+            toast.error("Bạn cần đăng nhập để chat với shop");
+            return;
+        }
+
+        if (!product || !product.accountId) {
+            toast.error("Không lấy được thông tin người bán.");
+            console.warn("❗ Sản phẩm hoặc người bán chưa sẵn sàng:", product);
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${product.accountId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`, // ✅ đúng biến token
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) throw new Error("Không tạo được phòng chat");
+
+            const data = await res.json();
+            console.log("[Chat] RoomID:", data.roomId);
+            setRoomId(data.roomId);
+            setShowChat(true);
+        } catch (e) {
+            console.error("[Chat] Error:", e);
+            alert("Lỗi khi bắt đầu cuộc trò chuyện");
+        }
+    };
+
+    const handleCloseChat = () => {
+        setShowChat(false);
+        setRoomId(null);
+    };
+
 
     const handleQuantityChange = useCallback((type) => {
         if (!product || !product.quantity) return;
@@ -234,7 +287,7 @@ const ProductDetail = ({ t, setCartCount }) => {
                             <p style={{ color: 'var(--main-text)' }}><span>{t('brand_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.brand || 'Không có thương hiệu'}</span></p>
                             <p style={{ color: 'var(--main-text)' }}><span>{t('origin_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.origin || 'Không rõ xuất xứ'}</span></p>
                             <p style={{ color: 'var(--main-text)' }}><span>{t('quality_label')}</span><span>:</span> <span className="quality-rating">{product.condition}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('shop_label')}</span><span>:</span> <span className="seller-name">{product.account?.user?.name || 'Người bán ẩn danh'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('shop_label')}</span><span>:</span> <span className="seller-name">{product.account?.user?.name || 'Người bán ẩn danh'}</span></p> <button className="chat-button" onClick={handleStartChat}>{t('chat_with_seller')}</button>
                             <p style={{ color: 'var(--main-text)' }}><span>{t('location_label')}</span><span>:</span> <span className="location">{product.account?.user?.address || 'Không rõ vị trí'}</span></p>
                         </div>
                         <div className="product-description">
