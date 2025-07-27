@@ -382,7 +382,7 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
               {openDropdown === 'language' && (
                 <div
                   className="dropdown-menu"
-                  style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: 120, background: 'var(--dropdown-bg)', boxShadow: '0 6px 24px rgba(0,0,0,0.13)', borderRadius: 12, padding: '10px 0', zIndex: 10 }}
+                  style={{ position: 'absolute', top: 'calc(100% + 8px)', right: -30, minWidth: 120, background: 'var(--dropdown-bg)', boxShadow: '0 6px 24px rgba(0,0,0,0.13)', borderRadius: 12, padding: '10px 0', zIndex: 10 }}
                 >
                   <a href="#" className="dropdown-item" onClick={() => { handleLanguageChange("vi"); setOpenDropdown(null); }} style={{ fontSize: 14, fontWeight: 600, padding: '9px 20px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>Tiếng Việt</a>
                   <a href="#" className="dropdown-item" onClick={() => { handleLanguageChange("en"); setOpenDropdown(null); }} style={{ fontSize: 14, fontWeight: 600, padding: '9px 20px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>English</a>
@@ -404,7 +404,7 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
               {openDropdown === 'theme' && (
                 <div
                   className="dropdown-menu"
-                  style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, minWidth: 120, background: 'var(--dropdown-bg)', boxShadow: '0 6px 24px rgba(0,0,0,0.13)', borderRadius: 12, padding: '10px 0', zIndex: 10 }}
+                  style={{ position: 'absolute', top: 'calc(100% + 8px)', right: -100, minWidth: 120, background: 'var(--dropdown-bg)', boxShadow: '0 6px 24px rgba(0,0,0,0.13)', borderRadius: 12, padding: '10px 0', zIndex: 10 }}
                 >
                   <a href="#" className="dropdown-item" onClick={() => { handleThemeChange("light"); setOpenDropdown(null); }} style={{ fontSize: 14, fontWeight: 600, padding: '9px 20px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("light_theme_label")}</a>
                   <a href="#" className="dropdown-item" onClick={() => { handleThemeChange("dark"); setOpenDropdown(null); }} style={{ fontSize: 14, fontWeight: 600, padding: '9px 20px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("dark_theme_label")}</a>

@@ -23,6 +23,7 @@ import com.sw.dto.OrderWithPaymentDTO;
 import com.sw.dto.admin.OrderRateDTO;
 import com.sw.dto.admin.RecentOrderDTO;
 import com.sw.dto.admin.RevenueByMonthDTO;
+import com.sw.dto.admin.TopProductDTO;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
 import com.sw.entity.OrderItem;
@@ -154,6 +155,16 @@ public class OrderService {
 			dto.setTotalRevenue((BigDecimal) row[1]);
 			return dto;
 		}).collect(Collectors.toList());
+	}
+	
+	public List<TopProductDTO> getTopSellingProducts() {
+	    List<Object[]> rows = orderRepository.findTopSellingProducts();
+	    return rows.stream().map(row -> {
+	        TopProductDTO dto = new TopProductDTO();
+	        dto.setProductName((String) row[0]);
+	        dto.setTotalSold((Long) row[1]);
+	        return dto;
+	    }).collect(Collectors.toList());
 	}
 
 	public List<OrderRateDTO> getOrderStatusRate() {

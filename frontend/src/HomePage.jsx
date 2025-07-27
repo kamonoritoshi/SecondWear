@@ -667,6 +667,9 @@ const HomePage = ({ t }) => {
                 <ProductCard
                   key={`suggest-${product.productId}`}
                   product={product}
+                  onQuickAddToCart={() => {
+                    onQuickAddToCart(product, 1, product.color, product.size);
+                  }}
                   t={t}
                 />
               ))}

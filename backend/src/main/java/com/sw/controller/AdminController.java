@@ -21,6 +21,7 @@ import com.sw.dto.admin.OrderAdminDTO;
 import com.sw.dto.admin.OrderRateDTO;
 import com.sw.dto.admin.RecentOrderDTO;
 import com.sw.dto.admin.RevenueByMonthDTO;
+import com.sw.dto.admin.TopProductDTO;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
 import com.sw.service.AccountService;
@@ -56,6 +57,11 @@ public class AdminController {
 	public List<RevenueByMonthDTO> getRevenueByMonth() {
 		return orderService.getMonthlyRevenue();
 	}
+	
+	@GetMapping("/statistics/top-products")
+	public List<TopProductDTO> getTopSellingProducts() {
+	    return orderService.getTopSellingProducts();
+	}
 
 	@GetMapping("/orders/rate")
 	public List<OrderRateDTO> getOrderRates() {
@@ -64,7 +70,7 @@ public class AdminController {
 
 	@GetMapping("/orders/recent")
 	public List<RecentOrderDTO> getRecentOrders() {
-		List<Order> orders = orderRepository.findTop10ByOrderByOrderDateDesc();
+		List<Order> orders = orderRepository.findTop5ByOrderByOrderDateDesc();
 		return orders.stream().map(order -> {
 			RecentOrderDTO dto = new RecentOrderDTO();
 			dto.setOrderId(order.getOrderId());

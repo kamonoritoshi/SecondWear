@@ -5,39 +5,54 @@ import "./css/SummaryCards.css";
 export default function SummaryCards({ statistics }) {
   const cards = [
     {
-      title: "Tổng doanh thu",
-      value: statistics.monthRevenue.toLocaleString("vi-VN") + " VNĐ",
-      description: "Tăng trưởng mạnh tháng này",
+      title: "Tổng doanh thu tháng",
+      value: statistics?.monthRevenue?.toLocaleString("vi-VN") + " VNĐ",
+      description: "Tăng trưởng so với tháng trước",
       subtext: "So với tháng trước",
-      growth: "+15.2%",
-      color: "#d1f7d6", // xanh lá nhạt
+      growth:
+        (statistics?.growthRate?.growth > 0 ? "+" : "") +
+        statistics?.growthRate?.growth +
+        "%",
+      color: "#d1f7d6",
       textColor: "#2e7d32",
     },
     {
       title: "Sản phẩm bán chạy",
-      value: "Tôn lạnh Pomina",
-      description: "1,250 tấn đã bán",
+      value: statistics?.topSellingProduct?.name || "Không có dữ liệu",
+      description:
+        statistics?.topSellingProduct?.soldQuantity +
+          " " +
+          statistics?.topSellingProduct?.unit || "",
       subtext: "Dẫn đầu về doanh số",
-      growth: "+28%",
-      color: "#e3f2fd", // xanh dương nhạt
+      growth:
+        (statistics?.topSellingProduct?.growth > 0 ? "+" : "") +
+        statistics?.topSellingProduct?.growth +
+        "%",
+      color: "#e3f2fd",
       textColor: "#1565c0",
     },
     {
       title: "Khách hàng mới",
-      value: "186",
-      description: "Tăng trưởng ổn định",
-      subtext: "Khách hàng tiềm năng tốt",
-      growth: "+22%",
-      color: "#f3e5f5", // tím nhạt
+      value: statistics?.newCustomers?.count?.toLocaleString("vi-VN") || "0",
+      description: "Tăng trưởng khách hàng mới",
+      subtext: "Trong tháng này",
+      growth:
+        (statistics?.newCustomers?.growth > 0 ? "+" : "") +
+        statistics?.newCustomers?.growth +
+        "%",
+      color: "#f3e5f5",
       textColor: "#6a1b9a",
     },
     {
       title: "Tỷ lệ tăng trưởng",
-      value: "12.8%",
-      description: "Vượt mục tiêu đề ra",
-      subtext: "Hiệu suất kinh doanh tốt",
-      growth: "+8.2%",
-      color: "#fff3e0", // cam nhạt
+      value: (statistics?.growthRate?.value || 0).toLocaleString("vi-VN") + "%",
+      description: "So với kỳ trước",
+      subtext: "Hiệu suất kinh doanh",
+      growth:
+        (statistics?.growthRate?.growth > 0 ? "+" : "") +
+        statistics?.growthRate?.growth +
+        "%",
+      color: "#fff3e0",
       textColor: "#ef6c00",
     },
   ];

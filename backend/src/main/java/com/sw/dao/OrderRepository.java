@@ -36,7 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status = :status")
 	double sumTotalAmountByStatus(@Param("status") String status);
 
-	List<Order> findTop10ByOrderByOrderDateDesc();
+	List<Order> findTop5ByOrderByOrderDateDesc();
 
 	@Query("SELECT MONTH(o.orderDate), SUM(o.totalAmount) "
 			+ "FROM Order o WHERE YEAR(o.orderDate) = :year AND o.status = 'Hoàn thành' "
@@ -76,17 +76,27 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Object[]> countOrdersByStatusForSeller(@Param("sellerId") Long sellerId);
 
 	@Query("""
-		    SELECT FUNCTION('FORMAT', o.orderDate, 'MM') AS month,
-		           SUM(oi.price * oi.quantity) AS revenue,
-		           COUNT(DISTINCT o.orderId) AS orderCount
-		    FROM Order o
-		    JOIN o.items oi
-		    JOIN oi.product p
-		    WHERE p.account.accountId = :sellerId
-		    GROUP BY FUNCTION('FORMAT', o.orderDate, 'MM')
-		    ORDER BY month
-		    """)
-		List<Object[]> sumRevenueAndOrdersByMonth(@Param("sellerId") Long sellerId);
+			SELECT FUNCTION('FORMAT', o.orderDate, 'MM') AS month,
+			       SUM(oi.price * oi.quantity) AS revenue,
+			       COUNT(DISTINCT o.orderId) AS orderCount
+			FROM Order o
+			JOIN o.items oi
+			JOIN oi.product p
+			WHERE p.account.accountId = :sellerId
+			GROUP BY FUNCTION('FORMAT', o.orderDate, 'MM')
+			ORDER BY month
+			""")
+	List<Object[]> sumRevenueAndOrdersByMonth(@Param("sellerId") Long sellerId);
 
-
+	@Query("""
+			    SELECT p.name, SUM(oi.quantity)
+			    FROM OrderItem oi
+			    JOIN oi.product p
+			    JOIN oi.order o
+			    WHERE o.status = 'Hoàn thành'
+			    GROUP BY p.productId, p.name
+			    ORDER BY SUM(oi.quantity) DESC
+			    LIMIT 10
+			""")
+	List<Object[]> findTopSellingProducts();
 }

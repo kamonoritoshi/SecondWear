@@ -1,5 +1,6 @@
 package com.sw.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 		       "OR LOWER(a.user.name) LIKE LOWER(CONCAT('%', :keyword, '%')))")
 	Page<Account> findByFilters(@Param("role") String role, @Param("status") String status,
 			@Param("keyword") String keyword, Pageable pageable);
+	
+	@Query("SELECT COUNT(a) FROM Account a WHERE a.role.roleName = 'customer' AND a.createdAt BETWEEN :start AND :end")
+	long countNewCustomersBetween(LocalDateTime start, LocalDateTime end);
+
 }

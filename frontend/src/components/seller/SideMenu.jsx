@@ -8,7 +8,6 @@ const SideMenu = () => {
 
   return (
     <div className="seller-side-menu">
-      <h2 className="menu-title">Seller Control</h2>
       <ul className="menu-list">
         <li className={isActive('/seller/dashboard') ? 'active' : ''}>
           <Link to="/seller/dashboard">Tổng quan</Link>

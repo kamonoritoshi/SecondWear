@@ -103,7 +103,7 @@ h2 {
   border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
-  color: white;
+  color: white !important;
   text-align: center;
   white-space: nowrap;
 }

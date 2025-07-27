@@ -36,7 +36,7 @@ public class Product {
 
 	@ManyToOne
 	@JoinColumn(name = "account_id", nullable = false)
-	@JsonIgnore  // 👉 Thêm dòng này
+	@JsonIgnoreProperties({"orders", "role", "password", "status", "createdAt"})
 	private Account account;
 
 	private String name;

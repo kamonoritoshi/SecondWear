@@ -1,6 +1,10 @@
 package com.sw.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
@@ -41,6 +45,10 @@ public class Account {
 
     @Column(nullable = false)
     private String status;
+    
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createdAt;
     
     @OneToMany(mappedBy = "account")
     @JsonIgnore // ✅ tránh vòng lặp khi serialize

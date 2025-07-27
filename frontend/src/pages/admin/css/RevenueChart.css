@@ -1,13 +1,11 @@
 .chart-container {
-  padding: 1rem;
+  margin-bottom: 0px !important;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
-
 .chart-total {
+  margin-top: 5px;
+  font-weight: bold;
   text-align: right;
-  margin-top: 10px;
-  font-size: 1rem;
-  color: #333;
 }

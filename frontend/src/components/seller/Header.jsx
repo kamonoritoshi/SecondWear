@@ -40,13 +40,13 @@ const Header = () => {
   return (
     <header className="seller-header">
       <div className="seller-header-left">
-        <h2>SecondWear Seller Center</h2>
+        <h2>Trang quản trị</h2>
       </div>
 
       <div className="seller-header-right" ref={dropdownRef}>
         {/* Với màn hình lớn */}
         <div className="desktop-buttons">
-          <span className="seller-name">👤 {currentUser?.name}</span>
+          <span className="seller-name">Xin chào, {currentUser?.name}</span>
           {/* <button onClick={() => setDarkMode(!darkMode)} className="theme-btn">
             {darkMode ? '☀️ Light' : '🌙 Dark'} 
           </button>*/}

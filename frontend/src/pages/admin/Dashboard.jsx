@@ -4,10 +4,12 @@ import RevenueChart from "./RevenueChart";
 import SellerRegisterChart from "./SellerRegisterChart";
 import OrderRatePieChart from "./OrderRatePieChart";
 import OrderTable from "./OrderTable";
+import TopProductsChart from "./TopProductsChart";
 import "./css/Dashboard.css";
 import axios from "axios";
 
 export default function Dashboard() {
+
   const [statistics, setStatistics] = useState({
     totalAccounts: 1050,
     totalSellers: 120,
@@ -64,6 +66,17 @@ export default function Dashboard() {
     },
   ]);
 
+  const [topProducts, setTopProducts] = useState([
+    {
+      productName: "Áo thun nam basic",
+      totalSold: 120,
+    },
+    {
+      productName: "Quần jean nữ rách gối",
+      totalSold: 85,
+    },
+  ]);
+
   useEffect(() => {
     const headers = {
       Authorization: "Bearer " + localStorage.getItem("jwtToken"),
@@ -92,6 +105,17 @@ export default function Dashboard() {
       });
 
     axios
+      .get("/api/admin/statistics/top-products", { headers })
+      .then((res) => {
+        console.log("Top sản phẩm: ", res.data);
+        setTopProducts(res.data);
+      })
+      .catch((err) => {
+        console.error("❌ Lỗi lấy top sản phẩm:", err);
+        if (err.response) console.error("↳ Response:", err.response);
+      });
+
+    axios
       .get("/api/admin/orders/rate", { headers })
       .then((res) => {
         console.log("✅ Tỷ lệ đơn hàng:", res.data);
@@ -116,7 +140,7 @@ export default function Dashboard() {
 
   return (
     <div className="admin-dashboard">
-      <h2>📊 Thống kê tổng quan</h2>
+      <h2>Tổng quan</h2>
 
       {statistics ? (
         <SummaryCards statistics={statistics} />
@@ -128,6 +152,11 @@ export default function Dashboard() {
         <div className="dashboard-section">
           <h3>Doanh thu theo tháng</h3>
           <RevenueChart data={revenueByMonth} />
+        </div>
+
+        <div className="dashboard-section">
+          <h3>Sản phẩm bán chạy</h3>
+          <TopProductsChart data={topProducts} />
         </div>
 
         <div className="dashboard-section">

@@ -5,7 +5,6 @@ import "./css/OrderTable.css";
 export default function OrderTable({ orders = [] }) {
   return (
     <div className="order-table-container">
-      <h3 className="order-table-title">Danh sách đơn hàng gần đây</h3>
       <table className="order-table">
         <thead>
           <tr>
@@ -36,7 +35,7 @@ export default function OrderTable({ orders = [] }) {
                     day: "2-digit",
                   })}
                 </td>
-                <td>{order.totalAmount?.toLocaleString()}₫</td>
+                <td>{order.totalAmount?.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
               </tr>
             ))
           )}
