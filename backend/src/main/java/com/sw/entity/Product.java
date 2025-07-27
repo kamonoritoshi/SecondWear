@@ -36,7 +36,7 @@ public class Product {
 
 	@ManyToOne
 	@JoinColumn(name = "account_id", nullable = false)
-	@JsonIgnoreProperties({"orders", "role", "password", "status", "createdAt"})
+	@JsonIgnoreProperties({"orders", "role", "password", "status", "createdAt", "hibernateLazyInitializer", "handler"})
 	private Account account;
 
 	private String name;

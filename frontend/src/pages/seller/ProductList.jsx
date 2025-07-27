@@ -21,8 +21,8 @@ export default function ProductList() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        setProducts(res.data);
         console.log("✅ Lấy sản phẩm thành công:", res.data);
+        setProducts(res.data);
       })
       .catch((err) => {
         console.error("❌ Lỗi khi tải danh sách sản phẩm:", err);
