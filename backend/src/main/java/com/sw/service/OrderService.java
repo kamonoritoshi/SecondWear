@@ -144,7 +144,7 @@ public class OrderService {
 	}
 
 	public List<Order> findTop10ByOrderByCreatedAtDesc() {
-		return orderRepository.findTop10ByOrderByOrderDateDesc();
+		return orderRepository.findTop5ByOrderByOrderDateDesc();
 	}
 
 	public List<RevenueByMonthDTO> getMonthlyRevenue() {
