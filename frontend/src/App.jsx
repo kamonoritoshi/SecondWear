@@ -55,6 +55,8 @@ import ReturnPolicy from "./ReturnPolicy";
 import ShippingPolicy from "./ShippingPolicy";
 import PaymentSecurity from "./PaymentSecurity";
 import FAQPage from "./FAQPage";
+import UserGuide from "./UserGuide";
+import ContactSupport from "./ContactSupport";
 
 // Route bảo vệ
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -120,6 +122,8 @@ const AppContent = () => {
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/payment-security" element={<PaymentSecurity />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/user-guide" element={<UserGuide />} />
+          <Route path="/contact" element={<ContactSupport />} />
 
           {/* Bảo vệ user */}
           <Route
