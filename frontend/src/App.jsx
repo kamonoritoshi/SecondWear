@@ -55,7 +55,7 @@ import ReturnPolicy from "./ReturnPolicy";
 import ShippingPolicy from "./ShippingPolicy";
 import PaymentSecurity from "./PaymentSecurity";
 import FAQPage from "./FAQPage";
-import UserGuide from "./UserGuide";
+import UserGuide from "./UserGuide"
 import ContactSupport from "./ContactSupport";
 
 // Route bảo vệ
