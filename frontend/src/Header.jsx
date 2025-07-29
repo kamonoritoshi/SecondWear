@@ -83,6 +83,7 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
         { labelKey: "menu_policy_return", label: "Chính sách đổi trả", to: "/return-policy", icon: <ReturnIcon /> },
         { labelKey: "menu_policy_shipping", label: "Chính sách vận chuyển", to: "/shipping-policy", icon: <ShippingIcon /> },
         { labelKey: "menu_policy_payment", label: "Bảo mật thanh toán", to: "/payment-security", icon: <PaymentSecurityIcon /> },
+
       ],
     },
     {
@@ -90,8 +91,9 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
       title: "Hỗ trợ khách hàng",
       items: [
         { labelKey: "menu_support_faq", label: "Câu hỏi thường gặp", to: "/faq", icon: <FaqIcon /> },
-        { labelKey: "menu_support_guide", label: "Hướng dẫn sử dụng", to: "/guide", icon: <InfoIcon /> },
+        { labelKey: "menu_support_guide", label: "Hướng dẫn sử dụng", to: "/user-guide", icon: <InfoIcon /> },
         { labelKey: "menu_support_contact", label: "Liên hệ hỗ trợ", to: "/contact", icon: <ContactIcon /> },
+
       ],
     },
     {
