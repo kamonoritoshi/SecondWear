@@ -55,27 +55,44 @@ public class OrderService {
 
 	// Tạo đơn hàng mới
 	public Order createOrder(Order order) {
-		List<OrderItem> items = order.getItems();
+	    List<OrderItem> items = order.getItems();
+	    BigDecimal total = BigDecimal.ZERO;
 
-		BigDecimal total = BigDecimal.ZERO;
+	    for (OrderItem item : items) {
+	        Long productId = item.getProduct().getProductId();
 
-		for (OrderItem item : items) {
-			Long productId = item.getProduct().getProductId(); // yêu cầu gửi lên đúng productId
-			Product product = productRepository.findById(productId)
-					.orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + productId));
+	        Product product = productRepository.findById(productId)
+	            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + productId));
 
-			item.setPrice(product.getPrice()); // Gán giá từ DB
-			item.setOrder(order); // Set back-reference
-			total = total.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-		}
+	        // ✅ Kiểm tra trạng thái
+	        if (!Boolean.TRUE.equals(product.getApproved())) {
+	            throw new RuntimeException("Sản phẩm '" + product.getName() + "' chưa được duyệt.");
+	        }
 
-		order.setItems(items);
-		order.setTotalAmount(total);
-		order.setStatus("Đang xử lý"); // mặc định
+	        // ✅ Kiểm tra tồn kho
+	        if (item.getQuantity() > product.getQuantity()) {
+	            throw new RuntimeException("Sản phẩm '" + product.getName() + "' không đủ tồn kho.");
+	        }
 
-		return orderRepository.save(order);
+	        // ✅ Trừ tồn kho
+	        product.setQuantity(product.getQuantity() - item.getQuantity());
 
+	        // ✅ Lưu lại thay đổi
+	        productRepository.save(product);
+
+	        // Gán giá và tính tổng
+	        item.setPrice(product.getPrice());
+	        item.setOrder(order);
+	        total = total.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+	    }
+
+	    order.setItems(items);
+	    order.setTotalAmount(total);
+	    order.setStatus("Đang xử lý");
+
+	    return orderRepository.save(order);
 	}
+
 
 	// Cập nhật đơn hàng
 	public Order updateOrder(Long id, Order updatedOrder) {
