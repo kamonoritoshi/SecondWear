@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/accounts/me").authenticated()
                         .requestMatchers("/api/users/me").authenticated()
                         .requestMatchers("/api/payments/**").permitAll()
+                        .requestMatchers("/api/chatbot/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

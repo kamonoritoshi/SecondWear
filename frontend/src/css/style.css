@@ -2468,107 +2468,107 @@ body.dark-mode .footer-link:hover {
 
 /*chính sách bảo mật*/
 .page-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 0 20px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.7;
-  color: #333;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: #333;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .page-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 16px;
-  color: #222;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #222;
 }
 
 .page-intro {
-  font-size: 1.1rem;
-  margin-bottom: 20px;
-  color: #444;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #444;
 }
 
 .page-container h2 {
-  font-size: 1.3rem;
-  margin-top: 24px;
-  font-weight: bold;
-  color: #1d1d1f;
+    font-size: 1.3rem;
+    margin-top: 24px;
+    font-weight: bold;
+    color: #1d1d1f;
 }
 
 .page-container ul {
-  padding-left: 20px;
-  list-style-type: disc;
-  margin-top: 10px;
+    padding-left: 20px;
+    list-style-type: disc;
+    margin-top: 10px;
 }
 
 .page-container p {
-  margin-top: 10px;
-  color: #555;
+    margin-top: 10px;
+    color: #555;
 }
 
 .download-wrapper {
-  text-align: center;
-  margin-top: 30px;
+    text-align: center;
+    margin-top: 30px;
 }
 
 .download-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #222;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
 }
 
 .download-button:hover {
-  background-color: #444;
-  transform: translateY(-1px);
+    background-color: #444;
+    transform: translateY(-1px);
 }
 
 .download-wrapper {
-  margin-top: 2rem;
-  text-align: center;
+    margin-top: 2rem;
+    text-align: center;
 }
 
 .download-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 8px;
-  background-color: #1e90ff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .download-button:hover {
-  background-color: #156dc1;
+    background-color: #156dc1;
 }
 
 .language-options {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .language-options a {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 .language-options a:hover {
-  text-decoration: underline;
-  color: #00468b;
+    text-decoration: underline;
+    color: #00468b;
 }
 
 .faq-list {
@@ -2747,59 +2747,94 @@ body.dark-mode .footer-link:hover {
 }
 
 .password-toggle-icon {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  position: absolute;
-  right: 1px;
-  top: 6px;
-  transform: translateY(-50%);
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    position: absolute;
+    right: 1px;
+    top: 6px;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
 .password-toggle-icon:hover {
-  opacity: 1;
+    opacity: 1;
 }
 
 .hide-icon {
-  filter: grayscale(100%) brightness(0.7);
+    filter: grayscale(100%) brightness(0.7);
 }
 
 .show-icon {
-  filter: none;
+    filter: none;
 }
 
 .password-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .password-wrapper input {
-  width: 100%;
-  padding-right: 40px; /* Khoảng trống để icon không đè lên chữ */
-  height: 40px;
-  box-sizing: border-box;
+    width: 100%;
+    padding-right: 40px;
+    /* Khoảng trống để icon không đè lên chữ */
+    height: 40px;
+    box-sizing: border-box;
 }
 
 .toggle-password-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .toggle-password-icon img {
-  width: 22px;
-  height: 22px;
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
+    width: 22px;
+    height: 22px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
 .toggle-password-icon:hover img {
-  opacity: 1;
+    opacity: 1;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #ff6f61;
+    box-shadow: 0 0 0 1px #ff6f61;
+}
+
+.form-submit {
+    background-color: #f04536;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+.form-submit:hover {
+    background-color: #f3948b;
 }
