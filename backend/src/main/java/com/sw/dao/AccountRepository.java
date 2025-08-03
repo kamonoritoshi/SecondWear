@@ -31,5 +31,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	@Query("SELECT COUNT(a) FROM Account a WHERE a.role.roleName = 'customer' AND a.createdAt BETWEEN :start AND :end")
 	long countNewCustomersBetween(LocalDateTime start, LocalDateTime end);
-//
 }
