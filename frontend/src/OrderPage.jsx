@@ -57,6 +57,17 @@ export default function OrderPage() {
     }
   };
 
+  const getStatusClass = (status) => {
+    if (!status) return '';
+
+    return 'status-' + status
+      .normalize('NFD')                 // tách dấu tiếng Việt
+      .replace(/[\u0300-\u036f]/g, '') // xóa dấu
+      .toLowerCase()
+      .replace(/\s+/g, '-');           // thay khoảng trắng bằng gạch nối
+  };
+
+
   return (
     <div className="orders-container">
       <h2>Đơn hàng của bạn</h2>
@@ -82,8 +93,9 @@ export default function OrderPage() {
               </div>
               <div>
                 <strong>Trạng thái:</strong>{" "}
-                <span className="status">{order.status}</span>
+                <span className={getStatusClass(order.status)}>{order.status}</span>
               </div>
+
               <div>
                 <strong>Thanh toán:</strong> {order.paymentMethod || "COD"}
               </div>
