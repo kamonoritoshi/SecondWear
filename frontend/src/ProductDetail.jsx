@@ -11,6 +11,8 @@ import likeIcon from './icons/like-icon.png';
 import likedIcon from './icons/liked-icon.png';
 import reportIcon from './icons/report-icon.png';
 
+import { BiMessageRoundedDetail } from 'react-icons/bi';
+
 import ChatBox from './ChatBox';
 import { toast } from 'react-toastify';
 
@@ -231,7 +233,7 @@ const ProductDetail = ({ t, setCartCount }) => {
                     <img src={reportIcon} alt={t('report_button_label')} className="header-icon" />
                 </button>
                 <section className="product-main-info">
-                    <div className="product-image-gallery" style={{ border: 'none'}}>
+                    <div className="product-image-gallery" style={{ border: 'none' }}>
                         <div className="main-image-container" style={{ width: 400, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--modal-bg)', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
                             <img
                                 src={selectedImage || '/images/placeholder.png'}
@@ -280,14 +282,23 @@ const ProductDetail = ({ t, setCartCount }) => {
                         <div className="product-meta">
                             <h2 className="section-title" style={{ color: 'var(--main-text)' }}>{t('product_details_title')}</h2>
                             <p className="price-info">
-                                <span style={{ color: 'var(--main-text)' }}>{t('price_label')}</span>:
+                                <span style={{ color: 'var(--main-text)' }}>{t('price_label')}</span>: <span></span>
                                 <span className="current-price">{product.price.toLocaleString('vi-VN')}₫</span>
                             </p>
                             <p style={{ color: 'var(--main-text)' }}><span>{t('category_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.category?.name || 'Chưa phân loại'}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('brand_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.brand || 'Không có thương hiệu'}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('origin_label')}</span><span>:</span> <span className="detail-value"  style={{ color: 'var(--main-text)' }}>{product.origin || 'Không rõ xuất xứ'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('brand_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.brand || 'Không có thương hiệu'}</span></p>
+                            <p style={{ color: 'var(--main-text)' }}><span>{t('origin_label')}</span><span>:</span> <span className="detail-value" style={{ color: 'var(--main-text)' }}>{product.origin || 'Không rõ xuất xứ'}</span></p>
                             <p style={{ color: 'var(--main-text)' }}><span>{t('quality_label')}</span><span>:</span> <span className="quality-rating">{product.condition}</span></p>
-                            <p style={{ color: 'var(--main-text)' }}><span>{t('shop_label')}</span><span>:</span> <span className="seller-name">{product.account?.user?.name || 'Người bán ẩn danh'}</span></p> <button className="chat-button" onClick={handleStartChat}>{t('chat_with_seller')}</button>
+                            <p style={{ color: 'var(--main-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>Cửa hàng:</span>
+                                <span style={{ color: '#007bff', fontWeight: 'bold' }}>
+                                    {product.account?.user?.name || 'Người bán ẩn danh'}
+                                </span>
+                                <button className="chat-button" onClick={handleStartChat} title={t('chat_with_seller')}>
+                                    <BiMessageRoundedDetail size={20} />
+                                </button>
+                            </p>
+
                             <p style={{ color: 'var(--main-text)' }}><span>{t('location_label')}</span><span>:</span> <span className="location">{product.account?.user?.address || 'Không rõ vị trí'}</span></p>
                         </div>
                         <div className="product-description">
@@ -361,7 +372,7 @@ const ProductDetail = ({ t, setCartCount }) => {
 };
 
 export default function WrappedProductDetail(props) {
-  return <>
-    <ProductDetail {...props} />
-  </>;
+    return <>
+        <ProductDetail {...props} />
+    </>;
 }

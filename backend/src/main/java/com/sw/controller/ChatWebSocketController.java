@@ -2,7 +2,7 @@
 package com.sw.controller;
 
 import com.sw.entity.ChatMessage;
-import com.sw.service.ChatService;
+import com.sw.service.ChatUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,7 +15,7 @@ public class ChatWebSocketController {
 	private SimpMessagingTemplate messagingTemplate;
 
 	@Autowired
-	private ChatService chatService;
+	private ChatUserService chatService;
 
 	@MessageMapping("/chat/send")
 	public void send(ChatMessage msg) {

@@ -14,7 +14,7 @@ import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
 
 @Service
-public class ChatService {
+public class ChatUserService {
     @Autowired private ChatRoomRepository chatRoomRepo;
     @Autowired private ChatMessageRepository messageRepo;
     @Autowired private AccountRepository accountRepo;

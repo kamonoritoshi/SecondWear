@@ -28,10 +28,26 @@
   font-weight: 600;
 }
 
-.status {
-  background-color: #007bff !important;
+.status-hoan-thanh {
+  color: #4caf50; /* Xanh lá */
   font-weight: bold;
 }
+
+.status-đang-xu-ly {
+  color: #ff9800; /* Cam */
+  font-weight: bold;
+}
+
+.status-huy {
+  color: #f44336; /* Đỏ */
+  font-weight: bold;
+}
+
+.status-đa-giao {
+  color: #2196f3; /* Xanh dương */
+  font-weight: bold;
+}
+
 
 .btn-detail {
   margin-top: 12px;

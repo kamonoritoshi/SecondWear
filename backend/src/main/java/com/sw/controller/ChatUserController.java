@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
-import com.sw.service.ChatService;
+import com.sw.service.ChatUserService;
 
 @RestController
 @RequestMapping("/api/chat")
-public class ChatController {
+public class ChatUserController {
 	@Autowired
-	private ChatService chatService;
+	private ChatUserService chatService;
 
 	@PostMapping("/room")
 	public ResponseEntity<ChatRoom> getOrCreateRoom(@RequestParam Long buyerId, @RequestParam Long sellerId) {
