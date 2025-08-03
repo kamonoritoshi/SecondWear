@@ -54,8 +54,9 @@ public class AdminStatisticsServiceImpl implements AdminStatisticsService {
 		LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(LocalTime.MAX);
 		Double monthRevenue = orderRepository.sumTotalAmountByStatusAndCreatedAtBetween("Hoàn thành", startOfMonth,
 				endOfMonth);
-		res.setMonthRevenue(monthRevenue != null ? monthRevenue : 0);
-
+		monthRevenue = (monthRevenue != null) ? monthRevenue : 0.0;
+		res.setMonthRevenue(monthRevenue != null ? monthRevenue : 0.0);
+		
 		// 🟩 1. Tính sản phẩm bán chạy nhất trong tháng
 		PageRequest pageRequest = PageRequest.of(0, 1);
 		List<Object[]> bestProducts = orderItemRepository.findTopSellingProductOfMonth(startOfMonth, endOfMonth, pageRequest);

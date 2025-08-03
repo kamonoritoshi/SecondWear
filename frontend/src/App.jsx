@@ -26,6 +26,7 @@ import CheckoutPage from "./CheckoutPage";
 import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
+import ChatbotWidget from './components/ChatbotWidget';
 
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
@@ -176,12 +177,14 @@ const AppContent = () => {
       </main>
 
       {!isAdminOrSellerRoute && (
+        <>
         <Footer
           t={t}
           currentTheme={theme}
           setTheme={setTheme}
           handleLanguageChange={setLanguage}
         />
+        </>
       )}
     </div>
   );
@@ -192,6 +195,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <AppContent />
+      <ChatbotWidget />
     </Router>
   );
 }
