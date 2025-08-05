@@ -7,4 +7,3 @@ public class VerifyRequest {
 	private String email;
     private String code;
 }
-//
