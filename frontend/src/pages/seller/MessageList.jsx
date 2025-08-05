@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ChatBox from "./ChatBox";
+//import ChatBox from "./ChatBox";
 import "./css/MessageList.css";
 
 export default function MessageList() {

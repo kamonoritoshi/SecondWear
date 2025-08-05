@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @EntityGraph(attributePaths = "images")
     List<Product> findByAccount_AccountId(Long accountId);
     
-    @Query("SELECT p FROM Product p WHERE p.approved = true ORDER BY FUNCTION('RAND')")
-    List<Product> findTop3SuggestedProducts(Pageable pageable);
+    @Query(value = "SELECT TOP 3 * FROM product WHERE approved = 1 ORDER BY NEWID()", nativeQuery = true)
+    List<Product> findTop3SuggestedProducts();
 
 }

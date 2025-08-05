@@ -125,10 +125,10 @@ export const translations = {
         'only_discount_label': 'Chỉ hiển thị sản phẩm giảm giá',
         'button_apply': 'Lọc',
         'button_clear_filter': 'Xóa bộ lọc',
-        'button_first_page': '⏮ Đầu',
-        'button_previous': 'Trước',
-        'button_next': 'Tiếp',
-        'button_last_page': 'Cuối ⏭',
+        'button_first_page': '⏮',     // Trang đầu
+        'button_previous': '←',
+        'button_next': '→',        // Tiếp
+        'button_last_page': '⏭',      // Trang cuối
         'button_go': 'Đi',
         'page_label': 'Trang',
         'filtering_category': 'Đang lọc',

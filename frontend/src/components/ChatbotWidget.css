@@ -1,0 +1,251 @@
+/* Vị trí cố định của widget */
+/* Widget bao toàn bộ: button + box */
+.chatbot-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000; /* Đẩy lên trên */
+}
+
+/* Nút mở chat */
+.chatbot-toggle {
+  position: relative;
+  font-size: 24px;
+  padding: 8px;
+  background: blue;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.chatbot-notify-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.chatbot-toggle-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.chatbot-preview {
+  position: absolute;
+  bottom: 110%;
+  right: 0;
+  max-width: 250px;
+  background: white;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  z-index: 10;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Khung chat */
+.chatbot-container {
+  width: 320px;
+  height: 500px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 64px; /* đẩy lên trên nút */
+  right: 0;
+  z-index: 1002; /* Cao hơn toggle */
+}
+
+/* Header */
+.chatbot-box {
+  width: 360px;
+  height: 520px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.chatbot-header {
+  padding: 14px 16px;
+  background-color: blue;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+
+/* Vùng chat */
+.chatbot-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+/* Chat row */
+.chat-row {
+  display: flex;
+  margin-bottom: 8px;
+}
+.chat-row-user {
+  justify-content: flex-end;
+}
+.chat-row-bot {
+  justify-content: flex-start;
+}
+
+/* Bubble */
+.chat-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+.bubble-user {
+  background-color: blue;
+  color: white;
+}
+.bubble-bot {
+  background-color: #e5e7eb;
+  color: black;
+}
+
+/* Input */
+.chatbot-input {
+  padding: 8px;
+  border-top: 1px solid #ccc;
+  display: flex;
+}
+.chatbot-input input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.chatbot-input button {
+  margin-left: 8px;
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.chatbot-input button:hover {
+  background-color: darkblue;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.suggestion-card {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.suggestion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #f9fafb;
+}
+
+.suggestion-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.suggestion-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.suggestion-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+.vnd {
+  font-weight: normal;
+  margin-left: 1px;
+}
+
+.chatbot-close {
+    color: white;
+}
+
+.chatbot-close:hover {
+    color: red;
+}

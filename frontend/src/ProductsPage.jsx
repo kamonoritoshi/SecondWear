@@ -549,7 +549,7 @@ const ProductsPage = ({ t }) => {
                 fontWeight: 600,
               }}
             >
-              {t ? t("button_first_page") : "⏮ Đầu"}
+              {t ? t("button_first_page") : "⏮"}
             </button>
             <button
               onClick={() => handlePageChange(page - 1)}
@@ -634,7 +634,7 @@ const ProductsPage = ({ t }) => {
                 fontWeight: 600,
               }}
             >
-              {t ? t("button_last_page") : "Cuối ⏭"}
+              {t ? t("button_last_page") : "⏭"}
             </button>
           </div>
         </div>
