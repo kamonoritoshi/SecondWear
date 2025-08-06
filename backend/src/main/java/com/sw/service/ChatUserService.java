@@ -65,6 +65,7 @@ public class ChatUserService {
 	}
 
 	public List<ChatRoom> getChatRooms(Long userId) {
-		return chatRoomRepository.findByBuyer_AccountIdOrSeller_AccountId(userId, userId);
+	    return chatRoomRepository.findRoomsWithMessages(userId);
 	}
+	
 }

@@ -38,10 +38,15 @@
   background-color: #d0e6ff;
 }
 
-.chat-sidebar li a {
+.chat-sidebar a li {
   text-decoration: none;
   color: #333;
   font-weight: 500;
+}
+
+.chat-room-link{
+  text-decoration: none;
+  color: #333;
 }
 
 .chat-window {
