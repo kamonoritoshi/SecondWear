@@ -1,7 +1,9 @@
 //chatservice
 package com.sw.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,45 +17,54 @@ import com.sw.entity.ChatRoom;
 
 @Service
 public class ChatUserService {
-    @Autowired private ChatRoomRepository chatRoomRepo;
-    @Autowired private ChatMessageRepository messageRepo;
-    @Autowired private AccountRepository accountRepo;
+	@Autowired
+	private ChatRoomRepository chatRoomRepository;
+	@Autowired
+	private ChatMessageRepository chatMessageRepository;
+	@Autowired
+	private AccountRepository accountRepository;
 
-    public ChatRoom getOrCreateChatRoom(Long buyerId, Long sellerId) {
-        Account buyer = accountRepo.findById(buyerId)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy buyerId: " + buyerId));
-        Account seller = accountRepo.findById(sellerId)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy sellerId: " + sellerId));
+	public ChatRoom getOrCreateChatRoom(Long buyerId, Long sellerId) {
+		return chatRoomRepository.findByBuyer_AccountIdAndSeller_AccountId(buyerId, sellerId).orElseGet(() -> {
+			Account buyer = accountRepository.findById(buyerId)
+					.orElseThrow(() -> new RuntimeException("Không tìm thấy buyerId: " + buyerId));
+			Account seller = accountRepository.findById(sellerId)
+					.orElseThrow(() -> new RuntimeException("Không tìm thấy sellerId: " + sellerId));
+			ChatRoom room = new ChatRoom();
+			room.setBuyer(buyer);
+			room.setSeller(seller);
+			return chatRoomRepository.save(room);
+		});
+	}
 
-        return chatRoomRepo.findByBuyerAndSeller(buyer, seller)
-            .orElseGet(() -> {
-                ChatRoom room = new ChatRoom();
-                room.setBuyer(buyer);
-                room.setSeller(seller);
-                return chatRoomRepo.save(room);
-            });
-    }
+//	public Optional<ChatRoom> findExistingChatRoom(Long buyerId, Long sellerId) {
+//		Account buyer = accountRepo.findById(buyerId)
+//				.orElseThrow(() -> new RuntimeException("Không tìm thấy buyerId: " + buyerId));
+//		Account seller = accountRepo.findById(sellerId)
+//				.orElseThrow(() -> new RuntimeException("Không tìm thấy sellerId: " + sellerId));
+//		return chatRoomRepository.findByBuyerAndSeller(buyer, seller);
+//	}
 
-    public ChatMessage sendMessage(Long roomId, Long senderId, String content) {
-        ChatRoom room = chatRoomRepo.findById(roomId)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng chat"));
+	public Optional<ChatRoom> findExistingChatRoom(Long buyerId, Long sellerId) {
+		return chatRoomRepository.findByBuyer_AccountIdAndSeller_AccountId(buyerId, sellerId);
+	}
 
-        Account sender = accountRepo.findById(senderId)
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy người gửi"));
+	public ChatMessage sendMessage(Long roomId, Long senderId, String content) {
+		Account sender = accountRepository.findById(senderId).orElseThrow();
+		ChatRoom room = chatRoomRepository.findById(roomId).orElseThrow();
+		ChatMessage message = new ChatMessage();
+		message.setSender(sender);
+		message.setChatRoom(room);
+		message.setContent(content);
+		message.setTimestamp(LocalDateTime.now());;
+		return chatMessageRepository.save(message);
+	}
 
-        ChatMessage msg = new ChatMessage();
-        msg.setChatRoom(room);
-        msg.setSender(sender);
-        msg.setContent(content);
+	public List<ChatMessage> getMessages(Long roomId) {
+		return chatMessageRepository.findByChatRoom_RoomIdOrderByTimestampAsc(roomId);
+	}
 
-        return messageRepo.save(msg);
-    }
-
-    public List<ChatMessage> getMessages(Long roomId) {
-        return messageRepo.findByChatRoom_RoomIdOrderByTimestampAsc(roomId);
-    }
-
-    public List<ChatRoom> getChatRooms(Long userId) {
-        return chatRoomRepo.findByBuyer_AccountIdOrSeller_AccountId(userId, userId);
-    }
+	public List<ChatRoom> getChatRooms(Long userId) {
+		return chatRoomRepository.findByBuyer_AccountIdOrSeller_AccountId(userId, userId);
+	}
 }

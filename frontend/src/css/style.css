@@ -2404,6 +2404,7 @@ body.dark-mode .product-card {
     color: var(--footer-text);
     font-size: 14px;
     padding: 40px 20px;
+    margin-top: 0px !important;
 }
 
 .footer-container {

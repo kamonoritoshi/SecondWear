@@ -2,8 +2,8 @@
 /* Widget bao toàn bộ: button + box */
 .chatbot-widget {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 80px;
+  right: 12px;
   z-index: 1000; /* Đẩy lên trên */
 }
 
@@ -16,6 +16,7 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  opacity: 0.6;
 }
 
 .chatbot-notify-dot {
@@ -48,7 +49,7 @@
 
 .chatbot-preview {
   position: absolute;
-  bottom: 110%;
+  bottom: 140%;
   right: 0;
   max-width: 250px;
   background: white;
@@ -63,6 +64,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   animation: fadeIn 0.3s ease-out;
+  opacity: 0.6;
 }
 
 @keyframes fadeIn {
@@ -86,7 +88,7 @@
   display: flex;
   flex-direction: column;
   position: absolute;
-  bottom: 64px; /* đẩy lên trên nút */
+  bottom: 72px; /* đẩy lên trên nút */
   right: 0;
   z-index: 1002; /* Cao hơn toggle */
 }

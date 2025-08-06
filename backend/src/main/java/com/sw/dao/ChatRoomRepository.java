@@ -11,12 +11,12 @@ import com.sw.entity.ChatRoom;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    // ✅ Nếu dùng ID
-    Optional<ChatRoom> findByBuyer_AccountIdAndSeller_AccountId(Long buyerId, Long sellerId);
-    List<ChatRoom> findByBuyer_AccountIdOrSeller_AccountId(Long buyerId, Long sellerId);
+	// ✅ Nếu dùng ID
+	Optional<ChatRoom> findByBuyer_AccountIdAndSeller_AccountId(Long buyerId, Long sellerId);
 
-    // ✅ Hoặc dùng Account trực tiếp
-    Optional<ChatRoom> findByBuyerAndSeller(Account buyer, Account seller);
-    List<ChatRoom> findByBuyerOrSeller(Account buyer, Account seller);
+	List<ChatRoom> findByBuyer_AccountIdOrSeller_AccountId(Long buyerId, Long sellerId);
+
+	// ✅ Hoặc dùng Account trực tiếp
+	Optional<ChatRoom> findByBuyerAndSeller(Account buyer, Account seller);
+	List<ChatRoom> findByBuyerOrSeller(Account buyer, Account seller);
 }
-

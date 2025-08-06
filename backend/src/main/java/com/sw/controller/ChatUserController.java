@@ -2,6 +2,7 @@
 package com.sw.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sw.dto.ChatMessageDTO;
+import com.sw.dto.ChatRoomDTO;
 import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
 import com.sw.service.ChatUserService;
@@ -23,29 +26,63 @@ public class ChatUserController {
 	@Autowired
 	private ChatUserService chatService;
 
+	@GetMapping("/room")
+	public ResponseEntity<?> getExistingRoom(@RequestParam Long buyerId, @RequestParam Long sellerId) {
+	    Optional<ChatRoom> existingRoom = chatService.findExistingChatRoom(buyerId, sellerId);
+	    return existingRoom
+	            .map(ResponseEntity::ok)
+	            .orElseGet(() -> ResponseEntity.notFound().build());
+	}
+	
 	@PostMapping("/room")
 	public ResponseEntity<ChatRoom> getOrCreateRoom(@RequestParam Long buyerId, @RequestParam Long sellerId) {
 		return ResponseEntity.ok(chatService.getOrCreateChatRoom(buyerId, sellerId));
 	}
 
 	@PostMapping("/room/{roomId}/message")
-	public ResponseEntity<ChatMessage> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessage msg) {
-	    if (msg.getSender() == null || msg.getSender().getAccountId() == null) {
-	        return ResponseEntity.badRequest().build();
-	    }
-	    ChatMessage saved = chatService.sendMessage(roomId, msg.getSender().getAccountId(), msg.getContent());
-	    return ResponseEntity.ok(saved);
+	public ResponseEntity<ChatMessageDTO> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessageDTO dto) {
+		if (dto.getSenderId() == null || dto.getContent() == null || dto.getContent().isBlank()) {
+			return ResponseEntity.badRequest().build();
+		}
+		ChatMessage saved = chatService.sendMessage(roomId, dto.getSenderId(), dto.getContent());
+		ChatMessageDTO response = new ChatMessageDTO(
+			saved.getChatId(),
+			saved.getContent(),
+			saved.getSender().getUser().getName(),  
+			saved.getSender().getAccountId(),
+			saved.getChatRoom().getRoomId(),
+			saved.getTimestamp()
+		);
+		return ResponseEntity.ok(response);
 	}
 
 
 	@GetMapping("/room/{roomId}/messages")
-	public ResponseEntity<List<ChatMessage>> getMessages(@PathVariable Long roomId) {
-		return ResponseEntity.ok(chatService.getMessages(roomId));
-	}
-	
-	@GetMapping("/rooms/{accountId}")
-	public ResponseEntity<List<ChatRoom>> getChatRooms(@PathVariable Long accountId) {
-	    return ResponseEntity.ok(chatService.getChatRooms(accountId));
+	public ResponseEntity<List<ChatMessageDTO>> getMessages(@PathVariable Long roomId) {
+	    List<ChatMessage> messages = chatService.getMessages(roomId);
+	    List<ChatMessageDTO> dtoList = messages.stream()
+	        .map(msg -> new ChatMessageDTO(
+	            msg.getChatId(),
+	            msg.getContent(),
+	            msg.getSender().getUser().getName(),
+	            msg.getSender().getAccountId(),
+	            msg.getChatRoom().getRoomId(),
+	            msg.getTimestamp()
+	        ))
+	        .toList();
+	    return ResponseEntity.ok(dtoList);
 	}
 
+	@GetMapping("/rooms/{accountId}")
+	public ResponseEntity<List<ChatRoomDTO>> getChatRooms(@PathVariable Long accountId) {
+	    List<ChatRoom> rooms = chatService.getChatRooms(accountId);
+	    List<ChatRoomDTO> dtoList = rooms.stream()
+	        .map(room -> new ChatRoomDTO(
+	            room.getRoomId(),
+	            room.getBuyer().getUser().getName(),
+	            room.getSeller().getUser().getName()
+	        ))
+	        .toList();
+	    return ResponseEntity.ok(dtoList);
+	}
 }

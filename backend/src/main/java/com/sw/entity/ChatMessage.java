@@ -12,23 +12,25 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "ChatMessage")
 public class ChatMessage {
 
-    @Id
-    @GeneratedValue
-    private Long chatId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "chat_id")
+	private Long chatId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_id")
-    @JsonIgnoreProperties({"messages", "buyer", "seller"}) // 👈 Tránh vòng lặp khi serialize
-    private ChatRoom chatRoom;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "room_id")
+	@JsonIgnoreProperties({ "messages", "buyer", "seller" }) // 👈 Tránh vòng lặp khi serialize
+	private ChatRoom chatRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", nullable = false)
-    @JsonIgnoreProperties({"user", "role", "orders"}) // 👈 Tránh vòng lặp khi serialize
-    private Account sender;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sender_id", nullable = false)
+	@JsonIgnoreProperties({ "user", "role", "orders" }) // 👈 Tránh vòng lặp khi serialize
+	private Account sender;
 
-    private String content;
+	private String content;
 
-    private LocalDateTime timestamp = LocalDateTime.now();
+	private LocalDateTime timestamp = LocalDateTime.now();
 }

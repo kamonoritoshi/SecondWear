@@ -27,6 +27,7 @@ import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 import ChatbotWidget from './components/ChatbotWidget';
+import ChatRoom from './ChatRoom';
 
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
@@ -135,6 +136,7 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/chat/:roomId" element={<ChatRoom />} />
 
           {/* Seller */}
           <Route

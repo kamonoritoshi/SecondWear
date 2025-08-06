@@ -50,8 +50,13 @@ const ProfilePage = ({ t }) => {
   };
 
   const handleSave = () => {
+    if (!user || !user.userId) {
+      setError("Không thể xác định người dùng.");
+      return;
+    }
+
     axios
-      .put(`/api/users/${user.id}`, { ...user, ...formData }, config)
+      .put(`/api/users/${user.userId}`, { ...user, ...formData }, config)
       .then((res) => {
         setUser(res.data);
         setEditing(false);
@@ -61,11 +66,17 @@ const ProfilePage = ({ t }) => {
 
   if (error) return <div className="profile-error">{error}</div>;
   if (!account || !user)
-    return <div className="profile-loading">{t ? t("profile_loading") : "Đang tải thông tin..."}</div>;
+    return (
+      <div className="profile-loading">
+        {t ? t("profile_loading") : "Đang tải thông tin..."}
+      </div>
+    );
 
   return (
     <div className="profile-container">
-      <h2 className="profile-title">{t ? t("profile_title") : "Thông tin cá nhân"}</h2>
+      <h2 className="profile-title">
+        {t ? t("profile_title") : "Thông tin cá nhân"}
+      </h2>
 
       <img
         src="/src/icons/black-user-icon.png"
@@ -74,12 +85,16 @@ const ProfilePage = ({ t }) => {
       />
 
       <div className="profile-field">
-        <label className="profile-label">{t ? t("profile_email") : "Email:"}</label>
+        <label className="profile-label">
+          {t ? t("profile_email") : "Email:"}
+        </label>
         <input value={formData.email} readOnly className="profile-input" />
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">{t ? t("profile_full_name") : "Họ tên:"}</label>
+        <label className="profile-label">
+          {t ? t("profile_full_name") : "Họ tên:"}
+        </label>
         <input
           name="fullName"
           value={formData.fullName}
@@ -90,7 +105,9 @@ const ProfilePage = ({ t }) => {
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">{t ? t("profile_phone") : "Số điện thoại:"}</label>
+        <label className="profile-label">
+          {t ? t("profile_phone") : "Số điện thoại:"}
+        </label>
         <input
           name="phone"
           value={formData.phone}
@@ -101,7 +118,9 @@ const ProfilePage = ({ t }) => {
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">{t ? t("profile_address") : "Địa chỉ:"}</label>
+        <label className="profile-label">
+          {t ? t("profile_address") : "Địa chỉ:"}
+        </label>
         <input
           name="address"
           value={formData.address}

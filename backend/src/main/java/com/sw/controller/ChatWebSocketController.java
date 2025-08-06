@@ -19,7 +19,11 @@ public class ChatWebSocketController {
 
 	@MessageMapping("/chat/send")
 	public void send(ChatMessage msg) {
-		ChatMessage saved = chatService.sendMessage(msg.getChatRoom().getRoomId(), msg.getSender().getAccountId(), // ⚠️ nếu sender là Account																												
+		ChatMessage saved = chatService.sendMessage(msg.getChatRoom().getRoomId(), msg.getSender().getAccountId(), // ⚠️
+																													// nếu
+																													// sender
+																													// là
+																													// Account
 				msg.getContent());
 		messagingTemplate.convertAndSend("/topic/chat/" + saved.getChatRoom().getRoomId(), saved);
 	}
