@@ -1,52 +1,43 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../css/SellerRequests.css"; // Bạn có thể tạo file CSS riêng nếu cần
+import "../css/SellerRequests.css";
 
 export default function SellerRequests() {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      email: "vana@example.com",
-      phone: "0123456789",
-      registerDate: "2025-07-20T10:30:00",
-      status: "PENDING",
-    },
-    {
-      id: 2,
-      name: "Trần Thị B",
-      email: "thib@example.com",
-      phone: "0987654321",
-      registerDate: "2025-07-21T09:15:00",
-      status: "PENDING",
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const [reasons, setReasons] = useState({});
 
   useEffect(() => {
-    const headers = {
-      Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-    };
+    fetchRequests();
+  }, []);
 
+  const fetchRequests = () => {
+    setLoading(true);
     axios
-      .get("/api/admin/seller-requests", { headers })
+      .get("/api/admin/seller-requests", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        },
+      })
       .then((res) => {
-        console.log("✅ Danh sách yêu cầu:", res.data);
-        // setRequests(res.data);
+        console.log("Data: ", res.data);
+        setRequests(res.data);
       })
       .catch((err) => {
-        console.error("❌ Lỗi lấy yêu cầu:", err);
+        console.error("❌ Lỗi khi tải danh sách yêu cầu:", err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, []);
+  };
 
   const handleAction = (id, action) => {
     const reason = reasons[id] || "";
     setProcessingId(id);
 
     axios
-      .post(
+      .put(
         `/api/admin/seller-requests/${id}/${action.toLowerCase()}`,
         { reason },
         {
@@ -56,17 +47,15 @@ export default function SellerRequests() {
         }
       )
       .then(() => {
-        setRequests((prev) =>
-          prev.map((r) =>
-            r.id === id ? { ...r, status: action.toUpperCase() } : r
-          )
-        );
+        fetchRequests(); // reload danh sách sau khi xử lý
       })
       .catch((err) => {
-        alert("Có lỗi xảy ra!");
+        alert("❌ Có lỗi xảy ra khi xử lý yêu cầu!");
         console.error(err);
       })
-      .finally(() => setProcessingId(null));
+      .finally(() => {
+        setProcessingId(null);
+      });
   };
 
   return (
@@ -74,7 +63,9 @@ export default function SellerRequests() {
       <h2>Yêu cầu đăng ký người bán</h2>
 
       {loading ? (
-        <p>Đang tải...</p>
+        <p>Đang tải dữ liệu...</p>
+      ) : requests.length === 0 ? (
+        <p>Không có yêu cầu nào đang chờ xử lý.</p>
       ) : (
         <table className="seller-request-table">
           <thead>
@@ -94,39 +85,53 @@ export default function SellerRequests() {
                 <td>{req.name}</td>
                 <td>{req.email}</td>
                 <td>{req.phone}</td>
-                <td>{new Date(req.registerDate).toLocaleString("vi-VN")}</td>
-                <td>{req.status}</td>
+                <td>
+                  {new Date(req.createdAt).toLocaleString("vi-VN", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </td>
+                <td>{req.sellerStatus}</td>
                 <td>
                   <input
                     type="text"
                     placeholder="Nhập lý do từ chối"
-                    disabled={req.status !== "PENDING"}
-                    value={reasons[req.id] || ""}
+                    disabled={req.sellerStatus !== "PENDING"}
+                    value={reasons[req.accountId] || ""}
                     onChange={(e) =>
                       setReasons((prev) => ({
                         ...prev,
-                        [req.id]: e.target.value,
+                        [req.accountId]: e.target.value,
                       }))
                     }
                   />
                 </td>
                 <td>
-                  {req.status === "PENDING" ? (
+                  {req.sellerStatus === "PENDING" ? (
                     <>
-                      <button
-                        onClick={() => handleAction(req.id, "APPROVED")}
-                        disabled={processingId === req.id}
-                        className="approve-btn"
-                      >
-                        Phê duyệt
-                      </button>
-                      <button
-                        onClick={() => handleAction(req.id, "REJECTED")}
-                        disabled={processingId === req.id}
-                        className="reject-btn"
-                      >
-                        Từ chối
-                      </button>
+                      <img
+                        src="/src/icons/approved.png"
+                        alt="Phê duyệt"
+                        className="action-icon"
+                        title="Phê duyệt yêu cầu"
+                        onClick={() => handleAction(req.accountId, "APPROVE")}
+                        style={{
+                          cursor:
+                            processingId === req.accountId ? "not-allowed" : "pointer",
+                        }}
+                      />
+                      <img
+                        src="/src/icons/rejected.png"
+                        alt="Từ chối"
+                        className="action-icon"
+                        title="Từ chối yêu cầu"
+                        onClick={() => handleAction(req.accountId, "REJECT")}
+                        style={{
+                          cursor:
+                            processingId === req.accountId ? "not-allowed" : "pointer",
+                          marginLeft: "8px",
+                        }}
+                      />
                     </>
                   ) : (
                     <span>Đã xử lý</span>

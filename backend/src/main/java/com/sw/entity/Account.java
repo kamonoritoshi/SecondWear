@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,4 +55,18 @@ public class Account {
     @OneToMany(mappedBy = "account")
     @JsonIgnore // ✅ tránh vòng lặp khi serialize
     private List<Order> orders;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seller_status", nullable = false)
+    private SellerStatus sellerStatus = SellerStatus.NONE;
+
+    @Column(name = "reject_reason")
+    private String rejectReason;
+
+    public enum SellerStatus {
+        NONE,
+        PENDING,
+        APPROVED,
+        REJECTED
+    }
 }

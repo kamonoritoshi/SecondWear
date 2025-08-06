@@ -1,63 +1,81 @@
-/* Bảng yêu cầu seller */
+/* Trang yêu cầu seller */
+.seller-requests-page {
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.seller-requests-page h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Bảng danh sách */
 .seller-request-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
   background-color: #fff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .seller-request-table th,
 .seller-request-table td {
-  padding: 12px 16px;
-  font-size: 14px; /* tăng nhẹ để dễ nhìn hơn */
+  padding: 14px 16px;
+  font-size: 14px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
 .seller-request-table th {
-  background-color: #f0f4f8;
-  font-weight: 600;
+  background-color: #f1f5f9;
   color: #333;
-  font-size: 14px; /* nhỏ hơn body để phân cấp rõ hơn */
+  font-weight: 600;
 }
 
 .seller-request-table tr:hover {
-  background-color: #fafafa;
+  background-color: #f9fafc;
 }
 
-/* Nút hành động */
-.approve-btn,
-.reject-btn {
-  padding: 6px 12px;
-  margin-right: 6px;
+/* Ô input lý do */
+.seller-request-table input[type="text"] {
+  width: 100%;
+  padding: 6px 10px;
   font-size: 13px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
-.approve-btn {
-  background-color: #28a745;
-  color: white;
+/* Trạng thái đã xử lý */
+.seller-request-table td span {
+  font-size: 13px;
+  color: #666;
 }
 
-.approve-btn:hover {
-  background-color: #218838;
-  box-shadow: 0 0 6px rgba(40, 167, 69, 0.4);
-  color: white;
+/* Loading + Empty state */
+.seller-requests-page .loading,
+.seller-requests-page .empty {
+  font-size: 15px;
+  color: #555;
+  margin-top: 30px;
+  text-align: center;
 }
 
-.reject-btn {
-  background-color: #dc3545;
-  color: white;
+/* Icon hành động */
+.action-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.9;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.reject-btn:hover {
-  background-color: #c82333;
-  box-shadow: 0 0 6px rgba(220, 53, 69, 0.4);
-  color: white;
+.action-icon:hover {
+  transform: scale(1.1);
+  opacity: 1;
 }
+

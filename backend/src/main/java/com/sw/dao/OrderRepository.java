@@ -1,5 +1,6 @@
 package com.sw.dao;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -99,4 +100,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			    LIMIT 10
 			""")
 	List<Object[]> findTopSellingProducts();
+	
+	@Query("SELECT SUM(oi.price * oi.quantity) FROM OrderItem oi WHERE oi.product.account.accountId = :sellerId")
+	BigDecimal getTotalRevenueBySeller(@Param("sellerId") Long sellerId);
 }

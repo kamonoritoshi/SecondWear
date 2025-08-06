@@ -1,7 +1,25 @@
+:root {
+  --bg-light: #f9fafb;
+  --bg-white: #ffffff;
+  --bg-header: #f1f5f9;
+  --bg-row: #f3f4f6;
+  --text-dark: #333;
+  --text-gray: #4b5563;
+  --text-header: #374151;
+  --status-active-bg: #dcfce7;
+  --status-active-text: #16a34a;
+  --status-inactive-bg: #fee2e2;
+  --status-inactive-text: #b91c1c;
+  --btn-view-bg: #3b82f6;
+  --btn-view-hover: #2563eb;
+  --btn-toggle-bg: #f59e0b;
+  --btn-toggle-hover: #d97706;
+}
+
 .account-page {
   padding: 24px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9fafb;
+  background-color: var(--bg-light);
   min-height: 100vh;
 }
 
@@ -9,7 +27,7 @@
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .account-table {
@@ -19,53 +37,51 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   overflow: hidden;
-  background-color: white;
+  background-color: var(--bg-white);
 }
 
 .account-table th,
 .account-table td {
   padding: 14px 16px;
   text-align: left;
+  font-size: 14px;
 }
 
 .account-table th {
-  background-color: #f1f5f9;
+  background-color: var(--bg-header);
   font-weight: 600;
-  font-size: 14px;
-  color: #374151;
+  color: var(--text-header);
   border-bottom: 1px solid #e5e7eb;
 }
 
 .account-table td {
-  font-size: 14px;
-  color: #4b5563;
-  border-bottom: 1px solid #f3f4f6;
+  color: var(--text-gray);
+  border-bottom: 1px solid var(--bg-row);
 }
 
 .account-table tr:last-child td {
   border-bottom: none;
 }
 
-.account-table td:nth-child(5) {
+.account-table td.status {
   font-weight: 600;
 }
 
-.status-active {
-  color: #16a34a;
-  background-color: #dcfce7;
+.status-badge {
   padding: 4px 10px;
   border-radius: 20px;
   display: inline-block;
   font-size: 13px;
 }
 
+.status-active {
+  background-color: var(--status-active-bg);
+  color: var(--status-active-text);
+}
+
 .status-inactive {
-  color: #b91c1c;
-  background-color: #fee2e2;
-  padding: 4px 10px;
-  border-radius: 20px;
-  display: inline-block;
-  font-size: 13px;
+  background-color: var(--status-inactive-bg);
+  color: var(--status-inactive-text);
 }
 
 .action-btn {
@@ -75,25 +91,22 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
+  color: white;
 }
 
 .view-btn {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--btn-view-bg);
 }
 
 .view-btn:hover {
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--btn-view-hover);
 }
 
 .toggle-btn {
-  background-color: #f59e0b;
-  color: white;
+  background-color: var(--btn-toggle-bg);
 }
 
 .toggle-btn:hover {
-  background-color: #d97706;
-  color: white;
+  background-color: var(--btn-toggle-hover);
 }

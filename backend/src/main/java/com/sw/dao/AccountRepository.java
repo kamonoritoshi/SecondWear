@@ -31,4 +31,12 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	@Query("SELECT COUNT(a) FROM Account a WHERE a.role.roleName = 'customer' AND a.createdAt BETWEEN :start AND :end")
 	long countNewCustomersBetween(LocalDateTime start, LocalDateTime end);
+	
+	List<Account> findBySellerStatus(Account.SellerStatus status);
+	
+	@Query("SELECT a FROM Account a WHERE a.role.roleName = 'SELLER' AND a.sellerStatus = 'APPROVED'")
+    List<Account> findApprovedSellers();
+	
+	@Query("SELECT a FROM Account a WHERE a.role.roleName = 'CUSTOMER'")
+    List<Account> findAllCustomers();
 }
