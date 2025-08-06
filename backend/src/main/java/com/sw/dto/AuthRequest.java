@@ -8,4 +8,5 @@ public class AuthRequest {
     private String password;
     private boolean rememberMe;
     private String roleName;
+    //
 }
