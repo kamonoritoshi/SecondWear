@@ -4,6 +4,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 
+import { useNavigate } from "react-router-dom";
+
+const accountId = localStorage.getItem("accountId");
 // --- SVG Icons ---
 // Định nghĩa các icon SVG dưới dạng component để dễ dàng tái sử dụng và tùy chỉnh
 const HomeIcon = (props) => (
@@ -64,6 +67,17 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [trayOpen, setTrayOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  // Hàm xử lý đăng xuất
+  const handleLogout = (e) => {
+    e.preventDefault(); // Ngăn chặn reload trang
+    logout(); // Gọi hàm logout từ AuthContext
+    setOpenDropdown(null); // Đóng dropdown
+    navigate("/login"); // Chuyển hướng sau khi logout
+  };
+
 
   // --- Cấu trúc dữ liệu cho Menu ---
   // Dễ dàng thay đổi, thêm, bớt hoặc sắp xếp lại menu tại đây
@@ -433,22 +447,136 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                 >
                   {isAuthenticated ? (
                     <>
-                      <Link to="/profile" className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("my_account_label")}</Link>
-                      <Link to="/orders" className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("menu_my_orders")}</Link>
+                      <Link
+                        to="/profile"
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("my_account_label")}
+                      </Link>
+
+                      <Link
+                        to="/orders"
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("menu_my_orders")}
+                      </Link>
+
+                      {/* Nút Tin nhắn */}
+                      <Link
+                        to={`/chat/rooms/${accountId}`}
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("Tin nhắn")}
+                      </Link>
+
                       {currentUser?.role?.toLowerCase() === "admin" && (
-                        <Link to="/admin/dashboard" className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t('admin_page_label')}</Link>
+                        <Link
+                          to="/admin/dashboard"
+                          className="dropdown-item"
+                          style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            padding: '10px 22px',
+                            color: 'var(--main-text)',
+                            textDecoration: 'none',
+                            display: 'block'
+                          }}
+                        >
+                          {t('admin_page_label')}
+                        </Link>
                       )}
+
                       {currentUser?.role?.toLowerCase() === "seller" && (
-                        <Link to="/seller/dashboard" className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t('seller_page_label')}</Link>
+                        <Link
+                          to="/seller/dashboard"
+                          className="dropdown-item"
+                          style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            padding: '10px 22px',
+                            color: 'var(--main-text)',
+                            textDecoration: 'none',
+                            display: 'block'
+                          }}
+                        >
+                          {t('seller_page_label')}
+                        </Link>
                       )}
-                      <a href="#" onClick={logout} className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("logout_label")}</a>
+
+                      <a
+                        href="/"
+                        onClick={handleLogout}
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("logout_label")}
+                      </a>
                     </>
                   ) : (
                     <>
-                      <Link to="/login" className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("login_label")}</Link>
-                      <Link to="/register" className="dropdown-item" style={{ fontSize: 15, fontWeight: 600, padding: '10px 22px', color: 'var(--main-text)', textDecoration: 'none', display: 'block' }}>{t("register_label")}</Link>
+                      <Link
+                        to="/login"
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("login_label")}
+                      </Link>
+
+                      <Link
+                        to="/register"
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("register_label")}
+                      </Link>
                     </>
                   )}
+
                 </div>
               )}
             </div>

@@ -421,6 +421,10 @@ const ProductCard = ({ product, onQuickAddToCart, t }) => (
           className="add-to-cart-icon-btn"
           onClick={(e) => {
             e.preventDefault();
+            if (product.quantity === 0) {
+              alert( t("Sản phẩm đã hết hàng"));
+              return;
+            }
             if (onQuickAddToCart) {
               onQuickAddToCart(product);
             }
@@ -431,6 +435,7 @@ const ProductCard = ({ product, onQuickAddToCart, t }) => (
             alt={t ? t('add_to_cart_alt') : 'Thêm vào giỏ'}
           />
         </button>
+
       </div>
     </div>
   </Link>

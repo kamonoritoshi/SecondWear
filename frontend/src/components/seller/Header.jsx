@@ -71,9 +71,9 @@ const Header = () => {
               <div className="dropdown-name">
                 <i className="fa fa-user" /> {currentUser?.name}
               </div>
-              <button onClick={() => setDarkMode(!darkMode)} className="theme-btn">
+              {/* <button onClick={() => setDarkMode(!darkMode)} className="theme-btn">
                 {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
-              </button>
+              </button> */}
               <button onClick={handleSwitchToCustomer} className="switch-btn">
                 Về giao diện người mua
               </button>

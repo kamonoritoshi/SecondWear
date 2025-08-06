@@ -1,62 +1,37 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "./contexts/AuthContext";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import "./css/ChatRoom.css";
 
 export default function ChatRoom() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const { roomId } = useParams();
+
   const [chatMessages, setChatMessages] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const [message, setMessage] = useState("");
   const chatEndRef = useRef(null);
 
   const token = localStorage.getItem("jwtToken");
-  const accountId = currentUser?.accountId; // ép kiểu ngay
+  const accountId = currentUser?.accountId;
 
-  // Cuộn xuống cuối mỗi khi có tin nhắn mới
+  // Redirect nếu chưa đăng nhập
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (!token || !currentUser) {
+      navigate("/login");
     }
-  }, [chatMessages]);
+  }, [token, currentUser, navigate]);
 
-  // Load tin nhắn của phòng hiện tại
-  useEffect(() => {
-    if (!token) return;
-
-    const fetchMessages = async () => {
-      try {
-        const res = await fetch(`/api/chat/room/${roomId}/messages`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) throw new Error(`Lỗi ${res.status}`);
-        const data = await res.json();
-        console.log("Data: ", data)
-        setChatMessages(data);
-      } catch (err) {
-        console.error("Lỗi load tin nhắn:", err);
-      }
-    };
-
-    fetchMessages();
-  }, [roomId, token]);
-
-  // Load danh sách đoạn chat
+  // Load danh sách phòng chat
   useEffect(() => {
     if (!token || !accountId) return;
 
     const fetchRooms = async () => {
       try {
         const res = await fetch(`/api/chat/rooms/${accountId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!res.ok) throw new Error(`Lỗi ${res.status}`);
         const data = await res.json();
         setChatRooms(data);
@@ -68,6 +43,34 @@ export default function ChatRoom() {
     fetchRooms();
   }, [token, accountId]);
 
+  // Load tin nhắn của phòng hiện tại
+  useEffect(() => {
+    if (!token || !roomId) return;
+
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`/api/chat/room/${roomId}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error(`Lỗi ${res.status}`);
+        const data = await res.json();
+        setChatMessages(data);
+      } catch (err) {
+        console.error("Lỗi load tin nhắn:", err);
+      }
+    };
+
+    fetchMessages();
+  }, [roomId, token]);
+
+  // Auto scroll khi có tin nhắn mới
+//   useEffect(() => {
+//   if (chatEndRef.current) {
+//     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+//   }
+// }, [chatMessages]);
+
+
   // Gửi tin nhắn
   const handleSendMessage = async () => {
     if (!message.trim()) return;
@@ -76,10 +79,7 @@ export default function ChatRoom() {
       return;
     }
 
-    const msgObj = {
-      content: message,
-      senderId: accountId,
-    };
+    const msgObj = { content: message, senderId: accountId };
 
     try {
       const res = await fetch(`/api/chat/room/${roomId}/message`, {
@@ -107,37 +107,39 @@ export default function ChatRoom() {
       ? currentRoom.sellerName
       : currentRoom.buyerName);
 
-  const formatTime = (time) => {
-    return new Date(time).toLocaleTimeString("vi-VN", {
+  const formatTime = (time) =>
+    new Date(time).toLocaleTimeString("vi-VN", {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
   return (
     <div className="chat-container">
+      {/* Sidebar hiển thị danh sách phòng chat */}
       <div className="chat-sidebar">
         <h3>Đoạn chat</h3>
         <ul>
-          {chatRooms.map((room) => (
+          {chatRooms.map((room) => (<Link to={`/chat/${room.roomId}`} className="chat-room-link">
             <li
               key={room.roomId}
               className={room.roomId === Number(roomId) ? "active" : ""}
             >
-              <a href={`/chat/${room.roomId}`}>
-                {room.sellerName && room.sellerName !== currentUser.name
-                  ? room.sellerName
-                  : room.buyerName}
-              </a>
-            </li>
+
+              {room.sellerName && room.sellerName !== currentUser.name
+                ? room.sellerName
+                : room.buyerName}
+
+            </li></Link>
           ))}
         </ul>
       </div>
 
+      {/* Khung chat chính */}
       <div className="chat-window">
-        <div className="chat-header">
-          {opponentName || `Phòng chat #${roomId}`}
-        </div>
+        {opponentName && roomId && (
+          <div className="chat-header">
+            {opponentName}
+          </div>)}
 
         <div className="chat-messages">
           {chatMessages.map((msg, idx) => {

@@ -1,4 +1,3 @@
-//chatmessage
 package com.sw.entity;
 
 import java.time.LocalDateTime;
@@ -6,6 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 @Entity
@@ -15,22 +15,22 @@ import lombok.*;
 @Table(name = "ChatMessage")
 public class ChatMessage {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chat_id")
-	private Long chatId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_id")
+    private Long chatId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "room_id")
-	@JsonIgnoreProperties({ "messages", "buyer", "seller" }) // 👈 Tránh vòng lặp khi serialize
-	private ChatRoom chatRoom;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    @JsonIgnoreProperties({ "messages", "buyer", "seller", "hibernateLazyInitializer", "handler" }) // 👈 đầy đủ để tránh lỗi
+    private ChatRoom chatRoom;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "sender_id", nullable = false)
-	@JsonIgnoreProperties({ "user", "role", "orders" }) // 👈 Tránh vòng lặp khi serialize
-	private Account sender;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false)
+    @JsonIgnoreProperties({ "user", "role", "orders", "hibernateLazyInitializer", "handler" }) // 👈 đây là phần lỗi chính
+    private Account sender;
 
-	private String content;
+    private String content;
 
-	private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now();
 }

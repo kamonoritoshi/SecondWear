@@ -47,11 +47,15 @@ public class OrderController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Order> createOrder(@RequestBody Order order,
-			@AuthenticationPrincipal CustomUserDetails userDetails) {
-		order.setAccount(userDetails.getAccount()); // ✅ gán user hiện tại
-		return ResponseEntity.ok(orderService.createOrder(order));
+	public ResponseEntity<Order> createOrder(
+	        @RequestBody Order order,
+	        @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+	    // Chính xác: gán account hiện tại từ JWT
+	    order.setAccount(userDetails.getAccount());
+	    return ResponseEntity.ok(orderService.createOrder(order));
 	}
+
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {

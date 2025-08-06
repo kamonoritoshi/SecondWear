@@ -19,12 +19,16 @@ import com.sw.dto.ChatRoomDTO;
 import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
 import com.sw.service.ChatUserService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @RestController
 @RequestMapping("/api/chat")
 public class ChatUserController {
 	@Autowired
 	private ChatUserService chatService;
+	
+	@Autowired
+    private SimpMessagingTemplate messagingTemplate; // ✅ Thêm dòng này
 
 	@GetMapping("/room")
 	public ResponseEntity<?> getExistingRoom(@RequestParam Long buyerId, @RequestParam Long sellerId) {
@@ -40,21 +44,30 @@ public class ChatUserController {
 	}
 
 	@PostMapping("/room/{roomId}/message")
-	public ResponseEntity<ChatMessageDTO> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessageDTO dto) {
-		if (dto.getSenderId() == null || dto.getContent() == null || dto.getContent().isBlank()) {
-			return ResponseEntity.badRequest().build();
-		}
-		ChatMessage saved = chatService.sendMessage(roomId, dto.getSenderId(), dto.getContent());
-		ChatMessageDTO response = new ChatMessageDTO(
-			saved.getChatId(),
-			saved.getContent(),
-			saved.getSender().getUser().getName(),  
-			saved.getSender().getAccountId(),
-			saved.getChatRoom().getRoomId(),
-			saved.getTimestamp()
-		);
-		return ResponseEntity.ok(response);
-	}
+    public ResponseEntity<ChatMessageDTO> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessageDTO dto) {
+        if (dto.getSenderId() == null || dto.getContent() == null || dto.getContent().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ChatMessage saved = chatService.sendMessage(roomId, dto.getSenderId(), dto.getContent());
+
+        ChatMessageDTO response = new ChatMessageDTO(
+            saved.getChatId(),
+            saved.getContent(),
+            saved.getSender().getUser().getName(),
+            saved.getSender().getAccountId(),
+            saved.getChatRoom().getRoomId(),
+            saved.getTimestamp()
+        );
+
+        // ✅ Gửi thông điệp đến các client đang subscribe room
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
+
+        // ✅ Broadcast cho danh sách phòng chat
+        messagingTemplate.convertAndSend("/topic/chat/rooms", response);
+
+        return ResponseEntity.ok(response);
+    }
 
 
 	@GetMapping("/room/{roomId}/messages")
@@ -75,14 +88,34 @@ public class ChatUserController {
 
 	@GetMapping("/rooms/{accountId}")
 	public ResponseEntity<List<ChatRoomDTO>> getChatRooms(@PathVariable Long accountId) {
+	    System.out.println("📥 Nhận yêu cầu lấy phòng chat cho accountId = " + accountId);
+	    
 	    List<ChatRoom> rooms = chatService.getChatRooms(accountId);
-	    List<ChatRoomDTO> dtoList = rooms.stream()
-	        .map(room -> new ChatRoomDTO(
+	    System.out.println("📦 Số lượng phòng tìm thấy: " + rooms.size());
+
+	    List<ChatRoomDTO> dtoList = rooms.stream().map(room -> {
+	        String lastMessage = room.getMessages() != null && !room.getMessages().isEmpty()
+	            ? room.getMessages()
+	                  .stream()
+	                  .max((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()))
+	                  .map(ChatMessage::getContent)
+	                  .orElse("...")
+	            : "...";
+
+	        System.out.println("🧾 Phòng ID: " + room.getRoomId()
+	            + ", Buyer: " + room.getBuyer().getUser().getName()
+	            + ", Seller: " + room.getSeller().getUser().getName()
+	            + ", Last Msg: " + lastMessage);
+
+	        return new ChatRoomDTO(
 	            room.getRoomId(),
 	            room.getBuyer().getUser().getName(),
-	            room.getSeller().getUser().getName()
-	        ))
-	        .toList();
+	            room.getSeller().getUser().getName(),
+	            lastMessage
+	        );
+	    }).toList();
+
 	    return ResponseEntity.ok(dtoList);
 	}
+
 }
