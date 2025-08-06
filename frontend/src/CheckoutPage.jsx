@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "./contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -11,13 +12,18 @@ const CheckoutPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!currentUser) return;
+  const location = useLocation();
 
-    const cartKey = `cart_${currentUser.email}`;
-    const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-    setCartItems(cart);
-  }, [currentUser]);
+  useEffect(() => {
+    if (location.state?.items) {
+      setCartItems(location.state.items);
+    } else if (currentUser) {
+      const cartKey = `cart_${currentUser.email}`;
+      const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+      setCartItems(cart);
+    }
+  }, [currentUser, location.state]);
+
 
   const getToken = () =>
     localStorage.getItem("jwtToken") || localStorage.getItem("jwt");
@@ -32,6 +38,7 @@ const CheckoutPage = () => {
 
     try {
       const token = getToken();
+      console.log("JWT:", token);
       if (!token) {
         alert("Bạn cần đăng nhập");
         setIsLoading(false);
@@ -40,6 +47,7 @@ const CheckoutPage = () => {
 
       // 1. Tạo đơn hàng
       const orderPayload = {
+        //accountId: currentUser?.accountId, // 👈 thêm dòng này
         status: "Đang xử lý",
         items: cartItems.map((item) => ({
           product: { productId: item.productId },
@@ -47,6 +55,7 @@ const CheckoutPage = () => {
           status: "Đang xử lý",
         })),
       };
+
 
       const orderRes = await axios.post("/api/orders", orderPayload, {
         headers: { Authorization: `Bearer ${token}` },
@@ -171,7 +180,7 @@ const CheckoutPage = () => {
               onChange={() => setSelectedMethod("payos")}
             />
             <span style={{ marginLeft: "8px" }}>
-              Thanh toán qua PayOS 
+              Thanh toán qua PayOS
             </span>
           </label>
           <label>

@@ -199,6 +199,8 @@ export const translations = {
         'quantity_label': 'Số lượng',
         'quantity_in_stock': 'Số lượng còn',
         'modal_add_to_cart_button_label': 'Thêm vào giỏ hàng',
+        'stock' : 'Còn hàng',
+        'out_of_stock': 'Hết hàng',
         // Cart Page
         'cart_error_loading': 'Lỗi khi tải giỏ hàng',
         'cart_unknown_shop': 'Cửa hàng không xác định',

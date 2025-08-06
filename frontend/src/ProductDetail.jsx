@@ -78,13 +78,18 @@ const ProductDetail = ({ t, setCartCount }) => {
   const handleStartChat = async () => {
     const token = localStorage.getItem("jwtToken");
     const buyerId = currentUser?.accountId;
+    const sellerId = product?.account?.accountId;
 
     if (!token) {
       toast.error("Bạn cần đăng nhập để chat với shop");
       return;
     }
 
-    const sellerId = product?.account?.accountId;
+    // ❗ CHẶN seller tự chat với chính sản phẩm của mình
+    if (buyerId === sellerId) {
+      toast.error("Bạn không thể chat với sản phẩm của chính mình!");
+      return;
+    }
 
     if (!product || !sellerId) {
       toast.error("Không lấy được thông tin người bán.");
@@ -140,16 +145,22 @@ const ProductDetail = ({ t, setCartCount }) => {
 
   const handleQuantityChange = useCallback(
     (type) => {
-      if (!product || !product.quantity) return;
+      if (!product) return;
 
       setQuantity((prev) => {
+        const stock = product.quantity || 0;
+
+        if (stock === 0) return 0;
+
         if (type === "decrease" && prev > 1) return prev - 1;
-        if (type === "increase" && prev < product.quantity) return prev + 1;
+        if (type === "increase" && prev < stock) return prev + 1;
+
         return prev;
       });
     },
     [product]
   );
+
 
   const handleAddToCart = useCallback(async () => {
     console.debug("[AddToCart] Triggered", {
@@ -160,15 +171,16 @@ const ProductDetail = ({ t, setCartCount }) => {
       selectedSize,
       quantity,
     });
+
     if (!isAuthenticated) {
-      alert(t("please_login_to_add_to_cart"));
+      alert(t("Bạn phải đăng nhập để thêm sản phẩm vào giỏ hàng"));
       console.warn("[AddToCart] Not authenticated");
       navigate("/login");
       return;
     }
 
     if (!product || !selectedColor || !selectedSize) {
-      alert(t("please_select_all_product_info"));
+      alert(t("Bạn cần chọn đầy đủ màu sắc, kích cỡ và số lượng"));
       console.warn("[AddToCart] Missing product/color/size", {
         product,
         selectedColor,
@@ -177,7 +189,6 @@ const ProductDetail = ({ t, setCartCount }) => {
       return;
     }
 
-    // Lưu giỏ hàng vào localStorage theo email (nếu có)
     try {
       const userEmail = currentUser?.email;
       if (!userEmail) {
@@ -185,6 +196,16 @@ const ProductDetail = ({ t, setCartCount }) => {
         console.error("[AddToCart] Missing user email", currentUser);
         return;
       }
+
+      // Gọi API lấy tồn kho mới nhất
+      const res = await fetch(`${API_BASE_URL}/api/products/${product.productId}`);
+      if (!res.ok) {
+        throw new Error("Không thể lấy thông tin tồn kho mới nhất!");
+      }
+      const latestProduct = await res.json();
+      const latestQuantity = latestProduct.quantity;
+
+      // Đọc giỏ hàng từ localStorage
       const cartKey = `cart_${userEmail}`;
       let cart = [];
       const cartStr = localStorage.getItem(cartKey);
@@ -197,18 +218,35 @@ const ProductDetail = ({ t, setCartCount }) => {
           cart = [];
         }
       }
-      // Kiểm tra sản phẩm đã có trong giỏ chưa (cùng productId, color, size)
+
+      // Kiểm tra sản phẩm đã có trong giỏ chưa
       const existingIndex = cart.findIndex(
         (item) =>
           item.productId === product.productId &&
           item.color === selectedColor &&
           item.size === selectedSize
       );
-      console.debug("[AddToCart] Existing index:", existingIndex, cart);
+
       if (existingIndex !== -1) {
-        cart[existingIndex].quantity += quantity;
+        const totalQuantity = cart[existingIndex].quantity + quantity;
+        if (totalQuantity > latestQuantity) {
+          alert(
+            `Số lượng cộng dồn (${totalQuantity}) vượt quá tồn kho hiện tại (${latestQuantity}).`
+          );
+          console.warn("[AddToCart] Vượt tồn kho, không cộng thêm");
+          return;
+        }
+        cart[existingIndex].quantity = totalQuantity;
         console.info("[AddToCart] Updated quantity:", cart[existingIndex]);
       } else {
+        if (quantity > latestQuantity) {
+          alert(
+            `Sản phẩm đã hết hàng.`
+          );
+          console.warn("[AddToCart] Quá số lượng cho phép");
+          return;
+        }
+
         const newItem = {
           productId: product.productId,
           name: product.name,
@@ -220,7 +258,7 @@ const ProductDetail = ({ t, setCartCount }) => {
           color: selectedColor,
           size: selectedSize,
           quantity: quantity,
-          maxQuantity: product.quantity,
+          maxQuantity: latestQuantity,
           shopName:
             product.account?.user?.name ||
             product.shopName ||
@@ -230,28 +268,34 @@ const ProductDetail = ({ t, setCartCount }) => {
         cart.push(newItem);
         console.info("[AddToCart] Added new item:", newItem);
       }
+
+      // Lưu lại giỏ hàng
       localStorage.setItem(cartKey, JSON.stringify(cart));
       console.debug("[AddToCart] Saved cart:", cartKey, cart);
+
       if (typeof setCartCount === "function") {
         setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
       }
+
       alert("Thêm vào giỏ hàng thành công!");
       setIsOptionsModalOpen(false);
     } catch (err) {
-      alert("Lỗi khi lưu giỏ hàng: " + err.message);
+      alert("Lỗi khi thêm vào giỏ hàng: " + err.message);
       console.error("[AddToCart] Exception", err);
     }
   }, [
     isAuthenticated,
     currentUser,
     product,
-    quantity,
     selectedColor,
     selectedSize,
+    quantity,
     setCartCount,
+    setIsOptionsModalOpen,
     t,
     navigate,
   ]);
+
 
   const handleLikeToggle = useCallback(() => setIsLiked((prev) => !prev), []);
   const openOptionsModal = useCallback(() => setIsOptionsModalOpen(true), []);
@@ -366,9 +410,8 @@ const ProductDetail = ({ t, setCartCount }) => {
                       objectFit: "contain",
                       display: "block",
                     }}
-                    className={`thumbnail-image${
-                      selectedImage === image.imageUrl ? " active" : ""
-                    }`}
+                    className={`thumbnail-image${selectedImage === image.imageUrl ? " active" : ""
+                      }`}
                   />
                 </div>
               ))}
@@ -512,9 +555,8 @@ const ProductDetail = ({ t, setCartCount }) => {
               <p>{t("color_label")}:</p>
               <div className="options-wrapper">
                 <button
-                  className={`option-button ${
-                    selectedColor === product.color ? "selected" : ""
-                  }`}
+                  className={`option-button ${selectedColor === product.color ? "selected" : ""
+                    }`}
                   onClick={() => setSelectedColor(product.color)}
                 >
                   {product.color}
@@ -525,9 +567,8 @@ const ProductDetail = ({ t, setCartCount }) => {
               <p>{t("size_label")}:</p>
               <div className="options-wrapper">
                 <button
-                  className={`option-button ${
-                    selectedSize === product.size ? "selected" : ""
-                  }`}
+                  className={`option-button ${selectedSize === product.size ? "selected" : ""
+                    }`}
                   onClick={() => setSelectedSize(product.size)}
                 >
                   {product.size}
@@ -535,29 +576,38 @@ const ProductDetail = ({ t, setCartCount }) => {
               </div>
             </div>
             <div className="option-group quantity-control">
-              <p>{t("quantity_label")}:</p>{" "}
+              <p>{t("quantity_label")}:</p>
               <div className="quantity-input-wrapper">
                 <button
                   className="quantity-btn"
                   onClick={() => handleQuantityChange("decrease")}
+                  disabled={product.quantity === 0}
                 >
                   -
                 </button>
+
                 <input
                   type="number"
-                  value={quantity}
-                  min="1"
+                  value={product.quantity === 0 ? 0 : quantity}
+                  min={product.quantity === 0 ? 0 : 1}
                   readOnly
                   className="quantity-input"
                 />
                 <button
                   className="quantity-btn"
                   onClick={() => handleQuantityChange("increase")}
+                  disabled={product.quantity === 0}
                 >
                   +
                 </button>
-                <span className="stock-info">
-                  {t("quantity_in_stock")}: {product.quantity}
+
+                <span
+                  className="stock-info"
+                  style={{ color: product.quantity === 0 ? "red" : undefined }}
+                >
+                  {product.quantity === 0
+                    ? t("out_of_stock")
+                    : `${t("quantity_label")}: ${product.quantity}`}
                 </span>
               </div>
             </div>
@@ -566,10 +616,12 @@ const ProductDetail = ({ t, setCartCount }) => {
               <button
                 className="modal-add-to-cart-button secondary-btn"
                 onClick={handleAddToCart}
+                disabled={product.quantity === 0}
               >
-                {t("modal_add_to_cart_button_label")}
+                {t("add_to_cart_button_label")}
               </button>
             </div>
+
           </div>
         </div>
       )}

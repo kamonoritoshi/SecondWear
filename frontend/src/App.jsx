@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -136,7 +139,9 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
+          {/* <Route path="/chat/rooms/:accountId" element={<ChatRoomsPage />} />*/}
           <Route path="/chat/:roomId" element={<ChatRoom />} />
+          <Route path="/chat/rooms/:accountId" element={<ChatRoom />} />
 
           {/* Seller */}
           <Route
@@ -198,6 +203,18 @@ function App() {
       <ScrollToTop />
       <AppContent />
       <ChatbotWidget />
+
+      {/* ✅ THÊM ToastContainer ở đây để hiện thông báo */}
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </Router>
   );
 }

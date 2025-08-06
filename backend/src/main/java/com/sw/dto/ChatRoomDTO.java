@@ -11,4 +11,5 @@ public class ChatRoomDTO {
     private Long roomId;
     private String buyerName;
     private String sellerName;
+    private String lastMessage;
 }

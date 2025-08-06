@@ -1,5 +1,7 @@
 package com.sw.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,22 +40,23 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/payment/vnpay-return").permitAll()
-                        .requestMatchers("/api/products/**").permitAll() // Thêm dòng này
-                        .requestMatchers("/api/categories/**").permitAll() // Thêm dòng này
-                        .requestMatchers("/api/payment/return", "/api/payment/cancel", "/test_payos.html").permitAll()
-                        .requestMatchers("/api/seller/**").hasAuthority("ROLE_seller")
-                        .requestMatchers("/api/seller/revenue/**").permitAll()
+                	    .requestMatchers("/ws/**").permitAll() // ✅ Thêm dòng này
+                	    .requestMatchers("/api/auth/**").permitAll()
+                	    .requestMatchers("/api/payment/vnpay-return").permitAll()
+                	    .requestMatchers("/api/products/**").permitAll()
+                	    .requestMatchers("/api/categories/**").permitAll()
+                	    .requestMatchers("/api/payment/return", "/api/payment/cancel", "/test_payos.html").permitAll()
+                	    .requestMatchers("/api/seller/**").hasAuthority("ROLE_seller")
+                	    .requestMatchers("/api/seller/revenue/**").permitAll()
+                	    .requestMatchers("/api/admin/**").hasAuthority("ROLE_admin")
+                	    .requestMatchers("/api/orders/**").authenticated()
+                	    .requestMatchers("/api/accounts/me").authenticated()
+                	    .requestMatchers("/api/users/me").authenticated()
+                	    .requestMatchers("/api/payments/**").permitAll()
+                	    .requestMatchers("/api/chatbot/**").permitAll()
+                	    .anyRequest().authenticated()
+                	)
 
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_admin")
-                        .requestMatchers("/api/orders/**").authenticated()
-                        .requestMatchers("/api/accounts/me").authenticated()
-                        .requestMatchers("/api/users/me").authenticated()
-                        .requestMatchers("/api/payments/**").permitAll()
-                        .requestMatchers("/api/chatbot/**").permitAll()
-                        .anyRequest().authenticated()
-                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -75,13 +78,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOriginPattern("*"); // hoặc chỉ định 'http://localhost:5500'
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
-        config.setAllowCredentials(false); // nếu không dùng cookie/JWT gửi qua header
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // ✅ Cụ thể, KHÔNG dùng "*"
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type")); // ✅ rõ ràng
+        config.setAllowCredentials(true); // ✅ PHẢI đặt true để SockJS hoạt động
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 }
