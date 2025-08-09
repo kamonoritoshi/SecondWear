@@ -2841,14 +2841,130 @@ body.dark-mode .footer-link:hover {
 }
 
 .chat-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 50%;
-  transition: background 0.2s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background 0.2s ease;
 }
 
 .chat-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Favorites Page ===== */
+.favorites-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 10px;
+}
+
+.favorites-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #111827;
+}
+
+/* Tabs */
+.favorites-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.favorites-tab {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.favorites-tab.active {
+    color: #2563eb;
+    border-bottom: 2px solid #2563eb;
+    font-weight: 600;
+}
+
+.favorites-tab:hover {
+    color: #1d4ed8;
+}
+
+/* Search */
+.favorites-search {
+    margin-bottom: 20px;
+}
+
+.favorites-search input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.favorites-search input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Grid */
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+/* Card */
+.favorites-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: 0.2s ease-in-out;
+}
+
+.favorites-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.favorites-card-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.favorites-card-info h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.favorites-card-info p {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* Empty State */
+.favorites-empty {
+    text-align: center;
+    padding: 40px 0;
+    color: #6b7280;
+}
+
+.favorites-empty-img {
+    width: 100px;
+    margin-bottom: 15px;
+    opacity: 0.6;
 }

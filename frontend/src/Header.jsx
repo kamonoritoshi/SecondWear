@@ -477,6 +477,22 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                         {t("menu_my_orders")}
                       </Link>
 
+                      {/* Nút Yêu thích */}
+                      <Link
+                        to="/favorites"
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: '10px 22px',
+                          color: 'var(--main-text)',
+                          textDecoration: 'none',
+                          display: 'block'
+                        }}
+                      >
+                        {t("Yêu thích")}
+                      </Link>
+
                       {/* Nút Tin nhắn */}
                       <Link
                         to={`/chat/rooms/${accountId}`}
