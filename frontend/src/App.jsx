@@ -31,6 +31,7 @@ import SuccessPage from "./SuccessPage";
 import OrderPage from "./OrderPage";
 import ChatbotWidget from './components/ChatbotWidget';
 import ChatRoom from './ChatRoom';
+import Favorites from "./Favorites";
 
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
@@ -142,6 +143,8 @@ const AppContent = () => {
           {/* <Route path="/chat/rooms/:accountId" element={<ChatRoomsPage />} />*/}
           <Route path="/chat/:roomId" element={<ChatRoom />} />
           <Route path="/chat/rooms/:accountId" element={<ChatRoom />} />
+            
+          <Route path="/favorites" element={<Favorites />} />
 
           {/* Seller */}
           <Route
@@ -185,12 +188,12 @@ const AppContent = () => {
 
       {!isAdminOrSellerRoute && (
         <>
-        <Footer
-          t={t}
-          currentTheme={theme}
-          setTheme={setTheme}
-          handleLanguageChange={setLanguage}
-        />
+          <Footer
+            t={t}
+            currentTheme={theme}
+            setTheme={setTheme}
+            handleLanguageChange={setLanguage}
+          />
         </>
       )}
     </div>
