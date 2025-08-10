@@ -1,3 +1,39 @@
+.account-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dashboard-card {
+  flex: 1 1 calc(20% - 16px); /* 4 thẻ trên 1 hàng */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  min-width: 180px;
+}
+
+.dashboard-card.total { background-color: #4a90e2; }
+.dashboard-card.active { background-color: #27ae60; }
+.dashboard-card.inactive { background-color: #c0392b; }
+.dashboard-card.spending { background-color: #f39c12; }
+
+.dashboard-card p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.dashboard-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+
 .customer-list {
   padding: 32px;
   background-color: #f8fafc;

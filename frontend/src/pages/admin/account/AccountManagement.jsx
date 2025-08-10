@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Ban, RotateCw, KeyRound } from "lucide-react";
+import { Ban, RotateCw, KeyRound, Users, Shield, Store, UserX } from "lucide-react";
 import axios from "axios";
 import "../css/AccountManagement.css";
 
@@ -9,22 +9,29 @@ export default function AccountManagement() {
   const [accounts, setAccounts] = useState([]);
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [keyword, setKeyword] = useState(""); // Giá trị người dùng nhập
-  const [searchKeyword, setSearchKeyword] = useState(""); // Giá trị dùng khi fetch
+  const [keyword, setKeyword] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const [stats, setStats] = useState({
+    total: 0,
+    admin: 0,
+    seller: 0,
+    customer: 0,
+    active: 0,
+    inactive: 0,
+  });
 
   const fetchAccounts = () => {
     const params = new URLSearchParams();
     if (roleFilter) params.append("role", roleFilter);
     if (statusFilter) params.append("status", statusFilter);
     if (searchKeyword) params.append("keyword", searchKeyword);
-    params.append("page", currentPage); // thêm tham số trang
-    params.append("size", 20); // số item mỗi trang
+    params.append("page", currentPage);
+    params.append("size", 20);
 
     axios
       .get(`/api/admin/accounts?${params.toString()}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-        },
+        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
       })
       .then((res) => {
         setAccounts(res.data.content);
@@ -33,43 +40,87 @@ export default function AccountManagement() {
       .catch((err) => console.error("Lỗi tải danh sách tài khoản:", err));
   };
 
-  // Chỉ gọi lại khi các bộ lọc thay đổi (không phải khi người dùng đang gõ)
+  const fetchStats = () => {
+    // Lấy thống kê dựa trên tất cả các trang
+    const paramsBase = new URLSearchParams();
+    if (roleFilter) paramsBase.append("role", roleFilter);
+    if (statusFilter) paramsBase.append("status", statusFilter);
+    if (searchKeyword) paramsBase.append("keyword", searchKeyword);
+    paramsBase.append("size", 100); // lấy nhiều nhất có thể mỗi trang để giảm số lần gọi
+
+    // Gọi trang đầu tiên trước để biết totalPages
+    axios
+      .get(`/api/admin/accounts?${paramsBase.toString()}&page=0`, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+      })
+      .then(async (res) => {
+        const totalPages = res.data.totalPages;
+        let allAccounts = [...res.data.content];
+
+        // Nếu còn trang khác, gọi tiếp
+        if (totalPages > 1) {
+          const requests = [];
+          for (let page = 1; page < totalPages; page++) {
+            requests.push(
+              axios.get(`/api/admin/accounts?${paramsBase.toString()}&page=${page}`, {
+                headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+              })
+            );
+          }
+          const responses = await Promise.all(requests);
+          responses.forEach((r) => {
+            allAccounts = allAccounts.concat(r.data.content);
+          });
+        }
+
+        // Cập nhật thống kê từ toàn bộ dữ liệu
+        setStats({
+          total: res.data.totalElements || allAccounts.length,
+          admin: allAccounts.filter((a) => a.role?.roleName === "admin").length,
+          seller: allAccounts.filter((a) => a.role?.roleName === "seller").length,
+          customer: allAccounts.filter((a) => a.role?.roleName === "customer").length,
+          active: allAccounts.filter((a) => a.status === "active").length,
+          inactive: allAccounts.filter((a) => a.status === "inactive").length,
+        });
+      })
+      .catch((err) => console.error("Lỗi tải thống kê tài khoản:", err));
+  };
+
   useEffect(() => {
     fetchAccounts();
+    fetchStats(); // gọi riêng để thống kê toàn bộ
   }, [roleFilter, statusFilter, searchKeyword, currentPage]);
 
   const translateRole = (role) => {
     switch (role) {
-      case "admin":
-        return "Quản trị viên";
-      case "seller":
-        return "Người bán";
-      case "customer":
-        return "Khách hàng";
-      default:
-        return "Không xác định";
+      case "admin": return "Quản trị viên";
+      case "seller": return "Người bán";
+      case "customer": return "Khách hàng";
+      default: return "Không xác định";
     }
   };
 
   const handleDisableAccount = (accountId) => {
     axios
       .put(`/api/admin/accounts/${accountId}/disable`, null, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-        },
+        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
       })
-      .then(() => fetchAccounts())
+      .then(() => {
+        fetchAccounts();
+        fetchStats();
+      })
       .catch((err) => console.error("Lỗi vô hiệu hóa tài khoản:", err));
   };
 
   const handleEnableAccount = (accountId) => {
     axios
       .put(`/api/admin/accounts/${accountId}/enable`, null, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-        },
+        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
       })
-      .then(() => fetchAccounts())
+      .then(() => {
+        fetchAccounts();
+        fetchStats();
+      })
       .catch((err) => console.error("Lỗi khôi phục tài khoản:", err));
   };
 
@@ -77,9 +128,7 @@ export default function AccountManagement() {
     if (window.confirm("Bạn có chắc chắn muốn đặt lại mật khẩu?")) {
       axios
         .put(`/api/admin/accounts/${accountId}/reset-password`, null, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-          },
+          headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
         })
         .then(() => alert("Mật khẩu đã được đặt lại."))
         .catch((err) => console.error("Lỗi đặt lại mật khẩu:", err));
@@ -90,21 +139,62 @@ export default function AccountManagement() {
     <div className="account-management">
       <h2>Quản lý tài khoản</h2>
 
+      {/* Dashboard tóm tắt */}
+      <div className="account-dashboard">
+        <div className="dashboard-card total">
+          <Users size={28} />
+          <div>
+            <p>Tổng tài khoản</p>
+            <h3>{stats.total}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card admin">
+          <Shield size={28} />
+          <div>
+            <p>Quản trị viên</p>
+            <h3>{stats.admin}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card seller">
+          <Store size={28} />
+          <div>
+            <p>Người bán</p>
+            <h3>{stats.seller}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card customer">
+          <Users size={28} />
+          <div>
+            <p>Khách hàng</p>
+            <h3>{stats.customer}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card active">
+          <Users size={28} />
+          <div>
+            <p>Đang hoạt động</p>
+            <h3>{stats.active}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card inactive">
+          <UserX size={28} />
+          <div>
+            <p>Vô hiệu hóa</p>
+            <h3>{stats.inactive}</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Bộ lọc */}
       <div className="filters">
-        <select
-          onChange={(e) => setRoleFilter(e.target.value)}
-          value={roleFilter}
-        >
+        <select onChange={(e) => setRoleFilter(e.target.value)} value={roleFilter}>
           <option value="">-- Tất cả vai trò --</option>
           <option value="admin">Quản trị viên</option>
           <option value="seller">Người bán</option>
           <option value="customer">Khách hàng</option>
         </select>
 
-        <select
-          onChange={(e) => setStatusFilter(e.target.value)}
-          value={statusFilter}
-        >
+        <select onChange={(e) => setStatusFilter(e.target.value)} value={statusFilter}>
           <option value="">-- Tất cả trạng thái --</option>
           <option value="active">Đang hoạt động</option>
           <option value="inactive">Đã vô hiệu hóa</option>
@@ -119,6 +209,7 @@ export default function AccountManagement() {
         <button onClick={() => setSearchKeyword(keyword)}>Tìm kiếm</button>
       </div>
 
+      {/* Bảng tài khoản */}
       <table className="account-table">
         <thead>
           <tr>
@@ -181,6 +272,7 @@ export default function AccountManagement() {
         </tbody>
       </table>
 
+      {/* Phân trang */}
       <div className="pagination">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
@@ -200,9 +292,7 @@ export default function AccountManagement() {
         ))}
 
         <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-          }
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
           disabled={currentPage === totalPages - 1}
         >
           Sau &raquo;

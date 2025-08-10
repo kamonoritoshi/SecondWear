@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "../css/CustomerList.css";
 import axios from "axios";
+import { Users, UserCheck, UserX } from "lucide-react";
 
 export default function CustomerList() {
   const [customers, setCustomers] = useState([]);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    totalSpending: 0
+  });
 
   useEffect(() => {
     fetchCustomers();
@@ -15,7 +22,21 @@ export default function CustomerList() {
         Authorization: "Bearer " + localStorage.getItem("jwtToken"),
       };
       const res = await axios.get("/api/admin/customers", { headers });
-      setCustomers(res.data);
+      const allCustomers = res.data;
+      setCustomers(allCustomers);
+
+      // Tính toán thống kê từ toàn bộ dữ liệu
+      const total = allCustomers.length;
+      const active = allCustomers.filter(c => c.status === "active").length;
+      const inactive = total - active;
+      const totalSpending = allCustomers.reduce((sum, c) => sum + (c.totalSpending || 0), 0);
+
+      setStats({
+        total,
+        active,
+        inactive,
+        totalSpending
+      });
     } catch (err) {
       console.error("❌ Lỗi lấy danh sách khách hàng:", err);
     }
@@ -28,8 +49,6 @@ export default function CustomerList() {
         Authorization: "Bearer " + localStorage.getItem("jwtToken"),
       };
       await axios.put(url, null, { headers });
-
-      // Cập nhật lại danh sách
       fetchCustomers();
     } catch (err) {
       console.error("❌ Lỗi cập nhật trạng thái:", err);
@@ -39,6 +58,40 @@ export default function CustomerList() {
   return (
     <div className="customer-list">
       <h2>Danh sách khách hàng</h2>
+
+      {/* Dashboard tóm tắt */}
+      <div className="account-dashboard">
+        <div className="dashboard-card total">
+          <Users size={28} />
+          <div>
+            <p>Tổng khách hàng</p>
+            <h3>{stats.total}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card active">
+          <UserCheck size={28} />
+          <div>
+            <p>Đang hoạt động</p>
+            <h3>{stats.active}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card inactive">
+          <UserX size={28} />
+          <div>
+            <p>Tạm ngưng</p>
+            <h3>{stats.inactive}</h3>
+          </div>
+        </div>
+        <div className="dashboard-card spending">
+          <Users size={28} />
+          <div>
+            <p>Tổng chi tiêu</p>
+            <h3>{stats.totalSpending.toLocaleString()}₫</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Bảng danh sách */}
       <table className="account-table">
         <thead>
           <tr>

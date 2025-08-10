@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/OrderManagement.css";
+import {
+  FaShoppingCart,
+  FaMoneyBillWave,
+  FaCheckCircle,
+  FaHourglassHalf,
+  FaTruck,
+  FaTimesCircle,
+  FaCreditCard,
+} from "react-icons/fa";
 
 export default function OrderManagementAdmin() {
   const [orders, setOrders] = useState([]);
@@ -23,10 +32,23 @@ export default function OrderManagementAdmin() {
       .catch((err) => console.error("Lỗi khi tải đơn hàng:", err));
   }, []);
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesStatus =
-      !statusFilter || order.status === statusFilter;
+  // --- TÍNH TOÁN SỐ LIỆU DASHBOARD ---
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+  const completedOrders = orders.filter(
+    (o) => o.status === "Hoàn thành"
+  ).length;
+  const processingOrders = orders.filter(
+    (o) => o.status === "Đang xử lý"
+  ).length;
+  const deliveredOrders = orders.filter((o) => o.status === "Đã giao").length;
+  const cancelledOrders = orders.filter((o) => o.status === "Hủy").length;
+  const paidOrders = orders.filter(
+    (o) => o.paymentStatus === "Đã thanh toán"
+  ).length;
 
+  const filteredOrders = orders.filter((order) => {
+    const matchesStatus = !statusFilter || order.status === statusFilter;
     const matchesPayment =
       !paymentFilter || order.paymentStatus === paymentFilter;
 
@@ -40,6 +62,67 @@ export default function OrderManagementAdmin() {
   return (
     <div className="admin-orders">
       <h2>Quản lý đơn hàng</h2>
+
+      {/* DASHBOARD */}
+      <div className="dashboard">
+        <div className="dashboard-card total-orders">
+          <FaShoppingCart className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Tổng đơn hàng</h4>
+            <p>{totalOrders}</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card revenue">
+          <FaMoneyBillWave className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Tổng doanh thu</h4>
+            <p>{totalRevenue.toLocaleString("vi-VN")}₫</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card completed">
+          <FaCheckCircle className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Hoàn thành</h4>
+            <p>{completedOrders}</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card processing">
+          <FaHourglassHalf className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Đang xử lý</h4>
+            <p>{processingOrders}</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card delivered">
+          <FaTruck className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Đã giao</h4>
+            <p>{deliveredOrders}</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card cancelled">
+          <FaTimesCircle className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Hủy</h4>
+            <p>{cancelledOrders}</p>
+          </div>
+        </div>
+
+        <div className="dashboard-card paid">
+          <FaCreditCard className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Đã thanh toán</h4>
+            <p>{paidOrders}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* FILTER */}
       <div className="filter-container">
         <select
           value={statusFilter}
@@ -74,6 +157,8 @@ export default function OrderManagementAdmin() {
           onChange={(e) => setEndDate(e.target.value)}
         />
       </div>
+
+      {/* TABLE */}
       <table className="orders-table">
         <thead>
           <tr>

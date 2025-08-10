@@ -1,3 +1,64 @@
+/* Dashboard container */
+.account-dashboard {
+  display: flex;
+  flex-wrap: wrap; /* Để khi màn hình nhỏ thì thẻ tự xuống hàng */
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Card chung */
+.dashboard-card {
+  flex: 1 1 calc(12.5% - 16px); /* 7 thẻ trên 1 hàng */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  min-width: 100px; /* Đảm bảo không bị quá nhỏ */
+}
+
+/* Màu riêng cho từng loại */
+.dashboard-card.total { background-color: #4cafef; }
+.dashboard-card.admin { background-color: #f44336; }
+.dashboard-card.seller { background-color: #ff9800; }
+.dashboard-card.customer { background-color: #9c27b0; }
+.dashboard-card.active { background-color: #4caf50; }
+.dashboard-card.inactive { background-color: #9e9e9e; }
+
+/* Chữ trong card */
+.dashboard-card p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.dashboard-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+/* Responsive cho màn nhỏ */
+@media (max-width: 1024px) {
+  .dashboard-card {
+    flex: 1 1 calc(33.33% - 16px); /* 3 thẻ / hàng */
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-card {
+    flex: 1 1 calc(50% - 16px); /* 2 thẻ / hàng */
+  }
+}
+
+@media (max-width: 400px) {
+  .dashboard-card {
+    flex: 1 1 100%; /* 1 thẻ / hàng */
+  }
+}
+
 /* Bộ lọc */
 .filters {
   margin-bottom: 24px;

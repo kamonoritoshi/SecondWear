@@ -88,7 +88,7 @@ export default function AdminSidebar() {
             </li>
             <li>
               <NavLink to="/admin/disputes" className={({ isActive }) => isActive ? 'active' : ''}>
-                Tranh chấp
+                Đơn hàng hoàn trả
               </NavLink>
             </li>
           </>
