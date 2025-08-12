@@ -50,9 +50,9 @@ const BlogIcon = (props) => (
 );
 
 // ĐÃ SỬA LẠI ĐÚNG ĐƯỜNG DẪN TƯƠNG ĐỐI
-import globeIcon from "./icons/globe-icon.png";
-import sunIcon from "./icons/sun-icon.png";
-import moonIcon from "./icons/moon-icon.png";
+//import globeIcon from "./icons/globe-icon.png";
+//import sunIcon from "./icons/sun-icon.png";
+//import moonIcon from "./icons/moon-icon.png";
 import blackUser from "./icons/black-user-icon.png";
 import whiteUser from "./icons/white-user-icon.png";
 import logoBlack from "./icons/black-transparent-logo.png";
@@ -78,6 +78,35 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
     navigate("/login"); // Chuyển hướng sau khi logout
   };
 
+  const GlobeIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+             10-4.48 10-10S17.52 2 12 2zm-1 17.93
+             c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1
+             c0 1.1.9 2 2 2v1.93zM11 14H8v-2h3V9l4 4-4 4v-3zm1-12
+             c4.08 0 7.44 3.06 7.93 7h-1.93c-.5-2.83-2.99-5-6-5V2.07z" />
+    </svg>
+  );
+
+  const SunIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8
+             1.42-1.42zM1 13h3v-2H1v2zm10
+             9h2v-3h-2v3zm9-9h3v-2h-3v2zm-4.24
+             7.16l1.79 1.8 1.41-1.41-1.8-1.79
+             -1.4 1.4zM12 8a4 4 0 100 8 4 4 0 000-8zm6.24
+             -3.16l1.8-1.79-1.41-1.41-1.79 1.8
+             1.4 1.4zM4.22 19.78l1.79-1.8-1.41-1.41
+             -1.8 1.79 1.42 1.42z" />
+    </svg>
+  );
+
+  const MoonIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M21.75 15.5A9 9 0 0110.5 3.25
+             a7 7 0 1011.25 12.25z" />
+    </svg>
+  );
 
   // --- Cấu trúc dữ liệu cho Menu ---
   // Dễ dàng thay đổi, thêm, bớt hoặc sắp xếp lại menu tại đây
@@ -393,7 +422,7 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                 onClick={() => toggleDropdown("language")}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 10px", borderRadius: 8, display: "flex", alignItems: "center" }}
               >
-                <img src={globeIcon} alt="Language" className="header-icon" />
+                <GlobeIcon style={{ color: "var(--main-text)" }} />
               </button>
               {openDropdown === 'language' && (
                 <div
@@ -415,8 +444,13 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                 onClick={() => toggleDropdown("theme")}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 10px", borderRadius: 8, display: "flex", alignItems: "center" }}
               >
-                <img src={currentTheme === "light" ? sunIcon : moonIcon} alt="Theme" className="header-icon" />
+                {currentTheme === "light" ? (
+                  <SunIcon style={{ color: "var(--main-text)" }} />
+                ) : (
+                  <MoonIcon style={{ color: "var(--main-text)" }} />
+                )}
               </button>
+
               {openDropdown === 'theme' && (
                 <div
                   className="dropdown-menu"
