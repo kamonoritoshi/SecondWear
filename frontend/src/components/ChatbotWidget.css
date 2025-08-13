@@ -1,10 +1,10 @@
+/* Vị trí cố định của widget */
 /* Widget bao toàn bộ: button + box */
 .chatbot-widget {
   position: fixed;
   bottom: 80px;
   right: 12px;
-  z-index: 1000;
-  /* Đẩy lên trên */
+  z-index: 1000; /* Đẩy lên trên */
 }
 
 /* Nút mở chat */
@@ -34,11 +34,9 @@
   0% {
     transform: scale(1);
   }
-
   50% {
     transform: scale(1.4);
   }
-
   100% {
     transform: scale(1);
   }
@@ -74,7 +72,6 @@
     opacity: 0;
     transform: translateY(8px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -91,11 +88,9 @@
   display: flex;
   flex-direction: column;
   position: absolute;
-  bottom: 72px;
-  /* đẩy lên trên nút */
+  bottom: 72px; /* đẩy lên trên nút */
   right: 0;
-  z-index: 1002;
-  /* Cao hơn toggle */
+  z-index: 1002; /* Cao hơn toggle */
 }
 
 /* Header */
@@ -135,11 +130,9 @@
   display: flex;
   margin-bottom: 8px;
 }
-
 .chat-row-user {
   justify-content: flex-end;
 }
-
 .chat-row-bot {
   justify-content: flex-start;
 }
@@ -151,12 +144,10 @@
   max-width: 70%;
   word-wrap: break-word;
 }
-
 .bubble-user {
   background-color: blue;
   color: white;
 }
-
 .bubble-bot {
   background-color: #e5e7eb;
   color: black;
@@ -168,7 +159,6 @@
   border-top: 1px solid #ccc;
   display: flex;
 }
-
 .chatbot-input input {
   flex: 1;
   padding: 10px 12px;
@@ -189,7 +179,6 @@
   border-radius: 8px;
   cursor: pointer;
 }
-
 .chatbot-input button:hover {
   background-color: darkblue;
   display: flex;
@@ -200,7 +189,6 @@
   cursor: pointer;
   margin-top: 6px;
 }
-
 .suggestion-card {
   display: flex;
   align-items: center;
@@ -257,9 +245,9 @@
 }
 
 .chatbot-close {
-  color: white;
+    color: white;
 }
 
 .chatbot-close:hover {
-  color: red;
+    color: red;
 }
