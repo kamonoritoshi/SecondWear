@@ -1,107 +1,100 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../css/PendingProducts.css";
 
-const mockPendingProducts = [
-  {
-    id: 1,
-    name: "Áo thun SecondWear",
-    image: "https://via.placeholder.com/100",
-    sellerName: "Nguyễn Văn A",
-    price: 199000,
-    description: "Chất cotton 100%, form rộng thoải mái.",
-  },
-  {
-    id: 2,
-    name: "Quần jeans vintage",
-    image: "https://via.placeholder.com/100",
-    sellerName: "Trần Thị B",
-    price: 299000,
-    description: "Quần jeans dáng straight từ năm 2000.",
-  },
-];
-
-export default function PendingProducts() {
+const PendingProducts = () => {
   const [products, setProducts] = useState([]);
-  const [reasonMap, setReasonMap] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  const token = localStorage.getItem("jwtToken");
+
+  const fetchPendingProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("/api/admin/products/pending", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Lỗi khi tải sản phẩm pending:", err);
+      toast.error("❌ Lỗi khi tải sản phẩm!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    axios.get("/api/admin/products/pending").then(res => setProducts(res.data));
-    setProducts(mockPendingProducts);
+    fetchPendingProducts();
   }, []);
 
-  const handleApprove = async (id) => {
+  const handleApprove = async (productId) => {
     try {
-      await axios.put(`/api/admin/products/${id}/approve`);
-      alert("✔ Đã phê duyệt sản phẩm!");
-      setProducts(products.filter((p) => p.id !== id));
+      await axios.put(`/api/admin/products/${productId}/approve`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProducts(products.filter((p) => p.productId !== productId));
+      toast.success("Sản phẩm đã được phê duyệt!");
     } catch (err) {
-      console.error(err);
+      console.error("Lỗi khi phê duyệt sản phẩm:", err);
+      toast.error("Lỗi khi phê duyệt sản phẩm!");
     }
   };
 
-  const handleReject = async (id) => {
-    const reason = reasonMap[id] || "";
-    if (!reason.trim()) {
-      alert("Vui lòng nhập lý do từ chối.");
-      return;
-    }
+  const handleReject = async (productId) => {
     try {
-      // await axios.put(`/api/admin/products/${id}/reject`, { reason });
-      alert("❌ Đã từ chối sản phẩm!");
-      setProducts(products.filter((p) => p.id !== id));
+      await axios.put(`/api/admin/products/${productId}/reject`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProducts(products.filter((p) => p.productId !== productId));
+      toast.info("Sản phẩm đã bị từ chối!");
     } catch (err) {
-      console.error(err);
+      console.error("Lỗi khi từ chối sản phẩm:", err);
+      toast.error("Lỗi khi từ chối sản phẩm!");
     }
   };
 
-  const handleReasonChange = (id, value) => {
-    setReasonMap((prev) => ({ ...prev, [id]: value }));
-  };
+  if (loading) return <div className="pending-products">Đang tải sản phẩm...</div>;
 
   return (
     <div className="pending-products">
-      <h2>Danh sách sản phẩm chờ duyệt</h2>
-      <table className="product-table">
-        <thead>
-          <tr>
-            <th>Ảnh</th>
-            <th>Tên sản phẩm</th>
-            <th>Người bán</th>
-            <th>Giá</th>
-            <th>Mô tả</th>
-            <th>Lý do từ chối</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.length === 0 ? (
-            <tr><td colSpan="7">Không có sản phẩm nào đang chờ duyệt.</td></tr>
-          ) : (
-            products.map((p) => (
-              <tr key={p.id}>
-                <td><img src={p.image} alt={p.name} className="thumb" /></td>
-                <td>{p.name}</td>
-                <td>{p.sellerName}</td>
-                <td>{p.price.toLocaleString()}₫</td>
-                <td>{p.description}</td>
-                <td>
-                  <input
-                    type="text"
-                    placeholder="Nhập lý do từ chối"
-                    value={reasonMap[p.id] || ""}
-                    onChange={(e) => handleReasonChange(p.id, e.target.value)}
-                  />
-                </td>
-                <td>
-                  <button className="approve" onClick={() => handleApprove(p.id)}>Phê duyệt</button>
-                  <button className="reject" onClick={() => handleReject(p.id)}>Từ chối</button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      {/* Toast notification container */}
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
+
+      {products.length === 0 ? (
+        <p>Không có sản phẩm nào đang chờ phê duyệt</p>
+      ) : (
+        <div className="product-grid">
+          {products.map((product) => (
+            <div key={product.productId} className="product-card">
+              <img
+                src={product.images?.[0]?.imageUrl || "/placeholder.jpg"}
+                alt={product.name}
+              />
+              <h3>{product.name}</h3>
+              <p className="price">Giá: {product.price?.toLocaleString()}đ</p>
+              <div className="actions">
+                <button
+                  className="approve-btn"
+                  onClick={() => handleApprove(product.productId)}
+                >
+                  <FaCheck />
+                </button>
+                <button
+                  className="reject-btn"
+                  onClick={() => handleReject(product.productId)}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default PendingProducts;

@@ -71,7 +71,7 @@ public class ProductService {
 	    Product product = pDAO.findById(id)
 	        .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
-	    product.setApproved(true);
+	    product.setApproved((byte) 1);
 	    return pDAO.save(product);
 	}
 

@@ -21,7 +21,7 @@ export default function ProductForm() {
     categoryId: "",
     brand: "",
     origin: "",
-    approved: false,
+    approved: 0, // 0: chờ duyệt, 1: đã duyệt, 2: bị từ chối
   });
 
   // Load product khi sửa
@@ -46,7 +46,7 @@ export default function ProductForm() {
             categoryId: data.category?.categoryId || "",
             brand: data.brand || "",
             origin: data.origin || "",
-            approved: data.approved ?? false,
+            approved: data.approved ?? 0,
           });
         })
         .catch((err) => {
@@ -64,79 +64,170 @@ export default function ProductForm() {
 
     try {
       setLoading(true);
-      const response = isEditing
-        ? await axios.put(`/api/seller/products/${id}`, product, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-        : await axios.post("/api/seller/products", product, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+      if (isEditing) {
+        await axios.put(`/api/seller/products/${id}`, product, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await axios.post("/api/seller/products", product, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
 
       alert("✅ Sản phẩm đã được " + (isEditing ? "cập nhật" : "thêm mới"));
       navigate("/seller/products");
     } catch (err) {
       console.error("❌ Cập nhật thất bại:", err);
-      alert("Cập nhật thất bại: " + (err.response?.data?.message || "Lỗi không xác định"));
+      alert(
+        "Cập nhật thất bại: " +
+          (err.response?.data?.message || "Lỗi không xác định")
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === "checkbox" ? checked : value;
-    setProduct({ ...product, [name]: newValue });
+    const { name, value } = e.target;
+    setProduct({ ...product, [name]: value });
+  };
+
+  const getApprovalStatusText = (code) => {
+    switch (code) {
+      case 1:
+        return "✅ Đã duyệt";
+      case 2:
+        return "❌ Bị từ chối";
+      default:
+        return "⏳ Chờ duyệt";
+    }
   };
 
   return (
     <div className="product-form-container">
       <h1>{isEditing ? "CHỈNH SỬA SẢN PHẨM" : "THÊM MỚI SẢN PHẨM"}</h1>
       <form className="product-form" onSubmit={handleSubmit}>
-        <div><label>Tên sản phẩm</label>
-          <input type="text" name="name" value={product.name} onChange={handleChange} required />
+        <div>
+          <label>Tên sản phẩm</label>
+          <input
+            type="text"
+            name="name"
+            value={product.name}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div><label>Mô tả</label>
-          <textarea name="description" value={product.description} onChange={handleChange} />
+        <div>
+          <label>Mô tả</label>
+          <textarea
+            name="description"
+            value={product.description}
+            onChange={handleChange}
+          />
         </div>
-        <div><label>Tình trạng</label>
-          <select name="condition" value={product.condition} onChange={handleChange}>
+        <div>
+          <label>Tình trạng</label>
+          <select
+            name="condition"
+            value={product.condition}
+            onChange={handleChange}
+          >
             <option value="Mới">Mới</option>
             <option value="Đã qua sử dụng">Đã qua sử dụng</option>
           </select>
         </div>
-        <div><label>Kích cỡ</label>
-          <input type="text" name="size" value={product.size} onChange={handleChange} />
+        <div>
+          <label>Kích cỡ</label>
+          <input
+            type="text"
+            name="size"
+            value={product.size}
+            onChange={handleChange}
+          />
         </div>
-        <div><label>Màu sắc</label>
-          <input type="text" name="color" value={product.color} onChange={handleChange} />
+        <div>
+          <label>Màu sắc</label>
+          <input
+            type="text"
+            name="color"
+            value={product.color}
+            onChange={handleChange}
+          />
         </div>
-        <div><label>Giá</label>
-          <input type="number" name="price" value={product.price} onChange={handleChange} required />
+        <div>
+          <label>Giá</label>
+          <input
+            type="number"
+            name="price"
+            value={product.price}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div><label>Tình trạng bán</label>
-          <select name="status" value={product.status} onChange={handleChange}>
+        <div>
+          <label>Tình trạng bán</label>
+          <select
+            name="status"
+            value={product.status}
+            onChange={handleChange}
+          >
             <option value="Đang bán">Đang bán</option>
             <option value="Ngừng bán">Ngừng bán</option>
           </select>
         </div>
-        <div><label>Số lượng</label>
-          <input type="number" name="quantity" value={product.quantity} onChange={handleChange} />
+        <div>
+          <label>Số lượng</label>
+          <input
+            type="number"
+            name="quantity"
+            value={product.quantity}
+            onChange={handleChange}
+          />
         </div>
-        <div><label>Danh mục (ID)</label>
-          <input type="number" name="categoryId" value={product.categoryId} onChange={handleChange} required />
+        <div>
+          <label>Danh mục (ID)</label>
+          <input
+            type="number"
+            name="categoryId"
+            value={product.categoryId}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div><label>Thương hiệu</label>
-          <input type="text" name="brand" value={product.brand} onChange={handleChange} />
+        <div>
+          <label>Thương hiệu</label>
+          <input
+            type="text"
+            name="brand"
+            value={product.brand}
+            onChange={handleChange}
+          />
         </div>
-        <div><label>Xuất xứ</label>
-          <input type="text" name="origin" value={product.origin} onChange={handleChange} />
-        </div>
-        <div><label>Duyệt sản phẩm</label>
-          <input type="checkbox" name="approved" checked={product.approved} onChange={handleChange} />
+        <div>
+          <label>Xuất xứ</label>
+          <input
+            type="text"
+            name="origin"
+            value={product.origin}
+            onChange={handleChange}
+          />
         </div>
 
+        {isEditing && (
+          <div>
+            <label>Trạng thái duyệt:</label>
+            <span className="approval-status">
+              {getApprovalStatusText(product.approved)}
+            </span>
+          </div>
+        )}
+
         <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? "Đang xử lý..." : isEditing ? "Cập nhật" : "Thêm mới"}
+          {loading
+            ? "Đang xử lý..."
+            : isEditing
+            ? "Cập nhật"
+            : "Thêm mới"}
         </button>
       </form>
     </div>

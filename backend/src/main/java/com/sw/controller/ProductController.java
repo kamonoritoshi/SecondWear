@@ -1,6 +1,8 @@
 package com.sw.controller;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,31 +23,45 @@ public class ProductController {
 	@Autowired
     private ProductService productService;
 
-    @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
-    }
+	@GetMapping
+	public List<Product> getAllProducts() {
+	    return productService.getAllProducts()
+	            .stream()
+	            .filter(p -> p.getApproved() != null && p.getApproved() == 1) // chỉ lấy đã duyệt
+	            .collect(Collectors.toList());
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        if (product == null)
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(product);
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+	    Product product = productService.getProductById(id);
+	    if (product == null || product.getApproved() == null || product.getApproved() != 1) {
+	        return ResponseEntity.notFound().build();
+	    }
+	    return ResponseEntity.ok(product);
+	}
 
-    @GetMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
-        return ResponseEntity.ok(productService.searchProductsByName(name));
-    }
+	@GetMapping("/search")
+	public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
+	    List<Product> approvedProducts = productService.searchProductsByName(name)
+	            .stream()
+	            .filter(p -> p.getApproved() != null && p.getApproved() == 1)
+	            .collect(Collectors.toList());
+	    return ResponseEntity.ok(approvedProducts);
+	}
 
-    @GetMapping("/paged")
-    public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
-    }
+	@GetMapping("/paged")
+	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
+	    Page<Product> products = (Page<Product>) productService.getAllProducts(pageable)
+	            .map(p -> p.getApproved() != null && p.getApproved() == 1 ? p : null) // giữ approved == 1
+	            .filter(Objects::nonNull); // loại null
+	    return ResponseEntity.ok(products);
+	}
 
-    @GetMapping("/category/{categoryId}")
-    public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
-        return productService.getProductsByCategory(categoryId);
-    }
+	@GetMapping("/category/{categoryId}")
+	public List<Product> getProductsByCategory(@PathVariable Integer categoryId) {
+	    return productService.getProductsByCategory(categoryId)
+	            .stream()
+	            .filter(p -> p.getApproved() != null && p.getApproved() == 1)
+	            .collect(Collectors.toList());
+	}
 }

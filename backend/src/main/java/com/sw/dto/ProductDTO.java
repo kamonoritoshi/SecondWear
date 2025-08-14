@@ -16,5 +16,6 @@ public class ProductDTO {
     private Long categoryId;
     private String brand;
     private String origin;
-    private Boolean approved;
+    private Byte approved;
+    private String rejectReason;
 }
