@@ -24,7 +24,7 @@ public class AccountController {
 	@Autowired
 	private AccountService accountService;
 	
-	
+	//
 	@GetMapping
 	public List<Account> getAllAccounts() {
 		return accountService.getAllAccounts();
