@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessageDTO {
-	private Long id;
+    private Long id;
     private String content;
+    private String imageUrl; // thêm field này
     private String senderName;
     private Long senderId;
     private Long roomId;

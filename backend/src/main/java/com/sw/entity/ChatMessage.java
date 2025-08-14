@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import lombok.*;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -22,15 +21,20 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
-    @JsonIgnoreProperties({ "messages", "buyer", "seller", "hibernateLazyInitializer", "handler" }) // 👈 đầy đủ để tránh lỗi
+    @JsonIgnoreProperties({ "messages", "buyer", "seller", "hibernateLazyInitializer", "handler" })
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
-    @JsonIgnoreProperties({ "user", "role", "orders", "hibernateLazyInitializer", "handler" }) // 👈 đây là phần lỗi chính
+    @JsonIgnoreProperties({ "user", "role", "orders", "hibernateLazyInitializer", "handler" })
     private Account sender;
 
-    private String content;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String content; // chứa text/emoji
+
+    @Column(name = "image_url", columnDefinition = "NVARCHAR(MAX)")
+    private String imageUrl; // chứa URL ảnh
 
     private LocalDateTime timestamp = LocalDateTime.now();
 }
+

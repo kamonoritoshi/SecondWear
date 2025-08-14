@@ -49,13 +49,14 @@ public class ChatUserService {
 		return chatRoomRepository.findByBuyer_AccountIdAndSeller_AccountId(buyerId, sellerId);
 	}
 
-	public ChatMessage sendMessage(Long roomId, Long senderId, String content) {
+	public ChatMessage sendMessage(Long roomId, Long senderId, String content, String imageUrl) {
 		Account sender = accountRepository.findById(senderId).orElseThrow();
 		ChatRoom room = chatRoomRepository.findById(roomId).orElseThrow();
 		ChatMessage message = new ChatMessage();
 		message.setSender(sender);
 		message.setChatRoom(room);
 		message.setContent(content);
+		message.setImageUrl(imageUrl);
 		message.setTimestamp(LocalDateTime.now());;
 		return chatMessageRepository.save(message);
 	}
