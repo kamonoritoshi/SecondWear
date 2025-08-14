@@ -9,7 +9,7 @@ export default function CustomerList() {
     total: 0,
     active: 0,
     inactive: 0,
-    totalSpending: 0
+    totalSpending: 0,
   });
 
   useEffect(() => {
@@ -27,15 +27,18 @@ export default function CustomerList() {
 
       // Tính toán thống kê từ toàn bộ dữ liệu
       const total = allCustomers.length;
-      const active = allCustomers.filter(c => c.status === "active").length;
+      const active = allCustomers.filter((c) => c.status === "active").length;
       const inactive = total - active;
-      const totalSpending = allCustomers.reduce((sum, c) => sum + (c.totalSpending || 0), 0);
+      const totalSpending = allCustomers.reduce(
+        (sum, c) => sum + (c.totalSpending || 0),
+        0
+      );
 
       setStats({
         total,
         active,
         inactive,
-        totalSpending
+        totalSpending,
       });
     } catch (err) {
       console.error("❌ Lỗi lấy danh sách khách hàng:", err);
@@ -60,33 +63,36 @@ export default function CustomerList() {
       <h2>Danh sách khách hàng</h2>
 
       {/* Dashboard tóm tắt */}
-      <div className="account-dashboard">
+      <div className="dashboard">
         <div className="dashboard-card total">
-          <Users size={28} />
-          <div>
-            <p>Tổng khách hàng</p>
-            <h3>{stats.total}</h3>
+          <Users className="dashboard-icon" size={28} />
+          <div className="dashboard-content">
+            <h4>Tổng khách hàng</h4>
+            <p>{stats.total}</p>
           </div>
         </div>
+
         <div className="dashboard-card active">
-          <UserCheck size={28} />
-          <div>
-            <p>Đang hoạt động</p>
-            <h3>{stats.active}</h3>
+          <UserCheck className="dashboard-icon" size={28} />
+          <div className="dashboard-content">
+            <h4>Đang hoạt động</h4>
+            <p>{stats.active}</p>
           </div>
         </div>
+
         <div className="dashboard-card inactive">
-          <UserX size={28} />
-          <div>
-            <p>Tạm ngưng</p>
-            <h3>{stats.inactive}</h3>
+          <UserX className="dashboard-icon" size={28} />
+          <div className="dashboard-content">
+            <h4>Tạm ngưng</h4>
+            <p>{stats.inactive}</p>
           </div>
         </div>
+
         <div className="dashboard-card spending">
-          <Users size={28} />
-          <div>
-            <p>Tổng chi tiêu</p>
-            <h3>{stats.totalSpending.toLocaleString()}₫</h3>
+          <Users className="dashboard-icon" size={28} />
+          <div className="dashboard-content">
+            <h4>Tổng chi tiêu</h4>
+            <p>{stats.totalSpending.toLocaleString()}₫</p>
           </div>
         </div>
       </div>
@@ -123,7 +129,10 @@ export default function CustomerList() {
                 <button
                   className="action-btn toggle-btn"
                   onClick={() =>
-                    toggleStatus(customer.accountId, customer.status === "active")
+                    toggleStatus(
+                      customer.accountId,
+                      customer.status === "active"
+                    )
                   }
                 >
                   {customer.status === "active" ? "Tạm ngưng" : "Khôi phục"}

@@ -1,35 +1,64 @@
 /* Dashboard seller */
-.seller-dashboard {
-  display: flex;
-  flex-wrap: wrap;
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
-  margin-bottom: 24px;
+  margin: 20px 0;
 }
 
-.seller-dashboard .dashboard-card {
-  flex: 1 1 calc(20% - 16px);
+/* Card style */
+.dashboard-card {
+  display: flex;
+  align-items: center;
   padding: 16px;
   border-radius: 10px;
-  color: #fff;
+  background-color: #fff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Icon style */
+.dashboard-icon {
+  font-size: 28px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+/* Text style */
+.dashboard-content h4 {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.dashboard-content p {
+  font-size: 20px;
   font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  min-width: 180px;
+  margin: 0;
 }
 
-.seller-dashboard .total {
-  background-color: #4a90e2;
-}
-.seller-dashboard .active {
-  background-color: #27ae60;
-}
-.seller-dashboard .inactive {
-  background-color: #c0392b;
-}
-.seller-dashboard .revenue {
-  background-color: #f39c12;
-  /* color: #333; */
+/* Màu từng loại card */
+.dashboard-card.total {
+  color: #4e73df;
 }
 
+.dashboard-card.active {
+  color: #2ecc71;
+}
+
+.dashboard-card.inactive {
+  color: #e74a3b;
+}
+
+.dashboard-card.revenue {
+  color: #f39c12;
+}
 
 :root {
   --bg-light: #f9fafb;

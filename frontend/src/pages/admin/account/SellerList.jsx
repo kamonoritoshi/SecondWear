@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from "react";
+import {
+  FaStore,
+  FaCheckCircle,
+  FaUserSlash,
+  FaMoneyBillWave,
+} from "react-icons/fa";
 import "../css/SellerList.css";
 import axios from "axios";
 
@@ -24,7 +30,7 @@ export default function SellerList() {
 
         // Tính summary
         const total = res.data.length;
-        const active = res.data.filter(s => s.status === "active").length;
+        const active = res.data.filter((s) => s.status === "active").length;
         const inactive = total - active;
         const totalRevenue = res.data.reduce(
           (sum, s) => sum + (s.revenue || 0),
@@ -68,22 +74,37 @@ export default function SellerList() {
       <h2>Danh sách người bán</h2>
 
       {/* Dashboard tóm tắt */}
-      <div className="seller-dashboard">
+      <div className="dashboard">
         <div className="dashboard-card total">
-          <p>Tổng người bán</p>
-          <h3>{stats.total}</h3>
+          <FaStore className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Tổng người bán</h4>
+            <p>{stats.total}</p>
+          </div>
         </div>
+
         <div className="dashboard-card active">
-          <p>Đang hoạt động</p>
-          <h3>{stats.active}</h3>
+          <FaCheckCircle className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Đang hoạt động</h4>
+            <p>{stats.active}</p>
+          </div>
         </div>
+
         <div className="dashboard-card inactive">
-          <p>Tạm ngưng</p>
-          <h3>{stats.inactive}</h3>
+          <FaUserSlash className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Tạm ngưng</h4>
+            <p>{stats.inactive}</p>
+          </div>
         </div>
+
         <div className="dashboard-card revenue">
-          <p>Tổng doanh thu</p>
-          <h3>{stats.totalRevenue.toLocaleString()}₫</h3>
+          <FaMoneyBillWave className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Tổng doanh thu</h4>
+            <p>{stats.totalRevenue.toLocaleString()}₫</p>
+          </div>
         </div>
       </div>
 
