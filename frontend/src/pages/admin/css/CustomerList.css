@@ -1,38 +1,64 @@
-.account-dashboard {
-  display: flex;
-  flex-wrap: wrap;
+/* Dashboard layout */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
+/* Card style */
 .dashboard-card {
-  flex: 1 1 calc(20% - 16px); /* 4 thẻ trên 1 hàng */
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 16px;
   border-radius: 10px;
-  color: #fff;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  min-width: 180px;
+  background-color: #fff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dashboard-card.total { background-color: #4a90e2; }
-.dashboard-card.active { background-color: #27ae60; }
-.dashboard-card.inactive { background-color: #c0392b; }
-.dashboard-card.spending { background-color: #f39c12; }
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
 
-.dashboard-card p {
-  margin: 0;
+/* Icon style */
+.dashboard-icon {
+  font-size: 28px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+/* Text style */
+.dashboard-content h4 {
   font-size: 14px;
-}
-
-.dashboard-card h3 {
+  font-weight: 500;
   margin: 0;
-  font-size: 20px;
+  opacity: 0.85;
 }
 
+.dashboard-content p {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Màu từng loại card */
+.dashboard-card.total {
+  color: #4e73df;
+}
+
+.dashboard-card.active {
+  color: #2ecc71;
+}
+
+.dashboard-card.inactive {
+  color: #e74a3b;
+}
+
+.dashboard-card.spending {
+  color: #f39c12;
+}
 
 .customer-list {
   padding: 32px;

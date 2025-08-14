@@ -1,6 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Ban, RotateCw, KeyRound, Users, Shield, Store, UserX } from "lucide-react";
+import {
+  Ban,
+  RotateCw,
+  KeyRound,
+  Users,
+  Shield,
+  Store,
+  UserX,
+} from "lucide-react";
 import axios from "axios";
+import {
+  FaUsers,
+  FaUserShield,
+  FaStore,
+  FaUser,
+  FaCheckCircle,
+  FaUserSlash,
+} from "react-icons/fa";
 import "../css/AccountManagement.css";
 
 export default function AccountManagement() {
@@ -31,7 +47,9 @@ export default function AccountManagement() {
 
     axios
       .get(`/api/admin/accounts?${params.toString()}`, {
-        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        },
       })
       .then((res) => {
         setAccounts(res.data.content);
@@ -51,7 +69,9 @@ export default function AccountManagement() {
     // Gọi trang đầu tiên trước để biết totalPages
     axios
       .get(`/api/admin/accounts?${paramsBase.toString()}&page=0`, {
-        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        },
       })
       .then(async (res) => {
         const totalPages = res.data.totalPages;
@@ -62,9 +82,14 @@ export default function AccountManagement() {
           const requests = [];
           for (let page = 1; page < totalPages; page++) {
             requests.push(
-              axios.get(`/api/admin/accounts?${paramsBase.toString()}&page=${page}`, {
-                headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
-              })
+              axios.get(
+                `/api/admin/accounts?${paramsBase.toString()}&page=${page}`,
+                {
+                  headers: {
+                    Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+                  },
+                }
+              )
             );
           }
           const responses = await Promise.all(requests);
@@ -77,8 +102,10 @@ export default function AccountManagement() {
         setStats({
           total: res.data.totalElements || allAccounts.length,
           admin: allAccounts.filter((a) => a.role?.roleName === "admin").length,
-          seller: allAccounts.filter((a) => a.role?.roleName === "seller").length,
-          customer: allAccounts.filter((a) => a.role?.roleName === "customer").length,
+          seller: allAccounts.filter((a) => a.role?.roleName === "seller")
+            .length,
+          customer: allAccounts.filter((a) => a.role?.roleName === "customer")
+            .length,
           active: allAccounts.filter((a) => a.status === "active").length,
           inactive: allAccounts.filter((a) => a.status === "inactive").length,
         });
@@ -93,17 +120,23 @@ export default function AccountManagement() {
 
   const translateRole = (role) => {
     switch (role) {
-      case "admin": return "Quản trị viên";
-      case "seller": return "Người bán";
-      case "customer": return "Khách hàng";
-      default: return "Không xác định";
+      case "admin":
+        return "Quản trị viên";
+      case "seller":
+        return "Người bán";
+      case "customer":
+        return "Khách hàng";
+      default:
+        return "Không xác định";
     }
   };
 
   const handleDisableAccount = (accountId) => {
     axios
       .put(`/api/admin/accounts/${accountId}/disable`, null, {
-        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        },
       })
       .then(() => {
         fetchAccounts();
@@ -115,7 +148,9 @@ export default function AccountManagement() {
   const handleEnableAccount = (accountId) => {
     axios
       .put(`/api/admin/accounts/${accountId}/enable`, null, {
-        headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        },
       })
       .then(() => {
         fetchAccounts();
@@ -128,7 +163,9 @@ export default function AccountManagement() {
     if (window.confirm("Bạn có chắc chắn muốn đặt lại mật khẩu?")) {
       axios
         .put(`/api/admin/accounts/${accountId}/reset-password`, null, {
-          headers: { Authorization: "Bearer " + localStorage.getItem("jwtToken") },
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+          },
         })
         .then(() => alert("Mật khẩu đã được đặt lại."))
         .catch((err) => console.error("Lỗi đặt lại mật khẩu:", err));
@@ -140,61 +177,72 @@ export default function AccountManagement() {
       <h2>Quản lý tài khoản</h2>
 
       {/* Dashboard tóm tắt */}
-      <div className="account-dashboard">
+      <div className="dashboard">
         <div className="dashboard-card total">
-          <Users size={28} />
-          <div>
-            <p>Tổng tài khoản</p>
-            <h3>{stats.total}</h3>
+          <FaUsers className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Tổng tài khoản</h4>
+            <p>{stats.total}</p>
           </div>
         </div>
+
         <div className="dashboard-card admin">
-          <Shield size={28} />
-          <div>
-            <p>Quản trị viên</p>
-            <h3>{stats.admin}</h3>
+          <FaUserShield className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Quản trị viên</h4>
+            <p>{stats.admin}</p>
           </div>
         </div>
+
         <div className="dashboard-card seller">
-          <Store size={28} />
-          <div>
-            <p>Người bán</p>
-            <h3>{stats.seller}</h3>
+          <FaStore className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Người bán</h4>
+            <p>{stats.seller}</p>
           </div>
         </div>
+
         <div className="dashboard-card customer">
-          <Users size={28} />
-          <div>
-            <p>Khách hàng</p>
-            <h3>{stats.customer}</h3>
+          <FaUser className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Khách hàng</h4>
+            <p>{stats.customer}</p>
           </div>
         </div>
+
         <div className="dashboard-card active">
-          <Users size={28} />
-          <div>
-            <p>Đang hoạt động</p>
-            <h3>{stats.active}</h3>
+          <FaCheckCircle className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Đang hoạt động</h4>
+            <p>{stats.active}</p>
           </div>
         </div>
+
         <div className="dashboard-card inactive">
-          <UserX size={28} />
-          <div>
-            <p>Vô hiệu hóa</p>
-            <h3>{stats.inactive}</h3>
+          <FaUserSlash className="dashboard-icon" />
+          <div className="dashboard-content">
+            <h4>Vô hiệu hóa</h4>
+            <p>{stats.inactive}</p>
           </div>
         </div>
       </div>
 
       {/* Bộ lọc */}
       <div className="filters">
-        <select onChange={(e) => setRoleFilter(e.target.value)} value={roleFilter}>
+        <select
+          onChange={(e) => setRoleFilter(e.target.value)}
+          value={roleFilter}
+        >
           <option value="">-- Tất cả vai trò --</option>
           <option value="admin">Quản trị viên</option>
           <option value="seller">Người bán</option>
           <option value="customer">Khách hàng</option>
         </select>
 
-        <select onChange={(e) => setStatusFilter(e.target.value)} value={statusFilter}>
+        <select
+          onChange={(e) => setStatusFilter(e.target.value)}
+          value={statusFilter}
+        >
           <option value="">-- Tất cả trạng thái --</option>
           <option value="active">Đang hoạt động</option>
           <option value="inactive">Đã vô hiệu hóa</option>
@@ -292,7 +340,9 @@ export default function AccountManagement() {
         ))}
 
         <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+          }
           disabled={currentPage === totalPages - 1}
         >
           Sau &raquo;
