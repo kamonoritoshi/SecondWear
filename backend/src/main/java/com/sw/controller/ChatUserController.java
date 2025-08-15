@@ -140,37 +140,5 @@ public class ChatUserController {
 
 	    return ResponseEntity.ok(dtoList);
 	}
-	
-	/*
-	 * @PostMapping("/room/{roomId}/message") public ResponseEntity<ChatMessageDTO>
-	 * sendMessage(
-	 * 
-	 * @PathVariable Long roomId,
-	 * 
-	 * @RequestParam("senderId") Long senderId,
-	 * 
-	 * @RequestParam(value = "content", required = false) String content,
-	 * 
-	 * @RequestParam(value = "file", required = false) MultipartFile file ) { if
-	 * (senderId == null || ( (content == null || content.trim().isEmpty()) && (file
-	 * == null || file.isEmpty()) )) { return ResponseEntity.badRequest().build(); }
-	 * 
-	 * String fileUrl = null; if (file != null && !file.isEmpty()) { fileUrl =
-	 * fileStorageService.saveFile(file); }
-	 * 
-	 * ChatMessage saved = chatService.sendMessage(roomId, senderId, content,
-	 * fileUrl);
-	 * 
-	 * ChatMessageDTO response = new ChatMessageDTO( saved.getChatId(),
-	 * saved.getContent(), saved.getImageUrl(),
-	 * saved.getSender().getUser().getName(), saved.getSender().getAccountId(),
-	 * saved.getChatRoom().getRoomId(), saved.getTimestamp() );
-	 * 
-	 * messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
-	 * messagingTemplate.convertAndSend("/topic/chat/rooms", response);
-	 * 
-	 * return ResponseEntity.ok(response); }
-	 */
-
-
+	// cho t push lên dcm
 }
