@@ -1,127 +1,80 @@
-/* Bảng sản phẩm */
-.product-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.pending-products {
+  padding: 20px;
 }
 
-.product-table th,
-.product-table td {
-  padding: 12px 14px;
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   text-align: center;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
+  transition: 0.2s;
 }
 
-.product-table th {
-  background-color: #f0f4f8;
-  font-weight: 600;
-  color: #333;
+.product-card:hover {
+  transform: translateY(-3px);
 }
 
-.product-table tr:hover {
-  background-color: #fdfdfd;
-}
-
-.product-table img.thumb {
-  width: 60px;
-  height: 60px;
+.product-card img {
+  width: 100%;
+  height: 200px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
-/* Nút hành động */
-.action-buttons {
+.product-card h3 {
+  font-size: 1.1rem;
+  margin: 10px 0;
+}
+
+.price {
+  font-weight: bold;
+  color: #555;
+}
+
+.actions {
   display: flex;
-  justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
-button {
-  padding: 6px 12px;
-  margin-right: 6px;
-  font-size: 13px;
+.approve-btn,
+.reject-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: none;
-  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
-button.approve {
-  background-color: #28a745;
-  color: white;
+.approve-btn {
+  color: #4caf50;
+  margin-right: 8px;
 }
 
-button.approve:hover {
-  background-color: #218838;
-  color: white;
+.approve-btn:hover {
+  background-color: #45a049;
+  color: #fff !important;
 }
 
-button.reject {
-  background-color: #dc3545;
-  color: white;
+.reject-btn {
+  color: #f44336;
 }
 
-button.reject:hover {
-  background-color: #c82333;
-  color: white;
-}
-
-/* Trạng thái */
-.status-label {
-  font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  display: inline-block;
-}
-
-.status-label.pending {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.status-label.approved {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status-label.rejected {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-/* Phân trang */
-.pagination {
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pagination button {
-  padding: 8px 14px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  background-color: white;
-  color: #007bff;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.3s;
-}
-
-.pagination button.active-page {
-  background-color: #007bff;
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.pagination button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+.reject-btn:hover {
+  background-color: #d7372a;
+  color: #fff !important;
 }

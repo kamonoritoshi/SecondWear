@@ -72,15 +72,28 @@ public class SellerProductController {
 	    Product existing = productRepository.findById(id)
 	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm"));
 
-	    if (!existing.getAccount().getAccountId().equals(accountId)) {
+	    // Nếu không phải chủ sản phẩm và không phải admin thì cấm
+	    boolean isAdmin = userDetails.getAuthorities().stream()
+	            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+	    if (!isAdmin && !existing.getAccount().getAccountId().equals(accountId)) {
 	        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không có quyền sửa sản phẩm này");
 	    }
 
-	    // Lấy category từ DB
+	    // Nếu là admin → có thể cập nhật approved & rejectReason
+	    if (isAdmin) {
+	        if (dto.getApproved() != null) {
+	            existing.setApproved(dto.getApproved());
+	        }
+	        if (dto.getRejectReason() != null) {
+	            existing.setRejectReason(dto.getRejectReason());
+	        }
+	    }
+
+	    // Cập nhật dữ liệu sản phẩm (cả seller và admin đều được)
 	    Category category = categoryRepository.findById(dto.getCategoryId())
 	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Danh mục không hợp lệ"));
 
-	    // Cập nhật dữ liệu
 	    existing.setName(dto.getName());
 	    existing.setDescription(dto.getDescription());
 	    existing.setCondition(dto.getCondition());
@@ -91,13 +104,13 @@ public class SellerProductController {
 	    existing.setQuantity(dto.getQuantity());
 	    existing.setBrand(dto.getBrand());
 	    existing.setOrigin(dto.getOrigin());
-	    existing.setApproved(dto.getApproved() != null ? dto.getApproved() : false);
 	    existing.setCategory(category);
 
 	    productRepository.save(existing);
 
 	    return ResponseEntity.ok("✅ Đã cập nhật sản phẩm");
 	}
+
 
 
 	@PutMapping("/{id}/quantity")

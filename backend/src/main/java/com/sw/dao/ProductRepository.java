@@ -19,5 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     @Query(value = "SELECT TOP 3 * FROM product WHERE approved = 1 ORDER BY NEWID()", nativeQuery = true)
     List<Product> findTop3SuggestedProducts();
-
+    
+    List<Product> findByApproved(Byte approved);
 }

@@ -65,7 +65,7 @@ public class OrderService {
 	            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm ID: " + productId));
 
 	        // ✅ Kiểm tra trạng thái
-	        if (!Boolean.TRUE.equals(product.getApproved())) {
+	        if (product.getApproved() != 1) {
 	            throw new RuntimeException("Sản phẩm '" + product.getName() + "' chưa được duyệt.");
 	        }
 
