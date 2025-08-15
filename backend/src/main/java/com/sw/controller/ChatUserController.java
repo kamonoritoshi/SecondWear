@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sw.dto.ChatMessageDTO;
 import com.sw.dto.ChatRoomDTO;
 import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
 import com.sw.service.ChatUserService;
+import com.sw.service.FileStorageService;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @RestController
@@ -29,6 +32,9 @@ public class ChatUserController {
 	
 	@Autowired
     private SimpMessagingTemplate messagingTemplate; // ✅ Thêm dòng này
+	
+	@Autowired
+	private FileStorageService fileStorageService;
 
 	@GetMapping("/room")
 	public ResponseEntity<?> getExistingRoom(@RequestParam Long buyerId, @RequestParam Long sellerId) {
@@ -44,30 +50,46 @@ public class ChatUserController {
 	}
 
 	@PostMapping("/room/{roomId}/message")
-    public ResponseEntity<ChatMessageDTO> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessageDTO dto) {
-        if (dto.getSenderId() == null || dto.getContent() == null || dto.getContent().isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
+	public ResponseEntity<ChatMessageDTO> sendMessage(
+	    @PathVariable Long roomId,
+	    @RequestParam("senderId") Long senderId,
+	    @RequestParam(value = "content", required = false) String content,
+	    @RequestParam(value = "file", required = false) MultipartFile file
+	) {
+	    // Kiểm tra: phải có ít nhất 1 trong 2 (text hoặc file)
+	    if (senderId == null || 
+	        ((content == null || content.trim().isEmpty()) && (file == null || file.isEmpty()))) {
+	        return ResponseEntity.badRequest().build();
+	    }
 
-        ChatMessage saved = chatService.sendMessage(roomId, dto.getSenderId(), dto.getContent());
+	    // Xử lý lưu file nếu có
+	    String fileUrl = null;
+	    if (file != null && !file.isEmpty()) {
+	        fileUrl = fileStorageService.saveFile(file);
+	    }
 
-        ChatMessageDTO response = new ChatMessageDTO(
-            saved.getChatId(),
-            saved.getContent(),
-            saved.getSender().getUser().getName(),
-            saved.getSender().getAccountId(),
-            saved.getChatRoom().getRoomId(),
-            saved.getTimestamp()
-        );
+	    // Lưu tin nhắn
+	    ChatMessage saved = chatService.sendMessage(roomId, senderId, content, fileUrl);
 
-        // ✅ Gửi thông điệp đến các client đang subscribe room
-        messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
+	    // Tạo DTO phản hồi
+	    ChatMessageDTO response = new ChatMessageDTO(
+	        saved.getChatId(),
+	        saved.getContent(),
+	        saved.getImageUrl(),
+	        saved.getSender().getUser().getName(),
+	        saved.getSender().getAccountId(),
+	        saved.getChatRoom().getRoomId(),
+	        saved.getTimestamp()
+	    );
 
-        // ✅ Broadcast cho danh sách phòng chat
-        messagingTemplate.convertAndSend("/topic/chat/rooms", response);
+	    // Gửi realtime cho client trong room
+	    messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
+	    // Gửi broadcast danh sách phòng
+	    messagingTemplate.convertAndSend("/topic/chat/rooms", response);
 
-        return ResponseEntity.ok(response);
-    }
+	    return ResponseEntity.ok(response);
+	}
+
 
 
 	@GetMapping("/room/{roomId}/messages")
@@ -77,6 +99,7 @@ public class ChatUserController {
 	        .map(msg -> new ChatMessageDTO(
 	            msg.getChatId(),
 	            msg.getContent(),
+	            msg.getImageUrl(),
 	            msg.getSender().getUser().getName(),
 	            msg.getSender().getAccountId(),
 	            msg.getChatRoom().getRoomId(),
@@ -117,5 +140,6 @@ public class ChatUserController {
 
 	    return ResponseEntity.ok(dtoList);
 	}
-
+	// cho t push lên dcm
+	// len điiiiiiiiiiiii
 }

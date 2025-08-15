@@ -24,7 +24,7 @@ public class ChatWebSocketController {
 																													// sender
 																													// là
 																													// Account
-				msg.getContent());
+				msg.getContent(), msg.getImageUrl());
 		messagingTemplate.convertAndSend("/topic/chat/" + saved.getChatRoom().getRoomId(), saved);
 	}
 }
