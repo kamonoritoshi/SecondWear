@@ -34,7 +34,7 @@ export default function ProductList() {
     <div className="product-list-container">
       <div className="product-list-header">
         <h1>QUẢN LÝ SẢN PHẨM</h1>
-        <button className="add-product-btn" onClick={() => navigate("add")}>
+        <button className="add-product-btn" onClick={() => navigate("/products/add")}>
           + Thêm sản phẩm
         </button>
       </div>
