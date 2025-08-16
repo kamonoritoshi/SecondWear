@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "./contexts/AuthContext";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import EmojiPicker from "emoji-picker-react"; // 🎯 emoji picker
 import "./css/ChatRoom.css";
 
 export default function ChatRoom() {
@@ -14,103 +11,93 @@ export default function ChatRoom() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const [message, setMessage] = useState("");
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
   const chatEndRef = useRef(null);
-  const stompClientRef = useRef(null);
 
   const token = localStorage.getItem("jwtToken");
   const accountId = currentUser?.accountId;
 
-  // 🔹 Kiểm tra login
+  // Redirect nếu chưa đăng nhập
   useEffect(() => {
     if (!token || !currentUser) {
       navigate("/login");
     }
   }, [token, currentUser, navigate]);
 
-  // 🔹 Load danh sách phòng
+  // Load danh sách phòng chat
   useEffect(() => {
     if (!token || !accountId) return;
 
-    fetch(`/api/chat/rooms/${accountId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch(`/api/chat/rooms/${accountId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error(`Lỗi ${res.status}`);
-        return res.json();
-      })
-      .then((data) => setChatRooms(data))
-      .catch((err) => console.error("Lỗi load danh sách phòng:", err));
+        const data = await res.json();
+        setChatRooms(data);
+      } catch (err) {
+        console.error("Lỗi load danh sách phòng:", err);
+      }
+    };
+
+    fetchRooms();
   }, [token, accountId]);
 
-  // 🔹 Load tin nhắn phòng hiện tại
+  // Load tin nhắn của phòng hiện tại
   useEffect(() => {
     if (!token || !roomId) return;
 
-    fetch(`/api/chat/room/${roomId}/messages`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`/api/chat/room/${roomId}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error(`Lỗi ${res.status}`);
-        return res.json();
-      })
-      .then((data) => setChatMessages(data))
-      .catch((err) => console.error("Lỗi load tin nhắn:", err));
+        const data = await res.json();
+        setChatMessages(data);
+      } catch (err) {
+        console.error("Lỗi load tin nhắn:", err);
+      }
+    };
+
+    fetchMessages();
   }, [roomId, token]);
 
-  // 🔹 Kết nối WebSocket
-  useEffect(() => {
-    if (!roomId) return;
+  // Auto scroll khi có tin nhắn mới
+//   useEffect(() => {
+//   if (chatEndRef.current) {
+//     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+//   }
+// }, [chatMessages]);
 
-    const socket = new SockJS("http://localhost:8080/ws");
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      onConnect: () => {
-        stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
-          const newMsg = JSON.parse(message.body);
-          setChatMessages((prev) => [...prev, newMsg]);
-        });
-      },
-    });
 
-    stompClient.activate();
-    stompClientRef.current = stompClient;
-
-    return () => {
-      stompClient.deactivate();
-    };
-  }, [roomId]);
-
-  // 📤 Gửi tin nhắn text + ảnh
+  // Gửi tin nhắn
   const handleSendMessage = async () => {
-    if (!message.trim() && !imageFile) return;
+    if (!message.trim()) return;
+    if (!accountId || accountId <= 0) {
+      alert("Bạn chưa đăng nhập!");
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append("senderId", accountId);
-    if (message.trim()) formData.append("content", message.trim());
-    if (imageFile) formData.append("file", imageFile); // 🔹 phải là 'file'
+    const msgObj = { content: message, senderId: accountId };
 
     try {
       const res = await fetch(`/api/chat/room/${roomId}/message`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(msgObj),
       });
 
       if (!res.ok) throw new Error(`Lỗi ${res.status}`);
-
+      const newMsg = await res.json();
+      setChatMessages((prev) => [...prev, newMsg]);
       setMessage("");
-      setImageFile(null);
     } catch (err) {
       console.error("Lỗi gửi tin nhắn:", err);
     }
-  };
-
-  const onEmojiClick = (emojiData) => {
-    setMessage((prev) => prev + emojiData.emoji);
-    setShowEmojiPicker(false);
   };
 
   const currentRoom = chatRooms.find((r) => r.roomId === Number(roomId));
@@ -126,46 +113,40 @@ export default function ChatRoom() {
       minute: "2-digit",
     });
 
-  // 🔹 Auto scroll xuống cuối khi có tin nhắn mới
-  // useEffect(() => {
-  //   chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [chatMessages]);
-
   return (
     <div className="chat-container">
-      {/* Sidebar */}
+      {/* Sidebar hiển thị danh sách phòng chat */}
       <div className="chat-sidebar">
         <h3>Đoạn chat</h3>
         <ul>
-          {chatRooms.map((room) => (
-            <Link key={room.roomId} to={`/chat/${room.roomId}`} className="chat-room-link">
-              <li className={room.roomId === Number(roomId) ? "active" : ""}>
-                {room.sellerName && room.sellerName !== currentUser.name
-                  ? room.sellerName
-                  : room.buyerName}
-              </li>
-            </Link>
+          {chatRooms.map((room) => (<Link to={`/chat/${room.roomId}`} className="chat-room-link">
+            <li
+              key={room.roomId}
+              className={room.roomId === Number(roomId) ? "active" : ""}
+            >
+
+              {room.sellerName && room.sellerName !== currentUser.name
+                ? room.sellerName
+                : room.buyerName}
+
+            </li></Link>
           ))}
         </ul>
       </div>
 
-      {/* Main Chat */}
+      {/* Khung chat chính */}
       <div className="chat-window">
-        {opponentName && <div className="chat-header">{opponentName}</div>}
+        {opponentName && roomId && (
+          <div className="chat-header">
+            {opponentName}
+          </div>)}
 
         <div className="chat-messages">
           {chatMessages.map((msg, idx) => {
             const isMine = msg.senderId === accountId;
             return (
               <div key={idx} className={`chat-message ${isMine ? "mine" : ""}`}>
-                {msg.imageUrl && (
-                  <img
-                    src={msg.imageUrl}
-                    alt="ảnh"
-                    style={{ maxWidth: "200px", borderRadius: "8px" }}
-                  />
-                )}
-                {msg.content && <div className="content">{msg.content}</div>}
+                <div className="content">{msg.content}</div>
                 <div className="timestamp">{formatTime(msg.timestamp)}</div>
               </div>
             );
@@ -173,18 +154,7 @@ export default function ChatRoom() {
           <div ref={chatEndRef}></div>
         </div>
 
-        {/* Input */}
         <div className="chat-input">
-          {/* Nút mở emoji */}
-          <button className="sendIcon" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>☺</button>
-          {/* Emoji Picker */}
-          {showEmojiPicker && (
-            <div className="emoji-picker-container">
-              <EmojiPicker onEmojiClick={onEmojiClick} />
-            </div>
-          )}
-
-          {/* Ô nhập tin nhắn */}
           <input
             type="text"
             value={message}
@@ -192,32 +162,8 @@ export default function ChatRoom() {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />
-
-          {/* Upload ảnh */}
-          {/* <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImageFile(e.target.files[0])}
-            style={{ display: "none" }}
-            id="imageUpload"
-          />
-          <label htmlFor="imageUpload" style={{ cursor: "pointer" }}>📷</label> */}
-
-          {/* Nút gửi */}
-          <button className="send" onClick={handleSendMessage}>Gửi</button>
+          <button onClick={handleSendMessage}>Gửi</button>
         </div>
-
-
-        {/* Preview ảnh */}
-        {imageFile && (
-          <div style={{ padding: "5px" }}>
-            <img
-              src={URL.createObjectURL(imageFile)}
-              alt="preview"
-              style={{ maxWidth: "100px", borderRadius: "5px" }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
