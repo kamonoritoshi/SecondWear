@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 const LoginPage = ({ t }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -58,6 +59,51 @@ const LoginPage = ({ t }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    try {
+      const res = await fetch("/api/auth/google-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+          roleName: "customer",
+          rememberMe: rememberMe,
+        }),
+      });
+
+      const data = await res.json();
+      console.log("Google login response:", data);
+
+      if (res.ok) {
+        // Gọi hàm login trong AuthContext, nhưng truyền token và role
+        await login(data.email, null, data.role, rememberMe, data.token);
+
+        if (rememberMe) {
+          const expiration = Date.now() + 7 * 24 * 60 * 60 * 1000;
+          localStorage.setItem(
+            "rememberedLogin",
+            JSON.stringify({
+              email: data.email,
+              role: data.role,
+              expiredAt: expiration,
+            })
+          );
+        }
+
+        navigate(from, { replace: true });
+      } else {
+        setError(data.message || "Google login failed");
+      }
+    } catch (err) {
+      setError("Google login failed: " + err.message);
+    }
+  };
+
+  // Hàm xử lý khi Google login thất bại
+  const handleGoogleLoginError = () => {
+    setError("Google login was unsuccessful. Please try again.");
   };
 
   return (
@@ -185,6 +231,12 @@ const LoginPage = ({ t }) => {
               t("login_label") || "Đăng nhập"
             )}
           </button>
+          <div style={{ marginTop: "16px", textAlign: "center" }}>
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginError}
+            />
+          </div>
         </form>
         <div className="auth-switch-link">
           <p>

@@ -1,5 +1,7 @@
 package com.sw.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.sw.dao.AccountRepository;
 import com.sw.dao.RoleRepository;
 import com.sw.dao.UserRepository;
@@ -21,6 +24,7 @@ import com.sw.entity.User;
 import com.sw.model.PendingRegistration;
 import com.sw.security.JwtUtil;
 import com.sw.service.EmailService;
+import com.sw.service.GoogleVerifier;
 import com.sw.service.PendingRegistrationService;
 import com.sw.util.CodeGenerator;
 
@@ -32,108 +36,145 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
-    private final AccountRepository accountRepository;
-    private final PendingRegistrationService registrationService;
-    private final EmailService emailService;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-    	System.out.println("⏺ Email: " + request.getEmail());
-    	System.out.println("⏺ Role: " + request.getRoleName());
-    	
-    	Account acc = accountRepository.findByEmailAndRole(
-    	        request.getEmail(), request.getRoleName()
-    	    ).orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
+	private final JwtUtil jwtUtil;
+	private final PasswordEncoder passwordEncoder;
+	private final AccountRepository accountRepository;
+	private final PendingRegistrationService registrationService;
+	private final EmailService emailService;
+	private final UserRepository userRepository;
+	private final RoleRepository roleRepository;
 
-	    // Kiểm tra password
-	    if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
-	    }
-	    
-        
-        // ⏱ Token duration tùy thuộc vào rememberMe
-        long expiration = request.isRememberMe() ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+		System.out.println("⏺ Email: " + request.getEmail());
+		System.out.println("⏺ Role: " + request.getRoleName());
 
-        String token = jwtUtil.generateToken(request.getEmail(), request.getRoleName(), expiration);
-        System.out.println("Trả về name: " + acc.getUser().getName());
-        return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getName()));
-    }
-    
-    
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDTO request) {
-        if (accountRepository.findByUser_Email(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email đã tồn tại");
-        }
+		Account acc = accountRepository.findByEmailAndRole(request.getEmail(), request.getRoleName())
+				.orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
 
-        if (registrationService.exists(request.getEmail())) {
-            return ResponseEntity.badRequest().body("Email đã được gửi mã xác nhận. Vui lòng kiểm tra hộp thư.");
-        }
+		// Kiểm tra password
+		if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
+		}
 
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            return ResponseEntity.badRequest().body("Mật khẩu và xác nhận không khớp.");
-        }
+		// ⏱ Token duration tùy thuộc vào rememberMe
+		long expiration = request.isRememberMe() ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
 
-        String code = CodeGenerator.generateVerificationCode();
-        emailService.sendVerificationCode(request.getEmail(), code);
+		String token = jwtUtil.generateToken(request.getEmail(), request.getRoleName(), expiration);
+		System.out.println("Trả về name: " + acc.getUser().getName());
+		return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getEmail(), acc.getUser().getName()));
+	}
 
-        PendingRegistration pending = new PendingRegistration(
-        	    request.getEmail(),
-        	    request.getFullName(),
-        	    request.getPhone(),
-        	    request.getCity(),
-        	    request.getAddress(),
-        	    request.getPassword(),
-        	    request.getRoleName(), // THÊM roleName từ request
-        	    code,
-        	    System.currentTimeMillis()
-        	);
+	@PostMapping("/register")
+	public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDTO request) {
+		if (accountRepository.findByUser_Email(request.getEmail()).isPresent()) {
+			return ResponseEntity.badRequest().body("Email đã tồn tại");
+		}
 
+		if (registrationService.exists(request.getEmail())) {
+			return ResponseEntity.badRequest().body("Email đã được gửi mã xác nhận. Vui lòng kiểm tra hộp thư.");
+		}
 
-        registrationService.save(pending);
-        return ResponseEntity.ok("Đã gửi mã xác nhận đến email.");
-    }
-    
-    
-    @PostMapping("/verify")
-    public ResponseEntity<String> verify(@RequestBody VerifyRequest request) {
-        PendingRegistration pending = registrationService.get(request.getEmail());
-        if (pending == null) {
-            return ResponseEntity.badRequest().body("Email chưa đăng ký hoặc mã đã hết hạn.");
-        }
+		if (!request.getPassword().equals(request.getConfirmPassword())) {
+			return ResponseEntity.badRequest().body("Mật khẩu và xác nhận không khớp.");
+		}
 
-        if (!pending.getVerificationCode().equalsIgnoreCase(request.getCode())) {
-            return ResponseEntity.badRequest().body("Mã xác nhận không đúng.");
-        }
+		String code = CodeGenerator.generateVerificationCode();
+		emailService.sendVerificationCode(request.getEmail(), code);
 
-        // Tạo User
-        User user = new User();
-        user.setEmail(pending.getEmail());
-        user.setName(pending.getFullName());
-        user.setPhone(pending.getPhone());
-        user.setAddress(pending.getAddress() + ", " + pending.getCity());
-        user = userRepository.save(user);
+		PendingRegistration pending = new PendingRegistration(request.getEmail(), request.getFullName(),
+				request.getPhone(), request.getCity(), request.getAddress(), request.getPassword(),
+				request.getRoleName(), // THÊM roleName từ request
+				code, System.currentTimeMillis());
 
-        // 🔍 Lấy role theo roleName trong pending
-        Role role = roleRepository.findByRoleName(pending.getRoleName())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy role '" + pending.getRoleName() + "'"));
+		registrationService.save(pending);
+		return ResponseEntity.ok("Đã gửi mã xác nhận đến email.");
+	}
 
-        // Tạo Account
-        Account account = new Account();
-        account.setUser(user);
-        account.setRole(role);
-        account.setPassword(passwordEncoder.encode(pending.getPassword()));
-        account.setStatus("active");
-        accountRepository.save(account);
+	@PostMapping("/verify")
+	public ResponseEntity<String> verify(@RequestBody VerifyRequest request) {
+		PendingRegistration pending = registrationService.get(request.getEmail());
+		if (pending == null) {
+			return ResponseEntity.badRequest().body("Email chưa đăng ký hoặc mã đã hết hạn.");
+		}
 
-        // Xóa pending
-        registrationService.remove(request.getEmail());
+		if (!pending.getVerificationCode().equalsIgnoreCase(request.getCode())) {
+			return ResponseEntity.badRequest().body("Mã xác nhận không đúng.");
+		}
 
-        return ResponseEntity.ok("Đăng ký thành công");
-    }
-    
+		// Tạo User
+		User user = new User();
+		user.setEmail(pending.getEmail());
+		user.setName(pending.getFullName());
+		user.setPhone(pending.getPhone());
+		user.setAddress(pending.getAddress() + ", " + pending.getCity());
+		user = userRepository.save(user);
+
+		// 🔍 Lấy role theo roleName trong pending
+		Role role = roleRepository.findByRoleName(pending.getRoleName())
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy role '" + pending.getRoleName() + "'"));
+
+		// Tạo Account
+		Account account = new Account();
+		account.setUser(user);
+		account.setRole(role);
+		account.setPassword(passwordEncoder.encode(pending.getPassword()));
+		account.setStatus("active");
+		accountRepository.save(account);
+
+		// Xóa pending
+		registrationService.remove(request.getEmail());
+
+		return ResponseEntity.ok("Đăng ký thành công");
+	}
+
+	@PostMapping("/google-login")
+	public ResponseEntity<AuthResponse> googleLogin(@RequestBody Map<String, String> payload) {
+		String credential = payload.get("credential"); // token Google trả về
+		String roleName = payload.getOrDefault("roleName", "customer"); // có thể nhận từ frontend
+		boolean rememberMe = Boolean.parseBoolean(payload.getOrDefault("rememberMe", "false"));
+
+		try {
+			// ✅ Xác thực token Google
+			GoogleIdToken.Payload googlePayload = GoogleVerifier.verify(credential);
+			if (googlePayload == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+						.body(new AuthResponse("Token Google không hợp lệ"));
+			}
+
+			String email = googlePayload.getEmail();
+			String name = (String) googlePayload.get("name");
+
+			// 🔍 Kiểm tra xem account đã tồn tại chưa
+			Account acc = accountRepository.findByEmailAndRole(email, roleName).orElse(null);
+
+			if (acc == null) {
+				// Nếu chưa có thì tạo User + Account mới
+				User user = new User();
+				user.setEmail(email);
+				user.setName(name);
+				user = userRepository.save(user);
+
+				Role role = roleRepository.findByRoleName(roleName)
+						.orElseThrow(() -> new RuntimeException("Không tìm thấy role: " + roleName));
+
+				acc = new Account();
+				acc.setUser(user);
+				acc.setRole(role);
+				acc.setPassword(passwordEncoder.encode("GOOGLE_USER")); // dummy password
+				acc.setStatus("active");
+				accountRepository.save(acc);
+			}
+
+			// ⏱ Token duration
+			long expiration = rememberMe ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
+			String token = jwtUtil.generateToken(email, roleName, expiration);
+
+			return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getName(), acc.getUser().getEmail()));
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new AuthResponse("Google login failed: " + e.getMessage()));
+		}
+	}
 }

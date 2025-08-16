@@ -60,51 +60,88 @@ export const AuthProvider = ({ children }) => {
 
   // SỬA LẠI HÀM LOGIN ĐỂ NHẬN 3 THAM SỐ
   // Nhận thêm rememberMe từ form
-  const login = async (email, password, roleName, rememberMe = false) => {
-    const payload = { email, password, rememberMe, roleName };
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+  const login = async (
+    email,
+    password,
+    roleName,
+    rememberMe = false,
+    tokenFromGoogle = null
+  ) => {
+    let token = tokenFromGoogle;
+    let data = {};
+
+    if (!token) {
+      // 🔹 Login thường (email + password)
+      const payload = { email, password, rememberMe, roleName };
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Đăng nhập thất bại");
+      }
+
+      data = await response.json();
+      token = data.token;
+    } else {
+      // 🔹 Login bằng Google => backend đã trả { token, email, name, role }
+      data = {
+        token,
+        email: email, // truyền từ Google
+        role: roleName, // truyền từ Google
+        name: tokenFromGoogle?.name || "", // lấy name đúng từ response
+      };
+    }
+
+    // ✅ Lưu token vào localStorage
+    localStorage.setItem("jwtToken", token);
+
+    if (data.name) {
+      localStorage.setItem("userName", data.name);
+    } else {
+      localStorage.removeItem("userName");
+    }
+
+    setToken(token);
+
+    // ✅ Decode token để lấy thông tin cơ bản
+    const decodedToken = jwtDecode(token);
+    const emailRaw = decodedToken.sub || "";
+    let role = decodedToken.role || "";
+
+    if (emailRaw.includes("|")) {
+      const [emailPart, rolePart] = emailRaw.split("|");
+      email = emailPart;
+      if (!role && rolePart) role = rolePart;
+    }
+
+    // ✅ Gọi API lấy thông tin account hiện tại
+    const res = await fetch(`${API_BASE_URL}/api/accounts/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("jwtToken", data.token);
-      if (data.name) {
-        localStorage.setItem("userName", data.name);
-      } else {
-        localStorage.removeItem("userName");
-      }
-      setToken(data.token);
-      // Cập nhật ngay thông tin người dùng từ token và response
-      const decodedToken = jwtDecode(data.token);
-      const email = decodedToken.sub;
-      const role = decodedToken.role;
+    if (!res.ok) throw new Error("Không lấy được thông tin người dùng");
 
-      const res = await fetch(`${API_BASE_URL}/api/accounts/me`, {
-        headers: {
-          Authorization: `Bearer ${data.token}`,
-        },
-      });
+    const userData = await res.json();
+    console.log("userData: ", userData);
 
-      if (!res.ok) throw new Error("Không lấy được thông tin người dùng");
+    const accountId = userData.accountId;
+    localStorage.setItem("accountId", accountId);
 
-      const userData = await res.json();
-      const accountId = userData.accountId;
-      localStorage.setItem("accountId", accountId);
-      setCurrentUser({
-        email,
-        name: data.name || userData.name,
-        role,
-        accountId: userData.accountId, // ✅ Lưu ID tại đây
-      });
+    // ✅ Cập nhật currentUser chính xác
+    setCurrentUser({
+      email,
+      name: name || data.user?.name || data.name,
+      role,
+      accountId,
+    });
 
-      return data;
-    } else {
-      const text = await response.text();
-      throw new Error(text || "Đăng nhập thất bại");
-    }
+    return data;
   };
 
   const logout = () => {

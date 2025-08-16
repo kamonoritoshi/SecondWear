@@ -67,6 +67,7 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [trayOpen, setTrayOpen] = useState(false);
   const dropdownRef = useRef(null);
+  console.log(currentUser)
 
   const navigate = useNavigate();
 
