@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,11 +28,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Account", schema = "dbo")
+@Table(name = "Account")
 public class Account {
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "account_id")
+    @Column(name = "account_id")
     private Long accountId;
 
     @ManyToOne
@@ -47,15 +50,15 @@ public class Account {
 
     @Column(nullable = false)
     private String status;
-    
+
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)
     private LocalDateTime createdAt;
-    
+
     @OneToMany(mappedBy = "account")
-    @JsonIgnore // ✅ tránh vòng lặp khi serialize
+    @JsonIgnore // tránh vòng lặp khi serialize
     private List<Order> orders;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "seller_status", nullable = false)
     private SellerStatus sellerStatus = SellerStatus.NONE;

@@ -45,7 +45,7 @@ export default function MessageList() {
     fetchChatRooms(); // Fetch dữ liệu ban đầu
 
     // WebSocket setup
-    // MessageList.jsx
+    // MessageList.jsxn
     const client = new Client({
       webSocketFactory: () => new WebSocket("ws://localhost:8080/ws"),
       reconnectDelay: 3000,
