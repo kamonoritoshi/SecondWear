@@ -8,12 +8,12 @@
 
 /* Sidebar */
 .chat-sidebar {
-  width: 280px;
+  width: 250px;
   background-color: #f0f2f5;
   border-right: 1px solid #ddd;
   padding: 20px;
   overflow-y: auto;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.35s ease-in-out, opacity 0.35s ease-in-out;
 }
 
 .chat-sidebar h3 {
@@ -34,7 +34,7 @@
   padding: 10px;
   cursor: pointer;
   background-color: #fff;
-  transition: 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .chat-sidebar li.active,
@@ -46,6 +46,19 @@
   text-decoration: none;
   color: #333;
   font-weight: 500;
+}
+
+/* Ẩn/hiện sidebar (áp dụng cả desktop & mobile) */
+.chat-sidebar.hide {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chat-sidebar.show {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Main chat */
@@ -68,13 +81,23 @@
   justify-content: space-between;
 }
 
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease;
+}
+
 .toggle-sidebar {
-  display: inline-block;
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   cursor: pointer;
-  margin-right: 10px;
+  transition: transform 0.2s ease;
+}
+
+.toggle-sidebar:hover {
+  transform: scale(1.1);
 }
 
 .chat-messages {
@@ -217,33 +240,4 @@
   border-radius: 6px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .chat-container {
-    flex-direction: column;
-    height: 100vh;
-  }
 
-  .chat-sidebar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 260px;
-    background: #fff;
-    z-index: 2000;
-    transform: translateX(-100%);
-  }
-
-  .chat-sidebar.show {
-    transform: translateX(0);
-  }
-
-  .chat-header {
-    justify-content: space-between;
-  }
-
-  .toggle-sidebar {
-    display: inline-block;
-  }
-}
