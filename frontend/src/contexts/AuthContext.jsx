@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { API_BASE_URL } from "../apiConfig";
-// import { authFetch } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -12,65 +11,55 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          const currentTime = Date.now() / 1000;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-          if (
-            decodedToken.exp > currentTime &&
-            decodedToken.sub &&
-            decodedToken.role
-          ) {
-            const email = decodedToken.sub;
-            const role = decodedToken.role;
-            // Lấy name từ localStorage (nếu có) hoặc chỉ lấy email
-            const name = localStorage.getItem("userName");
-            const res = await fetch(`${API_BASE_URL}/api/accounts/me`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-
-            if (res.ok) {
-              const data = await res.json();
-              const accountId = data.accountId;
-
-              setCurrentUser({
-                email,
-                name: name || data.name,
-                role,
-                accountId, // ✅ thêm id vào đây
-              });
-            } else {
-              logout();
-            }
-          } else {
-            logout();
-          }
-        } catch (error) {
-          console.error("Lỗi khi xác thực token:", error);
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
           logout();
+          setLoading(false);
+          return;
         }
+
+        const res = await fetch(`${API_BASE_URL}/api/accounts/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) {
+          logout();
+        } else {
+          const data = await res.json();
+          setCurrentUser({
+            email: data.email,
+            name: data.name,
+            role: data.roleName, // cần chắc API trả về roleName
+            accountId: data.accountId,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi xác thực token:", error);
+        logout();
       }
       setLoading(false);
     };
     fetchUser();
-  }, [token]);
+  }, []);
 
-  // SỬA LẠI HÀM LOGIN ĐỂ NHẬN 3 THAM SỐ
-  // Nhận thêm rememberMe từ form
   const login = async (
     email,
     password,
     roleName,
     rememberMe = false,
-    tokenFromGoogle = null
+    tokenFromGoogle = null // credential từ Google (chính là credentialResponse.credential)
   ) => {
-    let token = tokenFromGoogle;
-    let data = {};
+    let token;
+    let data;
 
-    if (!token) {
+    if (!tokenFromGoogle) {
       // 🔹 Login thường (email + password)
       const payload = { email, password, rememberMe, roleName };
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -84,41 +73,41 @@ export const AuthProvider = ({ children }) => {
         throw new Error(text || "Đăng nhập thất bại");
       }
 
-      data = await response.json();
+      data = await response.json(); // { token, email, name, role }
       token = data.token;
     } else {
-      // 🔹 Login bằng Google => backend đã trả { token, email, name, role }
-      data = {
-        token,
-        email: email, // truyền từ Google
-        role: roleName, // truyền từ Google
-        name: tokenFromGoogle?.name || "", // lấy name đúng từ response
-      };
+      // 🔹 Login bằng Google (FE chỉ truyền credential vào đây)
+      const response = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credential: tokenFromGoogle, // credential từ Google
+          roleName,
+          rememberMe,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Google login failed");
+      }
+
+      data = await response.json(); // { token, email, name, role }
+      token = data.token;
     }
 
     // ✅ Lưu token vào localStorage
     localStorage.setItem("jwtToken", token);
-
-    if (data.name) {
-      localStorage.setItem("userName", data.name);
-    } else {
-      localStorage.removeItem("userName");
-    }
-
     setToken(token);
 
-    // ✅ Decode token để lấy thông tin cơ bản
+    // ✅ Kiểm tra hạn token
     const decodedToken = jwtDecode(token);
-    const emailRaw = decodedToken.sub || "";
-    let role = decodedToken.role || "";
-
-    if (emailRaw.includes("|")) {
-      const [emailPart, rolePart] = emailRaw.split("|");
-      email = emailPart;
-      if (!role && rolePart) role = rolePart;
+    const currentTime = Date.now() / 1000;
+    if (decodedToken.exp < currentTime) {
+      throw new Error("Token hết hạn");
     }
 
-    // ✅ Gọi API lấy thông tin account hiện tại
+    // ✅ Gọi API lấy account hiện tại
     const res = await fetch(`${API_BASE_URL}/api/accounts/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -126,26 +115,39 @@ export const AuthProvider = ({ children }) => {
     });
 
     if (!res.ok) throw new Error("Không lấy được thông tin người dùng");
-
     const userData = await res.json();
-    console.log("userData: ", userData);
 
     const accountId = userData.accountId;
     localStorage.setItem("accountId", accountId);
 
-    // ✅ Cập nhật currentUser chính xác
     setCurrentUser({
-      email,
-      name: name || data.user?.name || data.name,
-      role,
+      email: userData.email ?? data.email,
+      name: userData.name ?? data.name,
+      role: userData.role?.roleName || data.role,
       accountId,
     });
+
+    // ✅ Remember Me
+    if (rememberMe) {
+      const expiration = Date.now() + 7 * 24 * 60 * 60 * 1000;
+      localStorage.setItem(
+        "rememberedLogin",
+        JSON.stringify({
+          email: data.email,
+          role: data.role,
+          expiredAt: expiration,
+        })
+      );
+    } else {
+      localStorage.removeItem("rememberedLogin");
+    }
 
     return data;
   };
 
   const logout = () => {
     localStorage.removeItem("jwtToken");
+    localStorage.removeItem("accountId");
     setToken(null);
     setCurrentUser(null);
   };

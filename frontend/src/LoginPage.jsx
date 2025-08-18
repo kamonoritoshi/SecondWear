@@ -63,39 +63,14 @@ const LoginPage = ({ t }) => {
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-      const res = await fetch("/api/auth/google-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          credential: credentialResponse.credential,
-          roleName: "customer",
-          rememberMe: rememberMe,
-        }),
-      });
-
-      const data = await res.json();
-      console.log("Google login response:", data);
-
-      if (res.ok) {
-        // Gọi hàm login trong AuthContext, nhưng truyền token và role
-        await login(data.email, null, data.role, rememberMe, data.token);
-
-        if (rememberMe) {
-          const expiration = Date.now() + 7 * 24 * 60 * 60 * 1000;
-          localStorage.setItem(
-            "rememberedLogin",
-            JSON.stringify({
-              email: data.email,
-              role: data.role,
-              expiredAt: expiration,
-            })
-          );
-        }
-
-        navigate(from, { replace: true });
-      } else {
-        setError(data.message || "Google login failed");
-      }
+      await login(
+        null,
+        null,
+        "customer",
+        rememberMe,
+        credentialResponse.credential
+      );
+      navigate(from, { replace: true });
     } catch (err) {
       setError("Google login failed: " + err.message);
     }

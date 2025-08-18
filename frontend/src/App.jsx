@@ -8,7 +8,6 @@ import {
   Route,
   useLocation,
   Outlet,
-  useOutletContext,
 } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import Header from "./Header";
