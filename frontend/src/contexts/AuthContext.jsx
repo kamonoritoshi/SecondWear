@@ -16,6 +16,14 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
+      // ✅ Load từ localStorage nếu có
+      const cachedUser = localStorage.getItem("currentUser");
+      if (cachedUser) {
+        setCurrentUser(JSON.parse(cachedUser));
+        setLoading(false);
+        return; // ⛔ Không cần gọi API lại mỗi lần refresh
+      }
+
       try {
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000;
@@ -25,20 +33,13 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
+        // Nếu không có cachedUser thì mới gọi API
         const res = await fetch(`${API_BASE_URL}/api/accounts/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) {
           logout();
-        } else {
-          const data = await res.json();
-          setCurrentUser({
-            email: data.email,
-            name: data.name,
-            role: data.roleName, // cần chắc API trả về roleName
-            accountId: data.accountId,
-          });
         }
       } catch (error) {
         console.error("Lỗi xác thực token:", error);
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
     fetchUser();
-  }, []);
+  }, [token]);
 
   const login = async (
     email,
@@ -118,14 +119,17 @@ export const AuthProvider = ({ children }) => {
     const userData = await res.json();
 
     const accountId = userData.accountId;
-    localStorage.setItem("accountId", accountId);
 
-    setCurrentUser({
+    const user = {
       email: userData.email ?? data.email,
       name: userData.name ?? data.name,
       role: userData.role?.roleName || data.role,
       accountId,
-    });
+    };
+
+    setCurrentUser(user);
+    console.log("User sẽ lưu vào localStorage:", user);
+    localStorage.setItem("currentUser", JSON.stringify(user));
 
     // ✅ Remember Me
     if (rememberMe) {
@@ -147,7 +151,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("jwtToken");
-    localStorage.removeItem("accountId");
+    localStorage.removeItem("currentUser"); // ✅ thêm dòng này
     setToken(null);
     setCurrentUser(null);
   };
