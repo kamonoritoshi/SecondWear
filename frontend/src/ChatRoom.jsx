@@ -135,8 +135,8 @@ export default function ChatRoom() {
     <div className="chat-container">
       {/* Sidebar */}
       {showSidebar && (
-        <div className="chat-sidebar">
-          <h3>Đoạn chat</h3>
+        <div className={`chat-sidebar ${showSidebar ? "show" : "hide"}`}>
+          <h3><strong>ĐOẠN CHAT</strong></h3>
           <ul>
             {chatRooms.map((room) => (
               <Link
@@ -159,13 +159,17 @@ export default function ChatRoom() {
       <div className="chat-window">
         {/* Header có nút ☰ */}
         <div className="chat-header">
-          <button
-            className="toggle-sidebar"
-            onClick={() => setShowSidebar(!showSidebar)}
-          >
-            ☰
-          </button>
-          {opponentName}
+          <div className="chat-header-left">
+            <button
+              className="toggle-sidebar"
+              onClick={() => setShowSidebar(!showSidebar)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="var(--main-text)">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+              </svg>
+            </button>
+            <span className="chat-opponent">{opponentName}</span>
+          </div>
         </div>
 
         <div className="chat-messages" ref={chatBoxRef}>
