@@ -170,7 +170,7 @@ public class AuthController {
 			long expiration = rememberMe ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
 			String token = jwtUtil.generateToken(email, roleName, expiration);
 
-			return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getName(), acc.getUser().getEmail()));
+			return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getEmail(), acc.getUser().getName()));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
