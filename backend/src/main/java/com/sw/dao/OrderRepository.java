@@ -67,11 +67,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			    EXTRACT(WEEK FROM o.order_date) AS week,
 			    SUM(o.total_amount) AS revenue
 			FROM
-			    orders o
+			    \"Order\" o
 			JOIN
-			    order_item i ON o.order_id = i.order_id
+			    \"OrderItem\" i ON o.order_id = i.order_id
 			JOIN
-			    product p ON i.product_id = p.product_id
+			    \"Product\" p ON i.product_id = p.product_id
 			WHERE
 			    p.account_id = :sellerId AND o.status IN ('Hoàn thành', 'Đã giao')
 			GROUP BY

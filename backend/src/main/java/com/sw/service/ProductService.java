@@ -55,8 +55,8 @@ public class ProductService {
 		pDAO.deleteById(id);
 	}
 
-	public Page<Product> getAllProducts(Pageable pageable) {
-		return pDAO.findAll(pageable);
+	public Page<Product> getAllApprovedProducts(Pageable pageable) {
+		return pDAO.findAllApproved(pageable);
 	}
 
 	public List<Product> searchProductsByName(String name) {

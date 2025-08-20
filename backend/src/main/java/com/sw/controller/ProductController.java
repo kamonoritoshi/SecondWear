@@ -51,9 +51,7 @@ public class ProductController {
 
 	@GetMapping("/paged")
 	public ResponseEntity<Page<Product>> getAllProductsPaged(@PageableDefault(size = 10) Pageable pageable) {
-	    Page<Product> products = (Page<Product>) productService.getAllProducts(pageable)
-	            .map(p -> p.getApproved() != null && p.getApproved() == 1 ? p : null) // giữ approved == 1
-	            .filter(Objects::nonNull); // loại null
+		Page<Product> products = productService.getAllApprovedProducts(pageable);
 	    return ResponseEntity.ok(products);
 	}
 
