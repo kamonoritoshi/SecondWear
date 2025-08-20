@@ -1,20 +1,10 @@
 services:
   - type: web
-    name: secondwear-api # <-- Dùng một tên mới để đảm bảo không bị ảnh hưởng bởi cache cũ
+    name: secondwear-api
     plan: free
     region: singapore
-    
-    # Thêm khối này để chỉ định rõ phiên bản Java
-    envVars:
-      - key: JAVA_VERSION
-        value: 21
-
-    # Cấu hình build và chạy
-    rootDir: backend
-    buildCommand: "./mvnw clean package -DskipTests"
-    startCommand: "java -jar target/SecondWear-0.0.1-SNAPSHOT.jar"
-
-    # Bộ lọc build để chỉ tập trung vào thư mục backend
-    buildFilter:
-      paths:
-        - backend/**
+    # Chỉ định môi trường là Docker
+    env: docker
+    # Render sẽ tự động tìm Dockerfile trong thư mục gốc của repo
+    # hoặc trong thư mục được chỉ định bởi 'dockerfilePath'
+    dockerfilePath: ./backend/Dockerfile
