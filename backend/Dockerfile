@@ -1,13 +1,18 @@
-# Sử dụng một ảnh nền chính thức có sẵn Maven và Java 21
+# Giai đoạn 1: Build ứng dụng
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Đặt thư mục làm việc bên trong container
 WORKDIR /app
 
-# Copy các file cần thiết để build
+# Copy các file Maven wrapper
 COPY backend/mvnw .
 COPY backend/.mvn .mvn
+
+# Copy file pom.xml và tải dependencies (tận dụng cache)
 COPY backend/pom.xml .
+RUN ./mvnw dependency:go-offline
+
+# Copy toàn bộ mã nguồn <-- BƯỚC QUAN TRỌNG ĐÃ ĐƯỢC THÊM VÀO
+COPY backend/src ./src
 
 # Chạy lệnh build
 RUN ./mvnw package -DskipTests
