@@ -5,7 +5,7 @@ services:
     region: singapore
     rootDir: backend
     buildCommand: "./mvnw clean package -DskipTests"
-    startCommand: "java -jar target/secondwear-0.0.1-SNAPSHOT.jar"
+    startCommand: "java -jar target/SecondWear-0.0.1-SNAPSHOT.jar"
     buildFilter:
       paths:
         - backend/**
