@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "[Order]") // vẫn giữ [Order] nếu DB dùng tên này
+@Table(name = "\"Order\"") // vẫn giữ [Order] nếu DB dùng tên này
 public class Order {
     
     @Id

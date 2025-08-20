@@ -11,7 +11,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ChatMessage")
+@Table(name = "\"ChatMessage\"")
 public class ChatMessage {
 
     @Id

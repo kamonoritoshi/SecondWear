@@ -62,13 +62,22 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Object[]> getMonthlyRevenueBySeller(@Param("sellerId") Long sellerId);
 
 	@Query(value = """
-			SELECT YEAR(o.order_date) AS year, DATEPART(WEEK, o.order_date) AS week, SUM(o.total_amount) AS revenue
-			FROM [Order] o
-			JOIN OrderItem i ON o.order_id = i.order_id
-			JOIN Product p ON i.product_id = p.product_id
-			WHERE p.account_id = :sellerId AND o.status IN (N'Hoàn thành', N'Đã giao')
-			GROUP BY YEAR(o.order_date), DATEPART(WEEK, o.order_date)
-			ORDER BY year, week
+			SELECT
+			    EXTRACT(YEAR FROM o.order_date) AS year,
+			    EXTRACT(WEEK FROM o.order_date) AS week,
+			    SUM(o.total_amount) AS revenue
+			FROM
+			    orders o
+			JOIN
+			    order_item i ON o.order_id = i.order_id
+			JOIN
+			    product p ON i.product_id = p.product_id
+			WHERE
+			    p.account_id = :sellerId AND o.status IN ('Hoàn thành', 'Đã giao')
+			GROUP BY
+			    EXTRACT(YEAR FROM o.order_date), EXTRACT(WEEK FROM o.order_date)
+			ORDER BY
+			    year, week
 			""", nativeQuery = true)
 	List<Object[]> getWeeklyRevenueBySeller(@Param("sellerId") Long sellerId);
 
@@ -100,7 +109,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			    LIMIT 10
 			""")
 	List<Object[]> findTopSellingProducts();
-	
+
 	@Query("SELECT SUM(oi.price * oi.quantity) FROM OrderItem oi WHERE oi.product.account.accountId = :sellerId")
 	BigDecimal getTotalRevenueBySeller(@Param("sellerId") Long sellerId);
 }
