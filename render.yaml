@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: secondwear-backend
+    env: java
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/secondwear-0.0.1-SNAPSHOT.jar"
