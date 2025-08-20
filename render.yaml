@@ -1,11 +1,20 @@
 services:
   - type: web
-    name: secondwear
+    name: secondwear-api # <-- Dùng một tên mới để đảm bảo không bị ảnh hưởng bởi cache cũ
     plan: free
     region: singapore
+    
+    # Thêm khối này để chỉ định rõ phiên bản Java
+    envVars:
+      - key: JAVA_VERSION
+        value: 21
+
+    # Cấu hình build và chạy
     rootDir: backend
     buildCommand: "./mvnw clean package -DskipTests"
     startCommand: "java -jar target/SecondWear-0.0.1-SNAPSHOT.jar"
+
+    # Bộ lọc build để chỉ tập trung vào thư mục backend
     buildFilter:
       paths:
         - backend/**
