@@ -1,7 +1,6 @@
 services:
   - type: web
     name: secondwear-backend
-    env: java
     plan: free
     region: singapore
     rootDir: backend
