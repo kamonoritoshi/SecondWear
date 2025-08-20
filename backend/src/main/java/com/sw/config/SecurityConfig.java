@@ -1,5 +1,6 @@
 package com.sw.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -35,8 +36,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-        		.cors()
-        		.and()
+        		.cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- Thêm dòng này
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -78,7 +78,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // ✅ Cụ thể, KHÔNG dùng "*"
+        config.setAllowedOrigins(Arrays.asList("https://second-wear.vercel.app", "http://localhost:5173")); // ✅ Cụ thể, KHÔNG dùng "*"
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type")); // ✅ rõ ràng
         config.setAllowCredentials(true); // ✅ PHẢI đặt true để SockJS hoạt động
