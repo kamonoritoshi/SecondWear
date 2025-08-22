@@ -31,6 +31,7 @@ import OrderPage from "./OrderPage";
 import ChatbotWidget from './components/ChatbotWidget';
 import ChatRoom from './ChatRoom';
 import Favorites from "./Favorites";
+import StorePage from "./StorePage";
 
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
@@ -144,6 +145,7 @@ const AppContent = () => {
           <Route path="/chat/rooms/:accountId" element={<ChatRoom />} />
             
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/stores/:storeId" element={<StorePage />} />
 
           {/* Seller */}
           <Route

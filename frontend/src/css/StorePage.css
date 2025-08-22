@@ -1,0 +1,155 @@
+/* src/css/StorePage.css */
+
+.store-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--section-bg);
+    color: var(--main-text);
+}
+
+/* --- Phần Header của Cửa hàng --- */
+.store-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    position: relative;
+}
+
+.store-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--section-bg);
+}
+
+.store-info h1 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin: 0 0 0.5rem 0;
+}
+
+.store-info p {
+    font-size: 1.1rem;
+    color: var(--secondary-text);
+    margin: 0;
+}
+
+/* --- Nút Yêu thích Cửa hàng --- */
+.favorite-store-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 25px;
+    border: 1px solid var(--border);
+    background-color: var(--section-bg);
+    color: var(--main-text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: auto; /* Đẩy nút về phía bên phải */
+}
+
+.favorite-store-btn:hover {
+    background-color: #ffebe6; /* Màu nền hồng nhạt khi hover */
+    border-color: #ff7b5a;
+    color: #ff5733;
+}
+
+.favorite-store-btn svg {
+    font-size: 1.2rem;
+}
+
+/* --- Phần Sản phẩm của Cửa hàng --- */
+.store-products {
+    padding: 0 1rem;
+}
+
+.store-products h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--highlight);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+/* --- Lưới sản phẩm --- */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.product-card-info {
+    padding: 1rem;
+}
+
+.product-card-info h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card-info p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--highlight);
+    margin: 0;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .store-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .favorite-store-btn {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}

@@ -25,4 +25,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     @Query("SELECT p FROM Product p WHERE p.approved = 1")
     Page<Product> findAllApproved(Pageable pageable);
+    
+    List<Product> findByAccount_AccountIdAndApproved(Long accountId, Byte approved);
 }

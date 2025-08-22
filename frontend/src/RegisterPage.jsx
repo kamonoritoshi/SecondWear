@@ -100,7 +100,6 @@ const RegisterPage = ({ t }) => {
                         <label htmlFor="role" style={{ color: 'var(--main-text)' }}>{t('role_label') || "Bạn muốn đăng ký với vai trò?"}</label>
                         <select id="role" name="role" value={formData.role} onChange={handleChange} required>
                             <option value="customer">{t('role_customer') || "Người mua"}</option>
-                            <option value="seller">{t('role_seller') || "Người bán"}</option>
                         </select>
                     </div>
 

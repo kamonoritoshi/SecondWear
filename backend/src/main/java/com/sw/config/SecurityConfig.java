@@ -44,6 +44,8 @@ public class SecurityConfig {
                 	    .requestMatchers("/api/auth/**").permitAll()
                 	    .requestMatchers("/api/payment/vnpay-return").permitAll()
                 	    .requestMatchers("/api/products/**").permitAll()
+                	    .requestMatchers("/api/stores/**").permitAll()
+                	    .requestMatchers("/api/favorites/**").authenticated()
                 	    .requestMatchers("/api/categories/**").permitAll()
                 	    .requestMatchers("/api/payment/return", "/api/payment/cancel", "/test_payos.html").permitAll()
                 	    .requestMatchers("/api/seller/**").hasAuthority("ROLE_seller")

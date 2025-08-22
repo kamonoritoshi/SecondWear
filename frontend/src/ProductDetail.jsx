@@ -1,9 +1,9 @@
 // src/ProductDetail.jsx
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+// THÊM 'Link' VÀO IMPORT
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
-// import { authFetch } from './services/api';
 import { API_BASE_URL } from "./apiConfig";
 
 // Import các hình ảnh
@@ -40,7 +40,7 @@ const ProductDetail = ({ t, setCartCount }) => {
 
   // --- State cho các Modal ---
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false); // <-- MỚI
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // --- State cho lựa chọn của người dùng trong Modal ---
   const [quantity, setQuantity] = useState(1);
@@ -48,10 +48,11 @@ const ProductDetail = ({ t, setCartCount }) => {
   const [selectedSize, setSelectedSize] = useState(null);
 
   // --- State cho Form Báo cáo ---
-  const [reportReason, setReportReason] = useState(""); // <-- MỚI
-  const [reportDetails, setReportDetails] = useState(""); // <-- MỚI
-  const [isSubmittingReport, setIsSubmittingReport] = useState(false); // <-- MỚI
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
+  // --- Lấy dữ liệu sản phẩm khi component được tải ---
   useEffect(() => {
     const fetchProductData = async () => {
       if (!productId) {
@@ -60,13 +61,26 @@ const ProductDetail = ({ t, setCartCount }) => {
         return;
       }
       setLoading(true);
+      
+      const token = localStorage.getItem("jwtToken");
+      const headers = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       try {
         const productRes = await fetch(
-          `${API_BASE_URL}/api/products/${productId}`
+          `${API_BASE_URL}/api/products/${productId}`,
+          { headers }
         );
+
         if (!productRes.ok) throw new Error("Không tìm thấy sản phẩm.");
+        
         const productData = await productRes.json();
         setProduct(productData);
+        
+        setIsLiked(productData.favorited || false);
+
         document.title = `${productData.name} - SecondWear`;
         setSelectedColor(productData.color);
         setSelectedSize(productData.size);
@@ -83,14 +97,59 @@ const ProductDetail = ({ t, setCartCount }) => {
     fetchProductData();
   }, [productId]);
 
-  // --- Handlers cho Báo cáo --- // <-- KHỐI MỚI
+  const handleLikeToggle = useCallback(async () => {
+    if (!isAuthenticated) {
+      toast.error("Bạn cần đăng nhập để thực hiện chức năng này.");
+      navigate("/login");
+      return;
+    }
+
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.");
+      navigate("/login");
+      return;
+    }
+
+    setIsLiked(prev => !prev); 
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/favorites/${productId}`, 
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        setIsLiked(prev => !prev);
+        throw new Error("Không thể thay đổi trạng thái yêu thích.");
+      }
+
+      const isNowFavorited = await response.json();
+      setIsLiked(isNowFavorited);
+
+      if (isNowFavorited) {
+        toast.success("Đã thêm vào danh sách yêu thích!");
+      } else {
+        toast.info("Đã bỏ yêu thích sản phẩm.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi yêu thích sản phẩm:", error);
+      toast.error(error.message || "Đã có lỗi xảy ra.");
+    }
+  }, [isAuthenticated, navigate, productId]);
+
+  // --- Các hàm xử lý khác (giữ nguyên) ---
   const handleOpenReportModal = () => {
     if (!isAuthenticated) {
       toast.error("Bạn cần đăng nhập để báo cáo sản phẩm.");
       navigate("/login");
       return;
     }
-    // Chặn người dùng tự báo cáo sản phẩm của mình
     if (currentUser?.accountId === product?.account?.accountId) {
       toast.error("Bạn không thể báo cáo sản phẩm của chính mình.");
       return;
@@ -125,12 +184,11 @@ const ProductDetail = ({ t, setCartCount }) => {
           productId: productId,
           reason: reportReason,
           details: reportDetails,
-          reporterId: currentUser?.accountId, // Gửi ID người báo cáo
+          reporterId: currentUser?.accountId,
         }),
       });
 
       if (!response.ok) {
-        // Cố gắng đọc lỗi từ body response
         const errorData = await response
           .json()
           .catch(() => ({ message: "Gửi báo cáo thất bại." }));
@@ -147,7 +205,6 @@ const ProductDetail = ({ t, setCartCount }) => {
     }
   };
 
-  // --- Các handlers khác ---
   const handleStartChat = async () => {
     const token = localStorage.getItem("jwtToken");
     const buyerId = currentUser?.accountId;
@@ -306,7 +363,6 @@ const ProductDetail = ({ t, setCartCount }) => {
     navigate,
   ]);
 
-  const handleLikeToggle = useCallback(() => setIsLiked((prev) => !prev), []);
   const openOptionsModal = useCallback(() => setIsOptionsModalOpen(true), []);
   const closeOptionsModal = useCallback(() => setIsOptionsModalOpen(false), []);
 
@@ -338,13 +394,13 @@ const ProductDetail = ({ t, setCartCount }) => {
       </main>
     );
 
+  // --- JSX Render ---
   return (
     <>
       <main
         className="product-detail-page"
         style={{ background: "var(--section-bg)" }}
       >
-        {/* THAY ĐỔI onClick ở đây */}
         <button
           className="report-product-button"
           onClick={handleOpenReportModal}
@@ -360,7 +416,6 @@ const ProductDetail = ({ t, setCartCount }) => {
         </button>
 
         <section className="product-main-info">
-          {/* ... Phần JSX còn lại của bạn giữ nguyên ... */}
           <div className="product-image-gallery" style={{ border: "none" }}>
             <div
               className="main-image-container"
@@ -485,6 +540,7 @@ const ProductDetail = ({ t, setCartCount }) => {
                 <span>:</span>{" "}
                 <span className="quality-rating">{product.condition}</span>
               </p>
+              {/* --- CẬP NHẬT KHỐI NÀY --- */}
               <p
                 style={{
                   color: "var(--main-text)",
@@ -494,9 +550,11 @@ const ProductDetail = ({ t, setCartCount }) => {
                 }}
               >
                 <span>Cửa hàng:</span>
-                <span style={{ color: "#007bff", fontWeight: "bold" }}>
-                  {product.account?.user?.name || "Người bán ẩn danh"}
-                </span>
+                <Link to={`/stores/${product.account?.accountId}`} style={{textDecoration: 'none'}}>
+                    <span style={{ color: "#007bff", fontWeight: "bold", cursor: 'pointer' }}>
+                        {product.account?.user?.name || "Người bán ẩn danh"}
+                    </span>
+                </Link>
                 <button
                   className="chat-button"
                   onClick={handleStartChat}
@@ -545,6 +603,7 @@ const ProductDetail = ({ t, setCartCount }) => {
         </section>
       </main>
 
+      {/* ... Modal JSX không thay đổi ... */}
       {isOptionsModalOpen && (
         <div className="overlay-modal active" onClick={closeOptionsModal}>
           <div
@@ -576,7 +635,6 @@ const ProductDetail = ({ t, setCartCount }) => {
               ×
             </button>
 
-            {/* Thông tin sản phẩm */}
             <div style={{ display: "flex", gap: "15px", marginBottom: "15px" }}>
               <img
                 src={selectedImage || "/images/placeholder.png"}
@@ -600,7 +658,6 @@ const ProductDetail = ({ t, setCartCount }) => {
               </div>
             </div>
 
-            {/* Màu sắc */}
             <div className="form-group" style={{ marginBottom: "15px" }}>
               <label
                 style={{
@@ -643,7 +700,6 @@ const ProductDetail = ({ t, setCartCount }) => {
               </div>
             </div>
 
-            {/* Kích cỡ */}
             <div className="form-group" style={{ marginBottom: "15px" }}>
               <label
                 style={{
@@ -686,7 +742,6 @@ const ProductDetail = ({ t, setCartCount }) => {
               </div>
             </div>
 
-            {/* Số lượng */}
             <div className="form-group" style={{ marginBottom: "20px" }}>
               <label
                 style={{
@@ -742,7 +797,6 @@ const ProductDetail = ({ t, setCartCount }) => {
               </div>
             </div>
 
-            {/* Nút hành động */}
             <div style={{ display: "flex", gap: "10px" }}>
               <button
                 onClick={handleAddToCart}
@@ -782,7 +836,6 @@ const ProductDetail = ({ t, setCartCount }) => {
         </div>
       )}
 
-      {/* --- MODAL BÁO CÁO MỚI --- */}
       {isReportModalOpen && (
         <div className="overlay-modal active" onClick={handleCloseReportModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

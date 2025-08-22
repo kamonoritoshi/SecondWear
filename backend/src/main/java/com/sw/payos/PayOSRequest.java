@@ -11,7 +11,7 @@ public class PayOSRequest {
     private String description;
     private String returnUrl;
     private String cancelUrl;
-    private String currency = "VND"; // Thêm currency
+//    private String currency = "VND"; // Thêm currency
     private List<Item> items;
     private String buyerName; // Thêm
     private String buyerEmail; // Thêm

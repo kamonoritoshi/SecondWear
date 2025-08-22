@@ -7,37 +7,40 @@ import org.springframework.stereotype.Service;
 
 import com.sw.dao.ProductRepository;
 import com.sw.entity.Product;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Service
 public class ProductService {
 	@Autowired
-	private ProductRepository pDAO;
+	private ProductRepository productRepository;
+	@Autowired
+	private FavoriteService favoriteService;
 
 	public List<Product> getAllProducts() {
-		List<Product> products = pDAO.findAll();
+		List<Product> products = productRepository.findAll();
 		// Ép Hibernate load danh sách ảnh
-	    for (Product p : products) {
-	        p.getImages().size(); // force lazy load
-	    }
-	    return products;
+		for (Product p : products) {
+			p.getImages().size(); // force lazy load
+		}
+		return products;
 	}
 
 	public Product getProductById(Long id) {
-		Product p = pDAO.findById(id).orElse(null);
-	    if (p != null) {
-	        p.getImages().size(); // ép load ảnh
-	    }
-	    return p;
+		Product p = productRepository.findById(id).orElse(null);
+		if (p != null) {
+			p.getImages().size(); // ép load ảnh
+		}
+		return p;
 	}
 
 	public Product createProduct(Product product) {
-		return pDAO.save(product);
+		return productRepository.save(product);
 	}
 
 	public Product updateProduct(Long id, Product product) {
-		Product existing = pDAO.findById(id).orElse(null);
+		Product existing = productRepository.findById(id).orElse(null);
 		if (existing == null)
 			return null;
 
@@ -48,31 +51,41 @@ public class ProductService {
 		existing.setSize(product.getSize());
 		existing.setColor(product.getColor());
 		existing.setStatus(product.getStatus());
-		return pDAO.save(existing);
+		return productRepository.save(existing);
 	}
 
 	public void deleteProduct(Long id) {
-		pDAO.deleteById(id);
+		productRepository.deleteById(id);
 	}
 
 	public Page<Product> getAllApprovedProducts(Pageable pageable) {
-		return pDAO.findAllApproved(pageable);
+		return productRepository.findAllApproved(pageable);
 	}
 
 	public List<Product> searchProductsByName(String name) {
-		return pDAO.findByNameContainingIgnoreCase(name);
+		return productRepository.findByNameContainingIgnoreCase(name);
 	}
-	
-	public List<Product> getProductsByCategory(Integer categoryId) {
-	    return pDAO.findByCategory_CategoryId(categoryId);
-	}
-	
-	public Product approve(Long id) {
-	    Product product = pDAO.findById(id)
-	        .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
-	    product.setApproved((byte) 1);
-	    return pDAO.save(product);
+	public List<Product> getProductsByCategory(Integer categoryId) {
+		return productRepository.findByCategory_CategoryId(categoryId);
+	}
+
+	public Product approve(Long id) {
+		Product product = productRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+
+		product.setApproved((byte) 1);
+		return productRepository.save(product);
+	}
+
+	public Product getProductById(Long id, Long currentAccountId) {
+		Product product = productRepository.findById(id).orElse(null);
+		if (product != null && currentAccountId != null) {
+			// Kiểm tra và set trạng thái isFavorited
+			boolean isFavorited = favoriteService.isProductFavoritedByUser(currentAccountId, id);
+			product.setFavorited(isFavorited);
+		}
+		return product;
 	}
 
 }
