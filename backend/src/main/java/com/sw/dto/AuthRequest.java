@@ -9,4 +9,3 @@ public class AuthRequest {
     private boolean rememberMe;
     private String roleName;
 }
-//
