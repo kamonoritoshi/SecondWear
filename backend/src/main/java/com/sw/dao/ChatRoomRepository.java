@@ -9,20 +9,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.sw.entity.Account;
+import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
+    Optional<ChatRoom> findByBuyer_AccountIdAndSeller_AccountId(Long buyerId, Long sellerId);
 
-	// ✅ Nếu dùng ID
-	Optional<ChatRoom> findByBuyer_AccountIdAndSeller_AccountId(Long buyerId, Long sellerId);
+    List<ChatRoom> findByBuyer_AccountIdOrSeller_AccountId(Long buyerId, Long sellerId);
 
-	List<ChatRoom> findByBuyer_AccountIdOrSeller_AccountId(Long buyerId, Long sellerId);
+    Optional<ChatRoom> findByBuyerAndSeller(Account buyer, Account seller);
+    List<ChatRoom> findByBuyerOrSeller(Account buyer, Account seller);
 
-	// ✅ Hoặc dùng Account trực tiếp
-	Optional<ChatRoom> findByBuyerAndSeller(Account buyer, Account seller);
-	List<ChatRoom> findByBuyerOrSeller(Account buyer, Account seller);
-	
-	@Query("SELECT r FROM ChatRoom r LEFT JOIN FETCH r.messages WHERE r.buyer.accountId = :id OR r.seller.accountId = :id")
-	List<ChatRoom> findRoomsWithMessages(@Param("id") Long id);
-
+    @Query("SELECT r FROM ChatRoom r LEFT JOIN FETCH r.messages WHERE r.buyer.accountId = :id OR r.seller.accountId = :id")
+    List<ChatRoom> findRoomsWithMessages(@Param("id") Long id);
 }
+

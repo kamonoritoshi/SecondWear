@@ -36,5 +36,9 @@ public class ChatMessage {
     private String imageUrl; // chứa URL ảnh
 
     private LocalDateTime timestamp = LocalDateTime.now();
+    
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead = false; // ✅ đổi tên field
+
 }
 

@@ -33,4 +33,5 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // 👈 Tránh serialize vòng lặp hoặc lỗi proxy
     private List<ChatMessage> messages;
+
 }
