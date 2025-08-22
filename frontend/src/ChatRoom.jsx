@@ -71,7 +71,7 @@ export default function ChatRoom() {
     const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
-      reconnectDelay: 5000,
+      reconnectDelay: 300,
       onConnect: () => {
         stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
           const newMsg = JSON.parse(message.body);
