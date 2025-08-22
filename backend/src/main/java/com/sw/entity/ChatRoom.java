@@ -13,7 +13,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ChatRoom")
+@Table(name = "\"ChatRoom\"")
 public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

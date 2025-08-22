@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Category")
+@Table(name = "\"Category\"")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "products"}) 
 public class Category {
     @Id

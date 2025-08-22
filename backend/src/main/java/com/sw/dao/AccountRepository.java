@@ -34,7 +34,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	List<Account> findBySellerStatus(Account.SellerStatus status);
 	
-	@Query("SELECT a FROM Account a WHERE a.role.roleName = 'SELLER' AND a.sellerStatus = 'APPROVED'")
+	@Query("SELECT a FROM Account a WHERE a.role.roleName = 'seller' AND a.sellerStatus = 'APPROVED'")
     List<Account> findApprovedSellers();
 	
 	@Query("SELECT a FROM Account a WHERE a.role.roleName = 'CUSTOMER'")

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: secondwear-api
+    plan: free
+    region: singapore
+    # Chỉ định môi trường là Docker
+    env: docker
+    # Render sẽ tự động tìm Dockerfile trong thư mục gốc của repo
+    # hoặc trong thư mục được chỉ định bởi 'dockerfilePath'
+    dockerfilePath: ./backend/Dockerfile
