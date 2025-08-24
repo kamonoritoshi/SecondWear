@@ -72,6 +72,8 @@ export default function ChatRoom() {
   useEffect(() => {
     if (!token || !roomId) return;
 
+    setChatMessages([]);
+
     fetch(`${API_URL}/api/chat/room/${roomId}/messages`, {
       headers: { Authorization: `Bearer ${token}` },
     })
