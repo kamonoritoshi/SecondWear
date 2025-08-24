@@ -64,7 +64,8 @@ public class AuthController {
 	            acc.getUser().getEmail(),
 	            acc.getUser().getName(),
 	            acc.getRole().getRoleName(),
-	            acc.getSellerStatus().toString()
+	            acc.getSellerStatus().toString(),
+	            acc.getAvatarUrl()
 	    ));
 	}
 
@@ -191,7 +192,8 @@ public class AuthController {
 		            acc.getUser().getEmail(),
 		            acc.getUser().getName(),
 		            acc.getRole().getRoleName(),
-		            acc.getSellerStatus().toString()
+		            acc.getSellerStatus().toString(),
+		            acc.getAvatarUrl()
 		    ));
 
 	    } catch (Exception e) {

@@ -78,4 +78,7 @@ public class Account {
     @JsonIgnore
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FavoriteProduct> favoriteProducts;
+    
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }

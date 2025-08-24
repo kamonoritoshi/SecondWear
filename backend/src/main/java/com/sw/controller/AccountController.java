@@ -1,8 +1,10 @@
 package com.sw.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sw.dao.AccountRepository;
 import com.sw.dao.RoleRepository;
@@ -118,4 +122,20 @@ public class AccountController {
 		// ✅ THAY ĐỔI: Trả về thông báo thành công, KHÔNG trả về token mới
 		return ResponseEntity.ok("Yêu cầu trở thành người bán đã được gửi thành công và đang chờ duyệt.");
 	}
+	
+	@PutMapping("/{accountId}/avatar")
+    public ResponseEntity<?> updateAvatar(@PathVariable Long accountId, 
+                                          @RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Vui lòng chọn một file để tải lên.");
+        }
+        
+        try {
+            // Logic ở đây không thay đổi, nó vẫn gọi AccountService
+            String avatarUrl = accountService.updateAvatar(accountId, file);
+            return ResponseEntity.ok(Map.of("avatarUrl", avatarUrl));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

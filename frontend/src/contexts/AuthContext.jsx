@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
             role: accountData.role.roleName,
             sellerStatus: accountData.sellerStatus,
             accountId: accountData.accountId,
+            avatarUrl: accountData.avatarUrl,
         };
 
         setCurrentUser(userToStore);
@@ -120,6 +121,7 @@ export const AuthProvider = ({ children }) => {
       role: data.role,
       sellerStatus: data.sellerStatus,
       accountId: data.accountId,
+      avatarUrl: data.avatarUrl,
     };
     
     setCurrentUser(userToStore);
@@ -151,6 +153,16 @@ export const AuthProvider = ({ children }) => {
     setCurrentUser(null);
   };
 
+  const updateUserAvatar = (newAvatarUrl) => {
+      setCurrentUser(prevUser => {
+          if (!prevUser) return null;
+          const updatedUser = { ...prevUser, avatarUrl: newAvatarUrl };
+          // Cập nhật lại localStorage để thông tin được đồng bộ
+          localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+          return updatedUser;
+      });
+  };
+
   const value = {
     currentUser,
     setCurrentUser,
@@ -159,6 +171,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     loading,
     isAuthenticated: !!currentUser,
+    updateUserAvatar,
   };
 
   return (

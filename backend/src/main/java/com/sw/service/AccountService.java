@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.sw.dao.AccountRepository;
 import com.sw.dto.admin.CustomerResponse;
 import com.sw.entity.Account;
@@ -25,6 +27,8 @@ public class AccountService {
     private AccountRepository accountRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+    private CloudinaryUploadService cloudinaryUploadService;
 	
 	public List<Account> getAllAccounts() {
         return accountRepository.findAll();
@@ -106,5 +110,23 @@ public class AccountService {
                     account.getStatus()
                 );
             }).collect(Collectors.toList());
+    }
+    
+    public String updateAvatar(Long accountId, MultipartFile file) {
+        // 1. Tìm tài khoản trong DB
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản với ID: " + accountId));
+
+        // 2. Gọi service để tải file lên Cloudinary và lấy về URL
+        String avatarUrl = cloudinaryUploadService.uploadFile(file);
+
+        // 3. Cập nhật URL mới cho tài khoản
+        account.setAvatarUrl(avatarUrl);
+
+        // 4. Lưu lại vào database
+        accountRepository.save(account);
+
+        // 5. Trả về URL đã được upload
+        return avatarUrl;
     }
 }

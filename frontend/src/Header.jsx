@@ -144,8 +144,6 @@ const BlogIcon = (props) => (
 //import globeIcon from "./icons/globe-icon.png";
 //import sunIcon from "./icons/sun-icon.png";
 //import moonIcon from "./icons/moon-icon.png";
-import blackUser from "./icons/black-user-icon.png";
-import whiteUser from "./icons/white-user-icon.png";
 import logoBlack from "./icons/black-transparent-logo.png";
 import logoWhite from "./icons/white-transparent-logo.png";
 import blackCart from "./icons/black-cart-icon.png";
@@ -349,6 +347,9 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
   const handleThemeChange = (theme) => {
     setTheme(theme);
   };
+
+  const defaultAvatar = "/src/icons/black-user-icon.png"; // Icon user mặc định của bạn
+  const avatarToShow = currentUser?.avatarUrl || defaultAvatar;
 
   return (
     <>
@@ -798,10 +799,10 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                   borderRadius: 8,
                 }}
               >
-                <img
-                  src={currentTheme === "dark" ? whiteUser : blackUser}
-                  alt="User"
-                  className="header-icon"
+                <img 
+                  src={avatarToShow} 
+                  alt="User Avatar" 
+                  className="header-icon" // Thêm class để style
                 />
                 <span
                   className="user-text"
