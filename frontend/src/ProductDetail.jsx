@@ -207,7 +207,7 @@ const ProductDetail = ({ t, setCartCount }) => {
 
   const handleStartChat = async () => {
     const token = localStorage.getItem("jwtToken");
-    const buyerId = currentUser?.accountId;
+    const buyerId = currentUser?.accountId || localStorage.getItem("accountId");
     const sellerId = product?.account?.accountId;
     if (!token) {
       toast.error("Bạn cần đăng nhập để chat với shop");
@@ -219,15 +219,18 @@ const ProductDetail = ({ t, setCartCount }) => {
     }
     try {
       let roomId;
-      // kiểm tra phòng
+
+      // Kiểm tra phòng chat có sẵn
       const checkRes = await fetch(
         `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       if (checkRes.ok) {
         const data = await checkRes.json();
         roomId = data.roomId;
       } else {
+        // Nếu chưa có phòng → tạo mới
         const createRes = await fetch(
           `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
           {
@@ -240,18 +243,20 @@ const ProductDetail = ({ t, setCartCount }) => {
         roomId = createdData.roomId;
       }
 
+      // Gửi tin nhắn chứa thông tin sản phẩm
       await fetch(`${API_BASE_URL}/api/chat/room/${roomId}/product`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          senderId: buyerId,       // ✅ người gửi chính là currentUser
-          productId: productId,    // ✅ id sản phẩm
-          content: "Chào shop! Tôi muốn tìm hiểu về sản phẩm này."// hoặc bạn tạo thêm state note nếu muốn kèm nội dung
-        })
+          senderId: buyerId,
+          productId: productId,
+          content: "Chào shop! Tôi muốn tìm hiểu về sản phẩm này.",
+        }),
       });
+
       navigate(`/chat/${roomId}`);
     } catch (e) {
       console.error("[Chat] Lỗi khi xử lý chat:", e);

@@ -3,7 +3,7 @@ import { useAuth } from "./contexts/AuthContext";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import EmojiPicker from "emoji-picker-react"; // 🎯 emoji picker
+import EmojiPicker from "emoji-picker-react";
 import "./css/ChatRoom.css";
 
 export default function ChatRoom() {
@@ -15,7 +15,7 @@ export default function ChatRoom() {
   const [chatRooms, setChatRooms] = useState([]);
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [imageFile, setImageFile] = useState(null); // 📸 ảnh upload
+  const [imageFile, setImageFile] = useState(null);
   const chatEndRef = useRef(null);
   const stompClientRef = useRef(null);
 
@@ -23,6 +23,7 @@ export default function ChatRoom() {
 
   const token = localStorage.getItem("jwtToken");
   const accountId = currentUser?.accountId;
+  const API_URL = "http://localhost:8080";
 
   useEffect(() => {
     if (!token || !currentUser) {
@@ -31,15 +32,30 @@ export default function ChatRoom() {
   }, [token, currentUser, navigate]);
 
   const chatBoxRef = useRef(null);
-
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
+  // ✅ Helper: merge + lọc trùng messages
+  const mergeUniqueMessages = (prev, incoming) => {
+    const merged = [...prev, ...incoming];
+    const unique = merged.filter(
+      (msg, index, self) =>
+        index ===
+        self.findIndex(
+          (m) =>
+            (m.id && msg.id && m.id === msg.id) ||
+            (!msg.id &&
+              m.senderId === msg.senderId &&
+              m.content === msg.content &&
+              m.timestamp === msg.timestamp)
+        )
+    );
+    return unique.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  };
 
-  const API_URL = "http://localhost:8080";
   // Load danh sách phòng
   useEffect(() => {
     if (!token || !accountId) return;
@@ -52,7 +68,7 @@ export default function ChatRoom() {
       .catch((err) => console.error("Lỗi load danh sách phòng:", err));
   }, [token, accountId]);
 
-  // Load tin nhắn của phòng
+  // Load tin nhắn trong phòng
   useEffect(() => {
     if (!token || !roomId) return;
 
@@ -60,11 +76,13 @@ export default function ChatRoom() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then((data) => setChatMessages(data))
+      .then((data) =>
+        setChatMessages((prev) => mergeUniqueMessages(prev, data))
+      )
       .catch((err) => console.error("Lỗi load tin nhắn:", err));
   }, [roomId, token]);
 
-  // WebSocket nhận tin nhắn realtime
+  // WebSocket realtime
   useEffect(() => {
     if (!roomId) return;
 
@@ -75,7 +93,7 @@ export default function ChatRoom() {
       onConnect: () => {
         stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
           const newMsg = JSON.parse(message.body);
-          setChatMessages((prev) => [...prev, newMsg]);
+          setChatMessages((prev) => mergeUniqueMessages(prev, [newMsg]));
         });
       },
     });
@@ -105,13 +123,13 @@ export default function ChatRoom() {
 
       if (!res.ok) throw new Error(`Lỗi ${res.status}`);
 
+      // ❌ Không cần push vào state vì WebSocket sẽ bắn về
       setMessage("");
       setImageFile(null);
     } catch (err) {
       console.error("Lỗi gửi tin nhắn:", err);
     }
   };
-
 
   const onEmojiClick = (emojiData) => {
     setMessage((prev) => prev + emojiData.emoji);
@@ -136,7 +154,9 @@ export default function ChatRoom() {
       {/* Sidebar */}
       {showSidebar && (
         <div className={`chat-sidebar ${showSidebar ? "show" : "hide"}`}>
-          <h3><strong>ĐOẠN CHAT</strong></h3>
+          <h3>
+            <strong>ĐOẠN CHAT</strong>
+          </h3>
           <ul>
             {chatRooms.map((room) => (
               <Link
@@ -157,14 +177,19 @@ export default function ChatRoom() {
 
       {/* Main Chat */}
       <div className="chat-window">
-        {/* Header có nút ☰ */}
         <div className="chat-header">
           <div className="chat-header-left">
             <button
               className="toggle-sidebar"
               onClick={() => setShowSidebar(!showSidebar)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="var(--main-text)">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                fill="var(--main-text)"
+              >
                 <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
               </svg>
             </button>
@@ -172,13 +197,14 @@ export default function ChatRoom() {
           </div>
         </div>
 
-
-
         <div className="chat-messages" ref={chatBoxRef}>
           {chatMessages.map((msg, idx) => {
             const isMine = msg.senderId === accountId;
             return (
-              <div key={idx} className={`chat-message ${isMine ? "mine" : ""}`}>
+              <div
+                key={msg.id || `${msg.senderId}-${msg.timestamp}-${idx}`}
+                className={`chat-message ${isMine ? "mine" : ""}`}
+              >
                 {msg.messageType === "PRODUCT" && (
                   <div className="product-bubble">
                     {msg.productImageUrl && (
@@ -192,17 +218,18 @@ export default function ChatRoom() {
                     <div>
                       <strong>{msg.productName}</strong>
                       <p>{msg.productPrice?.toLocaleString("vi-VN")} ₫</p>
-                      <Link to={`/products/${msg.productId}`} className="view-btn">
+                      <Link
+                        to={`/products/${msg.productId}`}
+                        className="view-btn"
+                      >
                         Xem chi tiết
                       </Link>
                     </div>
                   </div>
                 )}
-                {/* Thêm hiển thị note (content) nếu có */}
-                {msg.content && (
-                  <div className="note">
-                    {msg.content}
-                  </div>
+
+                {msg.content && msg.messageType === "TEXT" && (
+                  <div className="content">{msg.content}</div>
                 )}
 
                 {msg.messageType === "IMAGE" && msg.imageUrl && (
@@ -212,10 +239,6 @@ export default function ChatRoom() {
                     style={{ maxWidth: "200px", borderRadius: "8px" }}
                     onError={(e) => (e.target.style.display = "none")}
                   />
-                )}
-
-                {msg.messageType === "TEXT" && msg.content && (
-                  <div className="content">{msg.content}</div>
                 )}
 
                 <div className="timestamp">{formatTime(msg.timestamp)}</div>
@@ -255,7 +278,7 @@ export default function ChatRoom() {
           <button onClick={handleSendMessage}>Gửi</button>
         </div>
 
-        {/* Preview ảnh trước khi gửi */}
+        {/* Preview ảnh */}
         {imageFile && (
           <div style={{ padding: "5px" }}>
             <img

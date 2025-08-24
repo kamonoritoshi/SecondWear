@@ -119,6 +119,7 @@ export const AuthProvider = ({ children }) => {
       name: data.name, // Sửa lại để khớp với AuthResponse
       role: data.role,
       sellerStatus: data.sellerStatus,
+      accountId: data.accountId,
     };
     
     setCurrentUser(userToStore);
