@@ -240,4 +240,24 @@
   border-radius: 6px;
 }
 
+.product-bubble {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.product-bubble img.product-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.product-bubble .view-btn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #f57224;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+}
 

@@ -172,12 +172,40 @@ export default function ChatRoom() {
           </div>
         </div>
 
+
+
         <div className="chat-messages" ref={chatBoxRef}>
           {chatMessages.map((msg, idx) => {
             const isMine = msg.senderId === accountId;
             return (
               <div key={idx} className={`chat-message ${isMine ? "mine" : ""}`}>
-                {msg.imageUrl && (
+                {msg.messageType === "PRODUCT" && (
+                  <div className="product-bubble">
+                    {msg.productImageUrl && (
+                      <img
+                        src={msg.productImageUrl}
+                        alt={msg.productName}
+                        className="product-thumb"
+                        onError={(e) => (e.target.style.display = "none")}
+                      />
+                    )}
+                    <div>
+                      <strong>{msg.productName}</strong>
+                      <p>{msg.productPrice?.toLocaleString("vi-VN")} ₫</p>
+                      <Link to={`/products/${msg.productId}`} className="view-btn">
+                        Xem chi tiết
+                      </Link>
+                    </div>
+                  </div>
+                )}
+                {/* Thêm hiển thị note (content) nếu có */}
+                {msg.content && (
+                  <div className="note">
+                    {msg.content}
+                  </div>
+                )}
+
+                {msg.messageType === "IMAGE" && msg.imageUrl && (
                   <img
                     src={msg.imageUrl}
                     alt="ảnh"
@@ -185,7 +213,11 @@ export default function ChatRoom() {
                     onError={(e) => (e.target.style.display = "none")}
                   />
                 )}
-                {msg.content && <div className="content">{msg.content}</div>}
+
+                {msg.messageType === "TEXT" && msg.content && (
+                  <div className="content">{msg.content}</div>
+                )}
+
                 <div className="timestamp">{formatTime(msg.timestamp)}</div>
               </div>
             );
