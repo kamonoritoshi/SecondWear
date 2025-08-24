@@ -1,0 +1,138 @@
+.become-seller-container {
+    max-width: 900px !important;
+    margin: 2rem auto !important;
+    padding: 2rem !important;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    color: #111827 !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.seller-banner {
+    text-align: center !important;
+    padding: 2rem !important;
+    background-color: #3b82f6 !important; /* Xanh dương */
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    margin-bottom: 2rem !important;
+}
+
+.seller-banner h1 {
+    margin: 0 !important;
+    font-size: 2.5rem !important;
+    font-weight: bold !important;
+}
+
+.seller-info-section {
+    text-align: center !important;
+    margin-bottom: 2rem !important;
+}
+
+.seller-info-section h2 {
+    font-size: 1.8rem !important;
+    margin-bottom: 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+.steps {
+    display: flex !important;
+    justify-content: space-around !important;
+    gap: 1.5rem !important;
+    margin-top: 1rem !important;
+}
+
+.step {
+    flex: 1 !important;
+    padding: 1.5rem !important;
+    background-color: #f9fafb !important;
+    border-radius: 8px !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.step h3 {
+    font-size: 1.2rem !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
+    color: #111827 !important;
+}
+
+.step p {
+    font-size: 1rem !important;
+    color: #4b5563 !important;
+}
+
+.registration-form {
+    padding: 2rem !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
+}
+
+.registration-form h2 {
+    text-align: center !important;
+    margin-top: 0 !important;
+    margin-bottom: 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+.user-info p {
+    margin: 0.5rem 0 !important;
+    font-size: 1.1rem !important;
+    color: #374151 !important;
+}
+
+.user-info p strong {
+    color: #111827 !important;
+}
+
+.terms {
+    margin: 1.5rem 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.terms input[type="checkbox"] {
+    margin-right: 10px !important;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.terms label {
+    font-size: 1rem !important;
+    color: #4b5563 !important;
+}
+
+.terms a {
+    color: #3b82f6 !important;
+    text-decoration: underline !important;
+}
+
+.registration-form button {
+    width: 100% !important;
+    padding: 0.8rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    background-color: #22c55e !important; /* Xanh lá */
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s !important;
+}
+
+.registration-form button:disabled {
+    background-color: #d1d5db !important;
+    cursor: not-allowed !important;
+}
+
+.registration-form button:hover:not(:disabled) {
+    background-color: #16a34a !important;
+}
+
+.error-message {
+    color: #ef4444 !important; /* Đỏ */
+    margin-bottom: 1rem !important;
+    text-align: center !important;
+    font-weight: 500 !important;
+}

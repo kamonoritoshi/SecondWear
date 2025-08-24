@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./css/ProfilePage.css";
+import { Link, useNavigate } from 'react-router-dom';
 
 const ProfilePage = ({ t }) => {
   const [account, setAccount] = useState(null);
@@ -14,6 +15,8 @@ const ProfilePage = ({ t }) => {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
   const token = localStorage.getItem("jwtToken");
   const config = {
     headers: {
@@ -25,17 +28,17 @@ const ProfilePage = ({ t }) => {
     const fetchProfile = async () => {
       try {
         const accRes = await axios.get("/api/accounts/me", config);
-        console.log("🧩 account raw response:", accRes.data);
-        setAccount(accRes.data);
+        const accountData = accRes.data;
+        const userData = accountData.user;
 
-        const userRes = await axios.get("/api/users/me", config);
-        console.log("🧩 user raw response:", userRes.data);
-        setUser(userRes.data);
+        setAccount(accountData);
+        setUser(userData);
+
         setFormData({
-          email: userRes.data.email || "",
-          fullName: userRes.data.name || "",
-          phone: userRes.data.phone || "",
-          address: userRes.data.address || "",
+          email: userData.email || "",
+          fullName: userData.name || "",
+          phone: userData.phone || "",
+          address: userData.address || "",
         });
       } catch (err) {
         setError("Không thể tải thông tin người dùng: " + err.message);
@@ -55,14 +58,58 @@ const ProfilePage = ({ t }) => {
       return;
     }
 
+    const updatedUser = {
+        ...user,
+        name: formData.fullName,
+        phone: formData.phone,
+        address: formData.address,
+    };
+
     axios
-      .put(`/api/users/${user.userId}`, { ...user, ...formData }, config)
+      .put(`/api/users/${user.userId}`, updatedUser, config)
       .then((res) => {
         setUser(res.data);
         setEditing(false);
       })
       .catch(() => setError("Cập nhật thông tin thất bại."));
   };
+  
+  const handleBecomeSellerClick = () => {
+    const { fullName, phone, address } = formData;
+    if (!fullName || !phone || !address) {
+      alert("Vui lòng cập nhật đầy đủ Họ tên, Số điện thoại và Địa chỉ trước khi đăng ký bán hàng.");
+      setEditing(true);
+    } else {
+      navigate('/become-seller');
+    }
+  };
+
+  const renderSellerStatus = () => {
+    if (!account) return null;
+
+    switch (account.sellerStatus) {
+      case 'PENDING':
+        return <div className="seller-status pending">Yêu cầu bán hàng của bạn đang chờ duyệt.</div>;
+      case 'APPROVED':
+        return <div className="seller-status approved">Bạn đã được duyệt làm người bán.</div>;
+      case 'REJECTED':
+        return (
+          <div className="seller-status rejected">
+            Yêu cầu bán hàng của bạn đã bị từ chối. Lý do: {account.rejectReason || 'Không có lý do cụ thể'}.
+            <button onClick={handleBecomeSellerClick} className="profile-button">Đăng ký lại</button>
+          </div>
+        );
+      case 'NONE':
+      default:
+        return (
+          <div className="seller-status none">
+            <p>Bạn muốn bán hàng trên SecondWear?</p>
+            <button onClick={handleBecomeSellerClick} className="profile-button">Trở thành người bán ngay</button>
+          </div>
+        );
+    }
+  };
+
 
   if (error) return <div className="profile-error">{error}</div>;
   if (!account || !user)
@@ -77,6 +124,13 @@ const ProfilePage = ({ t }) => {
       <h2 className="profile-title">
         {t ? t("profile_title") : "Thông tin cá nhân"}
       </h2>
+      
+      {/* ✅ ĐIỀU KIỆN ĐƯỢC CẬP NHẬT */}
+      {(account.role.roleName.toLowerCase() === 'customer' || account.role.roleName.toLowerCase() === 'seller') && (
+        <div className="seller-status-container">
+          {renderSellerStatus()}
+        </div>
+      )}
 
       <img
         src="/src/icons/black-user-icon.png"

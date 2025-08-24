@@ -115,24 +115,28 @@ public class SellerProductController {
 
 	@PutMapping("/{id}/quantity")
 	public ResponseEntity<?> updateProductQuantity(@PathVariable Long id, @RequestBody int newQuantity,
-			@RequestHeader("Authorization") String token) {
+	        @RequestHeader("Authorization") String token) {
 
-		String email = jwtUtil.extractUsername(token.substring(7));
-		String role = jwtUtil.extractRole(token.substring(7));
+	    // Lấy chuỗi token bằng cách loại bỏ "Bearer "
+	    String jwt = token.substring(7);
 
-		Product product = productRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm"));
+	    // ✅ SỬA ĐỔI: Sử dụng phương thức mới từ JwtUtil
+	    String email = jwtUtil.getEmailFromToken(jwt);
+	    String role = jwtUtil.getRoleFromToken(jwt);
 
-		Account seller = accountRepository.findByEmailAndRole(email, role)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy người bán"));
+	    Product product = productRepository.findById(id)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm"));
 
-		if (!product.getAccount().getAccountId().equals(seller.getAccountId())) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật sản phẩm này");
-		}
+	    Account seller = accountRepository.findByEmailAndRole(email, role)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy người bán"));
 
-		product.setQuantity(newQuantity);
-		productRepository.save(product);
+	    if (!product.getAccount().getAccountId().equals(seller.getAccountId())) {
+	        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật sản phẩm này");
+	    }
 
-		return ResponseEntity.ok("Đã cập nhật số lượng mới: " + newQuantity);
+	    product.setQuantity(newQuantity);
+	    productRepository.save(product);
+
+	    return ResponseEntity.ok("Đã cập nhật số lượng mới: " + newQuantity);
 	}
 }

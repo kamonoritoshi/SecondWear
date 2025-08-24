@@ -1,6 +1,7 @@
 package com.sw.controller;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,25 +46,26 @@ public class AuthController {
 	private final RoleRepository roleRepository;
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-		System.out.println("⏺ Email: " + request.getEmail());
-		System.out.println("⏺ Role: " + request.getRoleName());
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        Account acc = accountRepository.findByEmailAndRole(request.getEmail(), request.getRoleName())
+                .orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
 
-		Account acc = accountRepository.findByEmailAndRole(request.getEmail(), request.getRoleName())
-				.orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
+        if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
+        }
 
-		// Kiểm tra password
-		if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
-		}
-
-		// ⏱ Token duration tùy thuộc vào rememberMe
-		long expiration = request.isRememberMe() ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
-
-		String token = jwtUtil.generateToken(request.getEmail(), request.getRoleName(), expiration);
-		System.out.println("Trả về name: " + acc.getUser().getName());
-		return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getEmail(), acc.getUser().getName()));
-	}
+        long expiration = request.isRememberMe() ? 604800000L : 1800000L;
+        String token = jwtUtil.generateToken(request.getEmail(), request.getRoleName().toLowerCase(), expiration);
+        
+        // ✅ Cập nhật AuthResponse trả về
+        return ResponseEntity.ok(new AuthResponse(
+            token, 
+            acc.getUser().getEmail(), 
+            acc.getUser().getName(), 
+            acc.getRole().getRoleName(), 
+            acc.getSellerStatus().toString()
+        ));
+    }
 
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDTO request) {
@@ -130,51 +132,70 @@ public class AuthController {
 
 	@PostMapping("/google-login")
 	public ResponseEntity<AuthResponse> googleLogin(@RequestBody Map<String, String> payload) {
-		String credential = payload.get("credential"); // token Google trả về
-		String roleName = payload.getOrDefault("roleName", "customer"); // có thể nhận từ frontend
-		boolean rememberMe = Boolean.parseBoolean(payload.getOrDefault("rememberMe", "false"));
+	    String credential = payload.get("credential");
+	    // roleName từ frontend chỉ được dùng khi tạo tài khoản mới
+	    String roleNameForNewUser = payload.getOrDefault("roleName", "customer");
+	    boolean rememberMe = Boolean.parseBoolean(payload.getOrDefault("rememberMe", "false"));
 
-		try {
-			// ✅ Xác thực token Google
-			GoogleIdToken.Payload googlePayload = GoogleVerifier.verify(credential);
-			if (googlePayload == null) {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-						.body(new AuthResponse("Token Google không hợp lệ"));
-			}
+	    try {
+	        GoogleIdToken.Payload googlePayload = GoogleVerifier.verify(credential);
+	        if (googlePayload == null) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                    .body(new AuthResponse("Token Google không hợp lệ"));
+	        }
 
-			String email = googlePayload.getEmail();
-			String name = (String) googlePayload.get("name");
+	        String email = googlePayload.getEmail();
+	        String name = (String) googlePayload.get("name");
 
-			// 🔍 Kiểm tra xem account đã tồn tại chưa
-			Account acc = accountRepository.findByEmailAndRole(email, roleName).orElse(null);
+	        // ✅ LOGIC MỚI: Ưu tiên tìm tài khoản đã tồn tại, bất kể vai trò
+	        // Tìm theo thứ tự ưu tiên: admin -> seller -> customer
+	        Optional<Account> existingAccountOpt = accountRepository.findByUser_EmailAndRole_RoleName(email, "admin")
+	            .or(() -> accountRepository.findByUser_EmailAndRole_RoleName(email, "seller"))
+	            .or(() -> accountRepository.findByUser_EmailAndRole_RoleName(email, "customer"));
 
-			if (acc == null) {
-				// Nếu chưa có thì tạo User + Account mới
-				User user = new User();
-				user.setEmail(email);
-				user.setName(name);
-				user = userRepository.save(user);
+	        Account acc;
+	        if (existingAccountOpt.isPresent()) {
+	            // ✅ Nếu người dùng đã tồn tại -> sử dụng tài khoản đó và bỏ qua roleName từ frontend
+	            acc = existingAccountOpt.get();
+	        } else {
+	            // ✅ Nếu người dùng chưa tồn tại -> tạo User và Account mới với vai trò từ frontend
+	            User user = userRepository.findByEmail(email).orElseGet(() -> {
+	                User newUser = new User();
+	                newUser.setEmail(email);
+	                newUser.setName(name);
+	                return userRepository.save(newUser);
+	            });
 
-				Role role = roleRepository.findByRoleName(roleName)
-						.orElseThrow(() -> new RuntimeException("Không tìm thấy role: " + roleName));
+	            Role role = roleRepository.findByRoleName(roleNameForNewUser)
+	                    .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò: " + roleNameForNewUser));
 
-				acc = new Account();
-				acc.setUser(user);
-				acc.setRole(role);
-				acc.setPassword(passwordEncoder.encode("GOOGLE_USER")); // dummy password
-				acc.setStatus("active");
-				accountRepository.save(acc);
-			}
+	            acc = new Account();
+	            acc.setUser(user);
+	            acc.setRole(role);
+	            acc.setPassword(passwordEncoder.encode("GOOGLE_USER"));
+	            acc.setStatus("active");
+	            if ("seller".equalsIgnoreCase(roleNameForNewUser)) {
+	                acc.setSellerStatus(Account.SellerStatus.APPROVED);
+	            }
+	            accountRepository.save(acc);
+	        }
 
-			// ⏱ Token duration
-			long expiration = rememberMe ? 604800000 : 1800000; // 7 ngày hoặc 30 phút
-			String token = jwtUtil.generateToken(email, roleName, expiration);
+	        long expiration = rememberMe ? 604800000L : 1800000L;
+	        // Sử dụng vai trò thực tế của tài khoản để tạo token, không dùng roleName từ frontend
+	        String token = jwtUtil.generateToken(email, acc.getRole().getRoleName(), expiration);
 
-			return ResponseEntity.ok(new AuthResponse(token, acc.getUser().getEmail(), acc.getUser().getName()));
+	        return ResponseEntity.ok(new AuthResponse(
+	            token, 
+	            acc.getUser().getEmail(), 
+	            acc.getUser().getName(),
+	            acc.getRole().getRoleName(),
+	            acc.getSellerStatus().toString()
+	        ));
 
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new AuthResponse("Google login failed: " + e.getMessage()));
-		}
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(new AuthResponse("Đăng nhập bằng Google thất bại: " + e.getMessage()));
+	    }
 	}
 }

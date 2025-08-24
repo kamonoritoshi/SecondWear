@@ -32,6 +32,7 @@ import ChatbotWidget from './components/ChatbotWidget';
 import ChatRoom from './ChatRoom';
 import Favorites from "./Favorites";
 import StorePage from "./StorePage";
+import BecomeSellerPage from "./BecomeSellerPage";
 
 // Trang Seller
 import SellerLayout from "./layouts/seller/SellerLayout";
@@ -146,6 +147,14 @@ const AppContent = () => {
             
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/stores/:storeId" element={<StorePage />} />
+          <Route
+            path="/become-seller"
+            element={
+              <ProtectedRoute>
+                <BecomeSellerPage t={t} />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Seller */}
           <Route

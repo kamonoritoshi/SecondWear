@@ -14,22 +14,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 	private final AccountRepository accountRepository;
-	
+
 	@Override
-    public UserDetails loadUserByUsername(String input) throws UsernameNotFoundException {
-		System.out.println("[UserDetailsService] → loadUserByUsername: " + input);
-		// 📌 Tách chuỗi email|role
-        String[] parts = input.split("\\|");
+    public UserDetails loadUserByUsername(String subject) throws UsernameNotFoundException {
+        // ✅ THAY ĐỔI: Tách email và role từ subject
+        if (subject == null || !subject.contains("|")) {
+            throw new UsernameNotFoundException("Định dạng subject không hợp lệ: " + subject);
+        }
+
+        String[] parts = subject.split("\\|");
         String email = parts[0];
-        String role = (parts.length > 1) ? parts[1] : "customer";
+        String role = parts[1];
 
-        // 📌 Tìm trong DB
-        Account account = accountRepository.findByEmailAndRole(email, role)
+        // ✅ Dùng cả email và role để tìm tài khoản duy nhất, giải quyết NonUniqueResultException
+        Account acc = accountRepository.findByUser_EmailAndRole_RoleName(email, role)
             .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản cho " + email + " với vai trò " + role));
-        System.out.println("[UserDetailsService] → Found account ID: " + account.getAccountId() + ", role: " + account.getRole().getRoleName());
-
-
-        // 📌 Trả về đối tượng chứa Account
-        return new CustomUserDetails(account);
+        
+        return new CustomUserDetails(acc);
     }
 }
