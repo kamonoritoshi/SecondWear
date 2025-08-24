@@ -39,4 +39,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	@Query("SELECT a FROM Account a WHERE a.role.roleName = 'CUSTOMER'")
     List<Account> findAllCustomers();
+	
+	Optional<Account> findByUser_EmailAndRole_RoleName(String email, String roleName);
 }

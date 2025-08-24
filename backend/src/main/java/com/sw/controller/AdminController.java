@@ -1,6 +1,7 @@
 package com.sw.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -11,12 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sw.dao.AccountRepository;
 import com.sw.dao.OrderRepository;
+import com.sw.dao.RoleRepository;
 import com.sw.dto.admin.AdminStatisticsResponse;
 import com.sw.dto.admin.CustomerResponse;
 import com.sw.dto.admin.OrderAdminDTO;
@@ -28,6 +31,7 @@ import com.sw.dto.admin.SellerRequestDTO;
 import com.sw.dto.admin.TopProductDTO;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
+import com.sw.entity.Role;
 import com.sw.service.AccountService;
 import com.sw.service.AdminSellerService;
 import com.sw.service.AdminStatisticsService;
@@ -50,7 +54,10 @@ public class AdminController {
 	private AccountService accountService;
 
 	@Autowired
-	private AccountRepository accountRepository; // ✅ Thêm nếu cần dùng
+	private AccountRepository accountRepository;
+	// ✅ Thêm nếu cần dùng
+	@Autowired
+    private RoleRepository roleRepository;
 	
 	@Autowired
 	private AdminSellerService adminSellerService;
@@ -153,24 +160,41 @@ public class AdminController {
 				.collect(Collectors.toList());
 	}
 
+    // ✅ PHƯƠNG THỨC NÀY ĐÃ ĐƯỢC CẬP NHẬT HOÀN TOÀN
 	@PutMapping("/seller-requests/{id}/approve")
 	public ResponseEntity<?> approveSellerRequest(@PathVariable Long id) {
-		Account account = accountRepository.findById(id).orElseThrow();
-		account.setSellerStatus(Account.SellerStatus.APPROVED);
-		account.setRejectReason(null);
+		// 1. Tìm tài khoản đang chờ duyệt
+        Account account = accountRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản với id: " + id));
+
+        // 2. Tìm vai trò "seller"
+        Role sellerRole = roleRepository.findByRoleName("seller")
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò 'seller' trong hệ thống."));
+
+        // 3. Cập nhật thông tin tài khoản
+        account.setRole(sellerRole); // << Quan trọng: Thay đổi vai trò
+        account.setSellerStatus(Account.SellerStatus.APPROVED);
+        account.setRejectReason(null);
+
+        // 4. Lưu lại
 		accountRepository.save(account);
-		return ResponseEntity.ok("Phê duyệt thành công.");
+		return ResponseEntity.ok("Phê duyệt thành công. Tài khoản đã được cấp quyền người bán.");
 	}
 
+    // ✅ PHƯƠNG THỨC NÀY ĐÃ ĐƯỢC CẬP NHẬT ĐỂ NHẬN REQUEST BODY
 	@PutMapping("/seller-requests/{id}/reject")
-	public ResponseEntity<?> rejectSellerRequest(@PathVariable Long id, @RequestParam String reason) {
+	public ResponseEntity<?> rejectSellerRequest(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        String reason = payload.get("reason");
 		if (reason == null || reason.trim().isEmpty()) {
 			return ResponseEntity.badRequest().body("Vui lòng nhập lý do từ chối.");
 		}
-		Account account = accountRepository.findById(id).orElseThrow();
-		account.setSellerStatus(Account.SellerStatus.REJECTED);
+		Account account = accountRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản với id: " + id));
+		
+        account.setSellerStatus(Account.SellerStatus.REJECTED);
 		account.setRejectReason(reason);
 		accountRepository.save(account);
+
 		return ResponseEntity.ok("Từ chối thành công.");
 	}
 
