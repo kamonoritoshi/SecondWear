@@ -61,7 +61,7 @@ const ProductDetail = ({ t, setCartCount }) => {
         return;
       }
       setLoading(true);
-      
+
       const token = localStorage.getItem("jwtToken");
       const headers = {};
       if (token) {
@@ -75,10 +75,10 @@ const ProductDetail = ({ t, setCartCount }) => {
         );
 
         if (!productRes.ok) throw new Error("Không tìm thấy sản phẩm.");
-        
+
         const productData = await productRes.json();
         setProduct(productData);
-        
+
         setIsLiked(productData.favorited || false);
 
         document.title = `${productData.name} - SecondWear`;
@@ -111,11 +111,11 @@ const ProductDetail = ({ t, setCartCount }) => {
       return;
     }
 
-    setIsLiked(prev => !prev); 
+    setIsLiked(prev => !prev);
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/favorites/${productId}`, 
+        `${API_BASE_URL}/api/favorites/${productId}`,
         {
           method: "POST",
           headers: {
@@ -217,41 +217,48 @@ const ProductDetail = ({ t, setCartCount }) => {
       toast.error("Bạn không thể chat với sản phẩm của chính mình!");
       return;
     }
-    if (!product || !sellerId) {
-      toast.error("Không lấy được thông tin người bán.");
-      return;
-    }
     try {
+      let roomId;
+      // kiểm tra phòng
       const checkRes = await fetch(
         `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (checkRes.ok) {
         const data = await checkRes.json();
-        navigate(`/chat/${data.roomId}`);
-        return;
+        roomId = data.roomId;
+      } else {
+        const createRes = await fetch(
+          `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!createRes.ok) throw new Error("Không tạo được phòng chat");
+        const createdData = await createRes.json();
+        roomId = createdData.roomId;
       }
-      const createRes = await fetch(
-        `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!createRes.ok) throw new Error("Không tạo được phòng chat");
-      const createdData = await createRes.json();
-      navigate(`/chat/${createdData.roomId}`);
+
+      await fetch(`${API_BASE_URL}/api/chat/room/${roomId}/product`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          senderId: buyerId,       // ✅ người gửi chính là currentUser
+          productId: productId,    // ✅ id sản phẩm
+          content: "Chào shop! Tôi muốn tìm hiểu về sản phẩm này."// hoặc bạn tạo thêm state note nếu muốn kèm nội dung
+        })
+      });
+      navigate(`/chat/${roomId}`);
     } catch (e) {
       console.error("[Chat] Lỗi khi xử lý chat:", e);
       toast.error("Không thể bắt đầu cuộc trò chuyện.");
     }
   };
+
 
   const handleQuantityChange = useCallback(
     (type) => {
@@ -477,9 +484,8 @@ const ProductDetail = ({ t, setCartCount }) => {
                       objectFit: "contain",
                       display: "block",
                     }}
-                    className={`thumbnail-image${
-                      selectedImage === image.imageUrl ? " active" : ""
-                    }`}
+                    className={`thumbnail-image${selectedImage === image.imageUrl ? " active" : ""
+                      }`}
                   />
                 </div>
               ))}
@@ -550,10 +556,10 @@ const ProductDetail = ({ t, setCartCount }) => {
                 }}
               >
                 <span>Cửa hàng:</span>
-                <Link to={`/stores/${product.account?.accountId}`} style={{textDecoration: 'none'}}>
-                    <span style={{ color: "#007bff", fontWeight: "bold", cursor: 'pointer' }}>
-                        {product.account?.user?.name || "Người bán ẩn danh"}
-                    </span>
+                <Link to={`/stores/${product.account?.accountId}`} style={{ textDecoration: 'none' }}>
+                  <span style={{ color: "#007bff", fontWeight: "bold", cursor: 'pointer' }}>
+                    {product.account?.user?.name || "Người bán ẩn danh"}
+                  </span>
                 </Link>
                 <button
                   className="chat-button"

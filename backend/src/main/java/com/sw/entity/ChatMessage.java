@@ -39,6 +39,9 @@ public class ChatMessage {
     
     @Column(name = "is_read", nullable = false)
     private boolean isRead = false; // ✅ đổi tên field
-
+    
+    @ManyToOne
+    @JoinColumn(name = "product_id")   // 👈 phải có cột product_id
+    private Product product;
 }
 

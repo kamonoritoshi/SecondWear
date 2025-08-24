@@ -13,11 +13,13 @@ import org.springframework.stereotype.Service;
 import com.sw.dao.AccountRepository;
 import com.sw.dao.ChatMessageRepository;
 import com.sw.dao.ChatRoomRepository;
+import com.sw.dao.ProductRepository;
 import com.sw.dto.ChatRoomDTO;
 import com.sw.dto.UnreadCountDTO;
 import com.sw.entity.Account;
 import com.sw.entity.ChatMessage;
 import com.sw.entity.ChatRoom;
+import com.sw.entity.Product;
 
 import jakarta.transaction.Transactional;
 
@@ -29,8 +31,9 @@ public class ChatUserService {
     @Autowired
     private ChatMessageRepository chatMessageRepository;
     @Autowired
-    private AccountRepository accountRepository;
-
+    private AccountRepository accountRepository;  
+    @Autowired ProductRepository productRepository;
+    
     // ---------- ROOM LOGIC ----------
     public ChatRoom getOrCreateChatRoom(Long buyerId, Long sellerId) {
         return chatRoomRepository.findByBuyer_AccountIdAndSeller_AccountId(buyerId, sellerId)
@@ -120,5 +123,22 @@ public class ChatUserService {
     public List<ChatMessage> getMessages(Long roomId) {
         return chatMessageRepository.findByChatRoom_RoomIdOrderByTimestampAsc(roomId);
     }
+    
+    public ChatMessage sendProductMessage(Long roomId, Long senderId, Long productId, String note) {
+        Account sender = accountRepository.findById(senderId).orElseThrow();
+        ChatRoom room = chatRoomRepository.findById(roomId).orElseThrow();
+        Product product = productRepository.findById(productId).orElseThrow();
+
+        ChatMessage message = new ChatMessage();
+        message.setSender(sender);
+        message.setChatRoom(room);
+        message.setProduct(product); // 👈 gắn sản phẩm
+        message.setContent(note != null ? note : "Xin chào, tôi muốn hỏi về sản phẩm này");
+        message.setTimestamp(LocalDateTime.now());
+        message.setRead(false);
+
+        return chatMessageRepository.save(message);
+    }
+
 }
 
