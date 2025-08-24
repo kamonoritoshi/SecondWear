@@ -46,26 +46,27 @@ public class AuthController {
 	private final RoleRepository roleRepository;
 
 	@PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        Account acc = accountRepository.findByEmailAndRole(request.getEmail(), request.getRoleName())
-                .orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
+	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+	    Account acc = accountRepository.findByEmailAndRole(request.getEmail(), request.getRoleName())
+	            .orElseThrow(() -> new RuntimeException("Tài khoản hoặc vai trò không đúng"));
 
-        if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Mật khẩu không đúng"));
-        }
+	    if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body(new AuthResponse("Mật khẩu không đúng"));
+	    }
 
-        long expiration = request.isRememberMe() ? 604800000L : 1800000L;
-        String token = jwtUtil.generateToken(request.getEmail(), request.getRoleName().toLowerCase(), expiration);
-        
-        // ✅ Cập nhật AuthResponse trả về
-        return ResponseEntity.ok(new AuthResponse(
-            token, 
-            acc.getUser().getEmail(), 
-            acc.getUser().getName(), 
-            acc.getRole().getRoleName(), 
-            acc.getSellerStatus().toString()
-        ));
-    }
+	    long expiration = request.isRememberMe() ? 604800000L : 1800000L;
+	    String token = jwtUtil.generateToken(request.getEmail(), request.getRoleName().toLowerCase(), expiration);
+
+	    return ResponseEntity.ok(new AuthResponse(
+	            acc.getAccountId(),             // 👈 gửi luôn accountId
+	            token,
+	            acc.getUser().getEmail(),
+	            acc.getUser().getName(),
+	            acc.getRole().getRoleName(),
+	            acc.getSellerStatus().toString()
+	    ));
+	}
 
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDTO request) {
@@ -185,12 +186,13 @@ public class AuthController {
 	        String token = jwtUtil.generateToken(email, acc.getRole().getRoleName(), expiration);
 
 	        return ResponseEntity.ok(new AuthResponse(
-	            token, 
-	            acc.getUser().getEmail(), 
-	            acc.getUser().getName(),
-	            acc.getRole().getRoleName(),
-	            acc.getSellerStatus().toString()
-	        ));
+		            acc.getAccountId(),             // 👈 gửi luôn accountId
+		            token,
+		            acc.getUser().getEmail(),
+		            acc.getUser().getName(),
+		            acc.getRole().getRoleName(),
+		            acc.getSellerStatus().toString()
+		    ));
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
