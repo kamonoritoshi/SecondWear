@@ -52,7 +52,6 @@ import SellerList from "./pages/admin/account/SellerList";
 import CustomerList from "./pages/admin/account/CustomerList";
 import PendingProducts from "./pages/admin/product/PendingProducts";
 import OrderManagementAdmin from "./pages/admin/order/OrderManagement";
-import ViolatedProducts from "./pages/admin/product/ViolatedProducts";
 import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin";
 
 // Chính sách
@@ -188,7 +187,6 @@ const AppContent = () => {
             <Route path="sellers" element={<SellerList />} />
             <Route path="customers" element={<CustomerList />} />
             <Route path="products/pending" element={<PendingProducts />} />
-            <Route path="products/violations" element={<ViolatedProducts />} />
             <Route path="orders" element={<OrderManagementAdmin />} />
             <Route path="disputes" element={<DisputeManagementAdmin />} />
           </Route>

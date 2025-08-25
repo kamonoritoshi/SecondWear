@@ -67,11 +67,6 @@ export default function AdminSidebar() {
                 Phê duyệt sản phẩm
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/admin/products/violations" className={({ isActive }) => isActive ? 'active' : ''}>
-                Sản phẩm vi phạm
-              </NavLink>
-            </li>
           </>
         )}
 
