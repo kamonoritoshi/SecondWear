@@ -16,22 +16,24 @@ export default function ChatRoom() {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [imageFile, setImageFile] = useState(null);
-  const chatEndRef = useRef(null);
-  const stompClientRef = useRef(null);
-
   const [showSidebar, setShowSidebar] = useState(true);
+
+  const chatEndRef = useRef(null);
+  const chatBoxRef = useRef(null);
+  const stompClientRef = useRef(null);
 
   const token = localStorage.getItem("jwtToken");
   const accountId = currentUser?.accountId;
   const API_URL = "http://localhost:8080";
 
+  // Redirect nếu chưa login
   useEffect(() => {
     if (!token || !currentUser) {
       navigate("/login");
     }
   }, [token, currentUser, navigate]);
 
-  const chatBoxRef = useRef(null);
+  // Auto scroll xuống cuối khi có message mới
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -56,19 +58,50 @@ export default function ChatRoom() {
     return unique.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
   };
 
-  // Load danh sách phòng
+  // ✅ Helper: cập nhật room theo roomId
+  const updateRoomPosition = (roomId, updates = {}) => {
+    setChatRooms((prevRooms) => {
+      const updatedRooms = prevRooms
+        .map((r) =>
+          Number(r.roomId) === Number(roomId)
+            ? { ...r, ...updates }
+            : r
+        )
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      return updatedRooms;
+    });
+  };
+
+  // ✅ Load danh sách phòng ban đầu
   useEffect(() => {
-    if (!token || !accountId) return;
+    if (!accountId) return;
 
     fetch(`${API_URL}/api/chat/rooms/${accountId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then((data) => setChatRooms(data))
-      .catch((err) => console.error("Lỗi load danh sách phòng:", err));
-  }, [token, accountId]);
+      .then((data) =>
+        setChatRooms(
+          data
+            .map((room) => ({
+              ...room,
+              // ⚡ Ưu tiên lấy roomName từ BE
+              roomName: room.roomName || "Không rõ",
+              // ⚡ Chuẩn hóa lastMessage
+              lastMessage:
+                room.messageType === "IMAGE"
+                  ? "[Hình ảnh]"
+                  : room.messageType === "PRODUCT"
+                    ? "[Sản phẩm]"
+                    : room.lastMessage || "...",
+            }))
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        )
+      )
+      .catch((err) => console.error("❌ Lỗi fetch rooms:", err));
+  }, [accountId, token]);
 
-  // Load tin nhắn trong phòng
+  // ✅ Load tin nhắn trong phòng
   useEffect(() => {
     if (!token || !roomId) return;
 
@@ -84,18 +117,86 @@ export default function ChatRoom() {
       .catch((err) => console.error("Lỗi load tin nhắn:", err));
   }, [roomId, token]);
 
-  // WebSocket realtime
+  // ✅ Khi click đổi phòng → gọi API markAsRead
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !accountId) return;
+
+    fetch(`${API_URL}/api/chat/room/${roomId}/read?accountId=${accountId}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(() => {
+        updateRoomPosition(roomId, { unread: 0 });
+      })
+      .catch((err) => console.error("❌ Lỗi markAsRead:", err));
+  }, [roomId, accountId, token]);
+
+  // ✅ WebSocket realtime: tin nhắn trong phòng + danh sách phòng
+  useEffect(() => {
+    if (!accountId) return;
 
     const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 300,
       onConnect: () => {
-        stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
-          const newMsg = JSON.parse(message.body);
-          setChatMessages((prev) => mergeUniqueMessages(prev, [newMsg]));
+        // Realtime tin nhắn trong phòng
+        if (roomId) {
+          stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
+            const newMsg = JSON.parse(message.body);
+            setChatMessages((prev) => mergeUniqueMessages(prev, [newMsg]));
+
+            updateRoomPosition(roomId, {
+              lastMessage:
+                newMsg.messageType === "IMAGE" ? "[Hình ảnh]" : newMsg.content,
+              unread: 0, // đang mở phòng thì reset unread
+              timestamp: newMsg.timestamp,
+            });
+          });
+        }
+
+        // Realtime cập nhật danh sách phòng
+        stompClient.subscribe(`/topic/rooms/${accountId}`, (message) => {
+          const updatedRoom = JSON.parse(message.body);
+          const lastMessage =
+            updatedRoom.messageType === "IMAGE"
+              ? "[Hình ảnh]"
+              : updatedRoom.content;
+
+          setChatRooms((prevRooms) => {
+            const exists = prevRooms.find(
+              (r) => Number(r.roomId) === Number(updatedRoom.roomId)
+            );
+
+            if (exists) {
+              return prevRooms
+                .map((r) => {
+                  if (Number(r.roomId) === Number(updatedRoom.roomId)) {
+                    return {
+                      ...r,
+                      lastMessage,
+                      timestamp: updatedRoom.timestamp || r.timestamp,
+                      unread:
+                        Number(updatedRoom.roomId) === Number(roomId)
+                          ? 0 // 👉 nếu đang mở thì reset 0
+                          : (r.unread || 0) + 1, // 👉 nếu đang ở phòng khác thì chỉ cộng thêm 1
+                      roomName: updatedRoom.roomName || r.roomName,
+                      avatarUrl: updatedRoom.avatarUrl || r.avatarUrl,
+                      buyerName: updatedRoom.buyerName || r.buyerName,
+                    };
+                  }
+                  return r;
+                })
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+
+            // 👉 Phòng mới thì thêm vào
+            return [
+              { ...updatedRoom, lastMessage, unread: 1 },
+              ...prevRooms,
+            ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          });
+
         });
       },
     });
@@ -106,8 +207,9 @@ export default function ChatRoom() {
     return () => {
       stompClient.deactivate();
     };
-  }, [roomId]);
+  }, [roomId, accountId]);
 
+  // ✅ Gửi tin nhắn
   const handleSendMessage = async () => {
     if (!message.trim() && !imageFile) return;
 
@@ -125,9 +227,13 @@ export default function ChatRoom() {
 
       if (!res.ok) throw new Error(`Lỗi ${res.status}`);
 
-      // ❌ Không cần push vào state vì WebSocket sẽ bắn về
       setMessage("");
       setImageFile(null);
+
+      updateRoomPosition(roomId, {
+        lastMessage: imageFile ? "[Hình ảnh]" : message.trim(),
+        unread: 0,
+      });
     } catch (err) {
       console.error("Lỗi gửi tin nhắn:", err);
     }
@@ -139,11 +245,7 @@ export default function ChatRoom() {
   };
 
   const currentRoom = chatRooms.find((r) => r.roomId === Number(roomId));
-  const opponentName =
-    currentRoom &&
-    (currentRoom.sellerName !== currentUser.name
-      ? currentRoom.sellerName
-      : currentRoom.buyerName);
+  const opponentName = currentRoom?.roomName;
 
   const formatTime = (time) =>
     new Date(time).toLocaleTimeString("vi-VN", {
@@ -167,9 +269,15 @@ export default function ChatRoom() {
                 className="chat-room-link"
               >
                 <li className={room.roomId === Number(roomId) ? "active" : ""}>
-                  {room.sellerName && room.sellerName !== currentUser.name
-                    ? room.sellerName
-                    : room.buyerName}
+                  <div className="room-header">
+                    <div className="room-name">{room.roomName}</div>
+                    {room.unread > 0 && (
+                      <span className="unread-badge">{room.unread}</span>
+                    )}
+                  </div>
+                  <div className="last-message">
+                    {room.lastMessage || "..."}
+                  </div>
                 </li>
               </Link>
             ))}
@@ -204,7 +312,7 @@ export default function ChatRoom() {
             const isMine = msg.senderId === accountId;
             return (
               <div
-                key={msg.id || `${msg.senderId}-${msg.timestamp}-${idx}`}
+                key={msg.chatId || `${msg.senderId}-${msg.timestamp}-${idx}`}
                 className={`chat-message ${isMine ? "mine" : ""}`}
               >
                 {msg.messageType === "PRODUCT" && (
@@ -220,6 +328,7 @@ export default function ChatRoom() {
                     <div>
                       <strong>{msg.productName}</strong>
                       <p>{msg.productPrice?.toLocaleString("vi-VN")} ₫</p>
+                      {msg.content && <p className="note">{msg.content}</p>}
                       <Link
                         to={`/products/${msg.productId}`}
                         className="view-btn"

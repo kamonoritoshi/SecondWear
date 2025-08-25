@@ -49,12 +49,12 @@ export default function MessageList() {
 
       const formatted = data.map((room) => ({
         id: room.roomId,
-        customer:
-          currentUser.role === "seller" ? room.buyerName : room.sellerName,
+        customer: room.roomName, // ✅ dùng roomName từ backend (không cần check role nữa)
         lastMessage: room.lastMessage || "(Chưa có tin nhắn)",
         lastTime: room.lastTime || null,
-        unreadCount: room.unreadCount || 0,
+        unreadCount: room.unread || 0, // ✅ lấy đúng trường từ backend
       }));
+
 
       // 👇 Sort: phòng nào có lastTime mới nhất thì nằm trên, null thì xuống dưới
       formatted.sort((a, b) => {
@@ -84,33 +84,30 @@ export default function MessageList() {
     client.onConnect = () => {
       console.log("✅ WebSocket connected (MessageList)");
 
-      client.subscribe("/topic/chat/rooms", (message) => {
-        console.log("📨 Received update:", message.body);
-        const { roomId, content, timestamp, unreadCount } = JSON.parse(message.body);
+      // Lắng nghe update danh sách phòng cho user hiện tại
+      client.subscribe(`/topic/rooms/${currentUser.accountId}`, (message) => {
+        console.log("📨 Room update:", message.body);
+        const update = JSON.parse(message.body);
 
         setMessages((prevMessages) => {
-          const updatedRoom = prevMessages.find((room) => room.id === roomId);
-          if (!updatedRoom) return prevMessages;
+          const existing = prevMessages.find((room) => room.id === update.roomId);
+          if (!existing) return prevMessages;
 
-          const newUnread =
-            unreadCount !== undefined
-              ? unreadCount
-              : (updatedRoom.unreadCount || 0) + 1; // fallback chắc chắn không mất
-
-          const newRoom = {
-            ...updatedRoom,
-            lastMessage: content,
-            lastTime: timestamp,
-            unreadCount: newUnread,
+          const updatedRoom = {
+            ...existing,
+            lastMessage: update.content,
+            lastTime: update.timestamp,
+            unreadCount: update.unread,
+            customer: update.roomName, // luôn là tên đối thủ từ backend
           };
 
-          // Đưa room này lên đầu danh sách
-          const filtered = prevMessages.filter((room) => room.id !== roomId);
-          return [newRoom, ...filtered];
+          // Đưa lên đầu
+          const filtered = prevMessages.filter((room) => room.id !== update.roomId);
+          return [updatedRoom, ...filtered];
         });
       });
-
     };
+
 
     client.onStompError = (frame) => {
       console.error("❌ STOMP error:", frame.headers["message"]);

@@ -1,19 +1,27 @@
 package com.sw.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ChatRoomUpdateDTO {
-    private Long roomId;
-    private String content;
-    private LocalDateTime timestamp;
-    private long unread;  // ✅ cập nhật realtime luôn
-    private Long receiverId; // ✅ thêm
-}
+	private Long roomId;
+	private String content;
+	private String messageType;
+	private LocalDateTime timestamp;
+	private long unread;
 
+	private Long receiverId;
+
+	private Long senderId;
+	private String senderName;
+	private String roomName;
+	private String avatarUrl;
+
+}

@@ -17,7 +17,5 @@ public class ChatRoomDTO {
     private LocalDateTime lastTime;
     private int unread;  // số tin chưa đọc
     private Long receiverId; // ✅ thêm
+    private String roomName;
 }
-
-
-
