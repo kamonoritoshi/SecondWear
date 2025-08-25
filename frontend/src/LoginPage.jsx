@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
+import hideIcon from "./icons/password-hide.png";
+import viewIcon from "./icons/password-view.png";
 
 const LoginPage = ({ t }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -137,15 +139,17 @@ const LoginPage = ({ t }) => {
             >
               {showPassword ? (
                 <img
-                  src="/src/icons/password-hide.png"
+                  src={hideIcon} // Dùng biến đã import
+                  alt="Hide password" // Thêm alt text cho accessibility
                   className="password-toggle-icon hide-icon"
                 />
               ) : (
                 <img
-                  src="/src/icons/password-view.png"
+                  src={viewIcon} // Dùng biến đã import
+                  alt="Show password" // Thêm alt text cho accessibility
                   className="password-toggle-icon hide-icon"
                 />
-              )}{" "}
+              )}
               {/* Có thể thay bằng icon SVG nếu muốn */}
             </span>
           </div>
