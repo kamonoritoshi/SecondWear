@@ -875,7 +875,21 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                       >
                         {t("Yêu thích")}
                       </Link>
-
+                      {/* Đổi mật khẩu */}
+                      <Link
+                        to="/change-password"
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: "10px 22px",
+                          color: "var(--main-text)",
+                          textDecoration: "none",
+                          display: "block",
+                        }}
+                      >
+                        {t("Đổi mật khẩu")}
+                      </Link>
                       {/* Nút Tin nhắn */}
                       <Link
                         to={`/chat/rooms/${accountId}`}
