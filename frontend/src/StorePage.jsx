@@ -3,8 +3,9 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { API_BASE_URL } from './apiConfig';
 import { toast } from 'react-toastify';
-import { FaHeart, FaRegHeart } from 'react-icons/fa'; // Icon trái tim
-import "./css/StorePage.css"; // Import file CSS
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { BiMessageRoundedDetail } from 'react-icons/bi';
+import "./css/StorePage.css";
 
 const StorePage = () => {
     const { storeId } = useParams();
@@ -77,6 +78,51 @@ const StorePage = () => {
         }
     }, [isAuthenticated, navigate, storeId]);
 
+    // ✅ Hàm chat với shop (giống ProductDetail)
+    const handleStartChat = async () => {
+        const token = localStorage.getItem("jwtToken");
+        const buyerId = currentUser?.accountId || localStorage.getItem("accountId");
+        const sellerId = storeData.accountId;
+        if (!token) {
+            toast.error("Bạn cần đăng nhập để chat với shop");
+            return;
+        }
+        if (buyerId === sellerId) {
+            toast.error("Bạn không thể chat với cửa hàng của chính mình!");
+            return;
+        }
+        try {
+            let roomId;
+
+            // Kiểm tra phòng chat đã tồn tại chưa
+            const checkRes = await fetch(
+                `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (checkRes.ok) {
+                const data = await checkRes.json();
+                roomId = data.roomId;
+            } else {
+                // Nếu chưa có phòng → tạo mới
+                const createRes = await fetch(
+                    `${API_BASE_URL}/api/chat/room?buyerId=${buyerId}&sellerId=${sellerId}`,
+                    {
+                        method: "POST",
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+                if (!createRes.ok) throw new Error("Không tạo được phòng chat");
+                const createdData = await createRes.json();
+                roomId = createdData.roomId;
+            }
+
+            navigate(`/chat/${roomId}`);
+        } catch (e) {
+            console.error("[Chat] Lỗi khi xử lý chat:", e);
+            toast.error("Không thể bắt đầu cuộc trò chuyện.");
+        }
+    };
 
     if (loading) return <div>Đang tải trang cửa hàng...</div>;
     if (error) return <div>Lỗi: {error}</div>;
@@ -84,22 +130,49 @@ const StorePage = () => {
 
     const isMyStore = currentUser?.accountId === storeData.accountId;
 
+    const defaultAvatar = "/src/icons/black-user-icon.png";
+    const avatarToShow = storeData.avatarUrl || defaultAvatar;
+
     return (
         <div className="store-page-container">
             <header className="store-header">
                 <div className="store-avatar">
-                    <img src={storeData.avatarUrl || '/src/icons/black-user-icon.png'} alt={storeData.storeName} />
+                    <img src={avatarToShow} alt={storeData.storeName} />
                 </div>
                 <div className="store-info">
                     <h1>{storeData.storeName}</h1>
                     <p>{storeData.address || "Chưa có địa chỉ"}</p>
                 </div>
-                {!isMyStore && (
-                    <button onClick={handleFavoriteStore} className="favorite-store-btn">
-                        {storeData.isFavorited ? <FaHeart color="red" /> : <FaRegHeart />}
-                        {storeData.isFavorited ? ' Đã yêu thích' : ' Yêu thích'}
-                    </button>
-                )}
+                <div style={{ display: "flex", gap: "10px" }}>
+                    {!isMyStore && (
+                        <>
+                            <button onClick={handleFavoriteStore} className="favorite-store-btn">
+                                {storeData.isFavorited ? <FaHeart color="red" /> : <FaRegHeart />}
+                                {storeData.isFavorited ? ' Đã yêu thích' : ' Yêu thích'}
+                            </button>
+                            <button
+                                onClick={handleStartChat}
+                                className="chat-with-seller-btn"
+                                title="Chat với cửa hàng"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    padding: "10px 16px",
+                                    background: "#007bff",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "6px",
+                                    cursor: "pointer",
+                                    fontSize: "14px"
+                                }}
+                            >
+                                <BiMessageRoundedDetail size={18} />
+                                Chat với shop
+                            </button>
+                        </>
+                    )}
+                </div>
             </header>
 
             <main className="store-products">
