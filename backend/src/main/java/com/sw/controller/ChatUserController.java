@@ -1,18 +1,12 @@
 package com.sw.controller;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sw.dto.ChatMessageDTO;
@@ -25,11 +19,10 @@ import com.sw.entity.ProductMessageRequest;
 import com.sw.service.ChatUserService;
 import com.sw.service.FileStorageService;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 @RestController
 @RequestMapping("/api/chat")
 public class ChatUserController {
+
     @Autowired
     private ChatUserService chatService;
 
@@ -39,6 +32,7 @@ public class ChatUserController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    // ================== ROOM ==================
     @GetMapping("/room")
     public ResponseEntity<?> getExistingRoom(@RequestParam Long buyerId, @RequestParam Long sellerId) {
         Optional<ChatRoom> existingRoom = chatService.findExistingChatRoom(buyerId, sellerId);
@@ -50,6 +44,42 @@ public class ChatUserController {
         return ResponseEntity.ok(chatService.getOrCreateChatRoom(buyerId, sellerId));
     }
 
+    @GetMapping("/rooms/{accountId}")
+    public ResponseEntity<List<ChatRoomDTO>> getChatRooms(@PathVariable Long accountId) {
+        List<ChatRoom> rooms = chatService.getChatRooms(accountId);
+
+        List<ChatRoomDTO> dtoList = rooms.stream().map(room -> {
+            ChatMessage lastMsg = room.getMessages() != null && !room.getMessages().isEmpty()
+                    ? room.getMessages().stream().max((a, b) -> a.getTimestamp().compareTo(b.getTimestamp())).orElse(null)
+                    : null;
+
+            int unread = chatService.countUnreadMessages(room.getRoomId(), accountId);
+
+         // 👇 lấy tên đối thủ
+            boolean isBuyer = room.getBuyer().getAccountId().equals(accountId);
+            String roomName = isBuyer 
+                    ? room.getSeller().getUser().getName()
+                    : room.getBuyer().getUser().getName();
+            
+            Long receiverId = room.getBuyer().getAccountId().equals(accountId)
+                    ? room.getSeller().getAccountId()
+                    : room.getBuyer().getAccountId();
+
+            return new ChatRoomDTO(
+            	    room.getRoomId(),
+            	    room.getBuyer().getUser().getName(),
+            	    room.getSeller().getUser().getName(),
+            	    lastMsg != null ? lastMsg.getContent() : "...",
+            	    lastMsg != null ? lastMsg.getTimestamp() : null,
+            	    unread,
+            	    receiverId,
+            	    roomName // 👈 thêm roomName ở đây
+            	);
+        }).toList();
+        return ResponseEntity.ok(dtoList);
+    }
+
+    // ================== MESSAGE ==================
     @PostMapping("/room/{roomId}/message")
     public ResponseEntity<ChatMessageDTO> sendMessage(
             @PathVariable Long roomId,
@@ -67,44 +97,13 @@ public class ChatUserController {
         }
 
         ChatMessage saved = chatService.sendMessage(roomId, senderId, content, fileUrl);
+        ChatMessageDTO response = mapToDTO(saved);
 
-        ChatMessageDTO response = new ChatMessageDTO(
-                saved.getChatId(),
-                saved.getContent(),
-                saved.getImageUrl(),
-                saved.getSender().getUser().getName(),
-                saved.getSender().getAccountId(),
-                saved.getChatRoom().getRoomId(),
-                saved.getTimestamp()
-        );
-
-        // ✅ set messageType
-        if (saved.getProduct() != null) {
-            response.setMessageType("PRODUCT");
-        } else if (saved.getImageUrl() != null) {
-            response.setMessageType("IMAGE");
-        } else {
-            response.setMessageType("TEXT");
-        }
-
-        // realtime message
+        // Gửi realtime message trong phòng
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
 
-        // ===== Broadcast update danh sách phòng =====
-        Long receiverId = saved.getChatRoom().getBuyer().getAccountId()
-                .equals(saved.getSender().getAccountId())
-                ? saved.getChatRoom().getSeller().getAccountId()
-                : saved.getChatRoom().getBuyer().getAccountId();
-
-        int unreadCount = chatService.countUnreadMessages(saved.getChatRoom().getRoomId(), receiverId);
-
-        messagingTemplate.convertAndSend("/topic/chat/rooms", new ChatRoomUpdateDTO(
-                saved.getChatRoom().getRoomId(),
-                saved.getContent(),
-                saved.getTimestamp(),
-                unreadCount,
-                receiverId
-        ));
+        // Broadcast update danh sách phòng (có đầy đủ name)
+        broadcastRoomUpdate(saved);
 
         return ResponseEntity.ok(response);
     }
@@ -112,64 +111,7 @@ public class ChatUserController {
     @GetMapping("/room/{roomId}/messages")
     public ResponseEntity<List<ChatMessageDTO>> getMessages(@PathVariable Long roomId) {
         List<ChatMessage> messages = chatService.getMessages(roomId);
-        List<ChatMessageDTO> dtoList = messages.stream().map(msg -> {
-            ChatMessageDTO dto = new ChatMessageDTO(
-                    msg.getChatId(),
-                    msg.getContent(),
-                    msg.getImageUrl(),
-                    msg.getSender().getUser().getName(),
-                    msg.getSender().getAccountId(),
-                    msg.getChatRoom().getRoomId(),
-                    msg.getTimestamp()
-            );
-
-            if (msg.getProduct() != null) {
-                dto.setMessageType("PRODUCT");
-                dto.setProductId(msg.getProduct().getProductId());
-                dto.setProductName(msg.getProduct().getName());
-                dto.setProductImageUrl(
-                        msg.getProduct().getImages() != null && !msg.getProduct().getImages().isEmpty()
-                                ? msg.getProduct().getImages().get(0).getImageUrl()
-                                : null
-                );
-                dto.setProductPrice(msg.getProduct().getPrice());
-            } else if (msg.getImageUrl() != null) {
-                dto.setMessageType("IMAGE");
-            } else {
-                dto.setMessageType("TEXT");
-            }
-
-            return dto;
-        }).toList();
-
-        return ResponseEntity.ok(dtoList);
-    }
-
-    @GetMapping("/rooms/{accountId}")
-    public ResponseEntity<List<ChatRoomDTO>> getChatRooms(@PathVariable Long accountId) {
-        List<ChatRoom> rooms = chatService.getChatRooms(accountId);
-
-        List<ChatRoomDTO> dtoList = rooms.stream().map(room -> {
-            ChatMessage lastMsg = room.getMessages() != null && !room.getMessages().isEmpty()
-                    ? room.getMessages().stream().max((a, b) -> a.getTimestamp().compareTo(b.getTimestamp())).orElse(null)
-                    : null;
-
-            int unread = chatService.countUnreadMessages(room.getRoomId(), accountId);
-
-            Long receiverId = room.getBuyer().getAccountId().equals(accountId)
-                    ? room.getSeller().getAccountId()
-                    : room.getBuyer().getAccountId();
-
-            return new ChatRoomDTO(
-                    room.getRoomId(),
-                    room.getBuyer().getUser().getName(),
-                    room.getSeller().getUser().getName(),
-                    lastMsg != null ? lastMsg.getContent() : "...",
-                    lastMsg != null ? lastMsg.getTimestamp() : null,
-                    unread,
-                    receiverId
-            );
-        }).toList();
+        List<ChatMessageDTO> dtoList = messages.stream().map(this::mapToDTO).toList();
         return ResponseEntity.ok(dtoList);
     }
 
@@ -178,14 +120,15 @@ public class ChatUserController {
             @PathVariable Long roomId,
             @RequestParam Long accountId) {
 
-        int unread = chatService.markMessagesAsRead(roomId, accountId);
+        // Đánh dấu tất cả tin nhắn chưa đọc là đã đọc
+        chatService.markMessagesAsRead(roomId, accountId);
 
         List<ChatMessage> messages = chatService.getMessages(roomId);
         ChatMessage lastMsg = messages.isEmpty() ? null : messages.get(messages.size() - 1);
 
         ChatRoom room = messages.isEmpty()
                 ? chatService.getChatRooms(accountId).stream()
-                .filter(r -> r.getRoomId().equals(roomId)).findFirst().orElse(null)
+                    .filter(r -> r.getRoomId().equals(roomId)).findFirst().orElse(null)
                 : messages.get(0).getChatRoom();
 
         if (room != null) {
@@ -193,18 +136,32 @@ public class ChatUserController {
                     ? room.getSeller().getAccountId()
                     : room.getBuyer().getAccountId();
 
-            messagingTemplate.convertAndSend("/topic/chat/rooms", new ChatRoomUpdateDTO(
-                    roomId,
-                    lastMsg != null ? lastMsg.getContent() : "...",
-                    lastMsg != null ? lastMsg.getTimestamp() : null,
-                    unread,
-                    receiverId
-            ));
+            // roomName = luôn là tên đối thủ
+            String roomName = room.getBuyer().getAccountId().equals(accountId)
+                    ? room.getSeller().getUser().getName()
+                    : room.getBuyer().getUser().getName();
+
+            ChatRoomUpdateDTO updateDTO = ChatRoomUpdateDTO.builder()
+                    .roomId(roomId)
+                    .content(lastMsg != null ? lastMsg.getContent() : "...")
+                    .messageType(lastMsg != null
+                            ? (lastMsg.getImageUrl() != null ? "IMAGE"
+                                : lastMsg.getProduct() != null ? "PRODUCT" : "TEXT")
+                            : "TEXT")
+                    .timestamp(lastMsg != null ? lastMsg.getTimestamp() : null)
+                    .unread(0) // ✅ luôn reset về 0 cho accountId này
+                    .receiverId(accountId) // ✅ chính là người vừa đọc
+                    .roomName(roomName)
+                    .build();
+
+            // ✅ Gửi riêng cho accountId
+            messagingTemplate.convertAndSend("/topic/rooms/" + accountId, updateDTO);
         }
 
         return ResponseEntity.ok().build();
     }
 
+    // ================== PRODUCT MESSAGE ==================
     @PostMapping("/room/{roomId}/product")
     public ResponseEntity<ChatMessageDTO> sendProductMessage(
             @PathVariable Long roomId,
@@ -214,46 +171,80 @@ public class ChatUserController {
                 roomId, request.getSenderId(), request.getProductId(), request.getContent()
         );
 
-        Product product = saved.getProduct();
-        String productImageUrl = null;
-        if (product != null && product.getImages() != null && !product.getImages().isEmpty()) {
-            productImageUrl = product.getImages().get(0).getImageUrl();
-        }
+        ChatMessageDTO response = mapToDTO(saved);
 
-        ChatMessageDTO response = new ChatMessageDTO(
-                saved.getChatId(),
-                saved.getContent(),
-                saved.getImageUrl(),
-                saved.getSender().getUser().getName(),
-                saved.getSender().getAccountId(),
-                saved.getChatRoom().getRoomId(),
-                saved.getTimestamp(),
-                product != null ? product.getProductId() : null,
-                product != null ? product.getName() : null,
-                productImageUrl,
-                product != null ? product.getPrice() : null
-        );
-
-        response.setMessageType("PRODUCT");
-
-        // realtime message
+        // Gửi realtime message
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
 
-        Long receiverId = saved.getChatRoom().getBuyer().getAccountId()
-                .equals(saved.getSender().getAccountId())
-                ? saved.getChatRoom().getSeller().getAccountId()
-                : saved.getChatRoom().getBuyer().getAccountId();
-
-        int unreadCount = chatService.countUnreadMessages(saved.getChatRoom().getRoomId(), receiverId);
-
-        messagingTemplate.convertAndSend("/topic/chat/rooms", new ChatRoomUpdateDTO(
-                saved.getChatRoom().getRoomId(),
-                saved.getContent(),
-                saved.getTimestamp(),
-                unreadCount,
-                receiverId
-        ));
+        // Broadcast update danh sách phòng (có đầy đủ name)
+        broadcastRoomUpdate(saved);
 
         return ResponseEntity.ok(response);
     }
+
+    // ================== HELPER ==================
+    private ChatMessageDTO mapToDTO(ChatMessage msg) {
+        ChatMessageDTO dto = new ChatMessageDTO(
+                msg.getChatId(),
+                msg.getContent(),
+                msg.getImageUrl(),
+                msg.getSender().getUser().getName(),
+                msg.getSender().getAccountId(),
+                msg.getChatRoom().getRoomId(),
+                msg.getTimestamp()
+        );
+
+        if (msg.getProduct() != null) {
+            Product product = msg.getProduct();
+            dto.setMessageType("PRODUCT");
+            dto.setProductId(product.getProductId());
+            dto.setProductName(product.getName());
+            dto.setProductImageUrl(
+                    product.getImages() != null && !product.getImages().isEmpty()
+                            ? product.getImages().get(0).getImageUrl()
+                            : null
+            );
+            dto.setProductPrice(product.getPrice());
+        } else if (msg.getImageUrl() != null) {
+            dto.setMessageType("IMAGE");
+        } else {
+            dto.setMessageType("TEXT");
+        }
+
+        return dto;
+    }
+
+    private void broadcastRoomUpdate(ChatMessage saved) {
+        ChatRoom room = saved.getChatRoom();
+
+        Long receiverId = room.getBuyer().getAccountId()
+                .equals(saved.getSender().getAccountId())
+                ? room.getSeller().getAccountId()
+                : room.getBuyer().getAccountId();
+
+        int unreadCount = chatService.countUnreadMessages(room.getRoomId(), receiverId);
+
+        // 👇 roomName = tên đối thủ (người gửi hoặc người còn lại)
+        String roomName = room.getBuyer().getAccountId().equals(receiverId)
+                ? room.getSeller().getUser().getName()
+                : room.getBuyer().getUser().getName();
+
+
+        ChatRoomUpdateDTO updateDTO = ChatRoomUpdateDTO.builder()
+                .roomId(room.getRoomId())
+                .content(saved.getContent())
+                .messageType(saved.getImageUrl() != null ? "IMAGE" :
+                             saved.getProduct() != null ? "PRODUCT" : "TEXT")
+                .timestamp(saved.getTimestamp())
+                .unread(unreadCount)
+                .receiverId(receiverId)
+                .senderId(saved.getSender().getAccountId())
+                .senderName(saved.getSender().getUser().getName())
+                .roomName(roomName) // 👈 luôn là tên đối thủ
+                .avatarUrl(null)
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/rooms/" + receiverId, updateDTO);
+    }
+
 }

@@ -20,7 +20,24 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     Optional<ChatRoom> findByBuyerAndSeller(Account buyer, Account seller);
     List<ChatRoom> findByBuyerOrSeller(Account buyer, Account seller);
 
-    @Query("SELECT r FROM ChatRoom r LEFT JOIN FETCH r.messages WHERE r.buyer.accountId = :id OR r.seller.accountId = :id")
-    List<ChatRoom> findRoomsWithMessages(@Param("id") Long id);
+    @Query("SELECT r FROM ChatRoom r " +
+    	       "LEFT JOIN r.messages m " +
+    	       "WHERE r.buyer.accountId = :id OR r.seller.accountId = :id " +
+    	       "GROUP BY r " +
+    	       "ORDER BY MAX(m.timestamp) DESC")
+    	List<ChatRoom> findRoomsWithMessages(@Param("id") Long id);
+
+    @Query("""
+    	    SELECT r, m FROM ChatRoom r
+    	    LEFT JOIN r.messages m
+    	    WHERE (r.buyer.accountId = :id OR r.seller.accountId = :id)
+    	      AND m.timestamp = (
+    	          SELECT MAX(m2.timestamp) 
+    	          FROM ChatMessage m2 
+    	          WHERE m2.chatRoom = r
+    	      )
+    	""")
+    	List<Object[]> findRoomsWithLastMessage(@Param("id") Long id);
+
 }
 
