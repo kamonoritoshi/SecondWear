@@ -1,22 +1,57 @@
 import React from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
+// Import file CSS thuần
+import "./css/PaymentFailPage.css";
+
+// Icon "X" đơn giản bằng SVG, không thay đổi
+const ErrorIcon = () => (
+  <svg
+    className="error-icon" // Sử dụng class từ file CSS
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+    ></path>
+  </svg>
+);
+
 export default function PaymentFailPage() {
   const [searchParams] = useSearchParams();
-  const error = searchParams.get("error") || "Thanh toán thất bại!";
-  const orderId = searchParams.get("orderId") || "Không rõ";
+  const error = searchParams.get("error") || "Giao dịch không thể hoàn tất.";
+  const orderId = searchParams.get("orderId") || "Không xác định";
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-red-50 px-4">
-      <div className="bg-white p-6 rounded-xl shadow-md max-w-md w-full text-center">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">Thanh toán thất bại</h2>
-        <p className="text-gray-700 mb-2">Mã đơn hàng: <strong>{orderId}</strong></p>
-        <p className="text-sm text-gray-500 mb-4">Lý do: {decodeURIComponent(error)}</p>
-        <Link
-          to="/checkout"
-          className="inline-block px-6 py-2 bg-red-600 text-black rounded hover:bg-red-700 transition"
-        >
+    <div className="payment-fail-container">
+      <div className="payment-fail-card">
+        <ErrorIcon />
+        <h1 className="card-title">
+          Giao dịch thất bại
+        </h1>
+        <p className="card-description">
+          Rất tiếc, đã có sự cố trong quá trình thanh toán.
+        </p>
+        
+        <div className="error-details">
+          <p>
+            Mã đơn hàng: <span className="order-id">{orderId}</span>
+          </p>
+          <p>
+            <span className="label">Chi tiết lỗi:</span> {decodeURIComponent(error)}
+          </p>
+        </div>
+        
+        <Link to="/checkout" className="btn btn-retry">
           Thử lại thanh toán
+        </Link>
+        <Link to="/" className="link-home">
+          Quay về trang chủ
         </Link>
       </div>
     </div>

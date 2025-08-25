@@ -92,6 +92,7 @@ public class PayOSService {
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> body = response.getBody();
+            System.out.println("PayOS Full Response: " + body.toString());
             if (!"00".equals(String.valueOf(body.get("code")))) {
                 throw new RuntimeException("Lỗi PayOS: " + body.get("desc"));
             }
