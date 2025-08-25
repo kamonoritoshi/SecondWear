@@ -11,6 +11,7 @@ public class StoreDTO {
 	private Long accountId;
     private String storeName;
     private String address;
+    private String avatarUrl;
     @JsonProperty("isFavorited")
     private boolean isFavorited; // Cho biết người dùng hiện tại có thích cửa hàng này không
     private List<ProductDTO> products;
