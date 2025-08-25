@@ -59,6 +59,7 @@ public class StoreService {
         storeDTO.setAccountId(storeAccount.getAccountId());
         storeDTO.setStoreName(storeAccount.getUser().getName());
         storeDTO.setAddress(storeAccount.getUser().getAddress());
+        storeDTO.setAvatarUrl(storeAccount.getAvatarUrl());
         storeDTO.setProducts(productDTOs);
         
         // Sửa lỗi: Sử dụng favoriteService để kiểm tra trạng thái yêu thích

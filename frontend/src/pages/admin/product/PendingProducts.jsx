@@ -26,7 +26,7 @@ export default function PendingProducts() {
     axios
       .get("/api/admin/products/pending", config)
       .then((res) => {
-        console.log("Dữ liệu sản phẩm từ API:", res.data); 
+        console.log("Dữ liệu sản phẩm từ API:", res.data);
         setProducts(res.data);
       })
       .catch((err) => {
@@ -86,7 +86,7 @@ export default function PendingProducts() {
   return (
     <div className="pending-products-container">
       <h2 className="page-title">Sản phẩm chờ duyệt</h2>
-      
+
       {products.length === 0 ? (
         <div className="no-products-message">
           🎉 Tuyệt vời! Không có sản phẩm nào đang chờ duyệt.

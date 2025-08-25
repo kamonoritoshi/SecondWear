@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sw.dao.AccountRepository;
 import com.sw.dao.RoleRepository;
 import com.sw.dto.AuthResponse;
+import com.sw.dto.ChangePasswordRequest;
 import com.sw.entity.Account;
 import com.sw.entity.Role;
 import com.sw.security.CustomUserDetails;
@@ -57,6 +58,15 @@ public class AccountController {
 	public ResponseEntity<Account> createAccount(@RequestBody Account account) {
 		return ResponseEntity.ok(accountService.createAccount(account));
 	}
+	
+	@PutMapping("/{id}/change-password")
+    public ResponseEntity<?> changePassword(
+            @PathVariable Long id,
+            @RequestBody ChangePasswordRequest request) {
+
+        accountService.changePassword(id, request);
+        return ResponseEntity.ok("Đổi mật khẩu thành công");
+    }
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account account) {

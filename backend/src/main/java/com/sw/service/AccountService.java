@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sw.dao.AccountRepository;
+import com.sw.dto.ChangePasswordRequest;
 import com.sw.dto.admin.CustomerResponse;
 import com.sw.entity.Account;
 import com.sw.entity.Order;
@@ -129,4 +130,17 @@ public class AccountService {
         // 5. Trả về URL đã được upload
         return avatarUrl;
     }
+    
+    public void changePassword(Long id, ChangePasswordRequest request) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
+            throw new RuntimeException("Mật khẩu cũ không đúng");
+        }
+
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        accountRepository.save(account);
+    }
+
 }

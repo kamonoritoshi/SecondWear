@@ -18,6 +18,16 @@
   margin-bottom: 24px !important;
 }
 
+/* Tiêu đề phụ (ví dụ: Đổi mật khẩu) */
+.profile-subtitle {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  margin: 32px 0 16px 0 !important;
+  color: #374151 !important; /* Xám đậm */
+  border-top: 1px solid #e5e7eb !important;
+  padding-top: 20px !important;
+}
+
 /* Ảnh đại diện */
 .profile-avatar {
   width: 120px !important;
@@ -36,48 +46,47 @@
 
 /* Khu vực hiển thị trạng thái đăng ký bán hàng */
 .seller-status-container {
-    width: 90% !important;
-    padding: 1.5rem !important;
-    margin-bottom: 2rem !important;
-    border-radius: 8px !important;
-    text-align: center !important;
-    background-color: #f9fafb !important;
-    border: 1px solid #e5e7eb !important;
+  width: 90% !important;
+  padding: 1.5rem !important;
+  margin-bottom: 2rem !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  background-color: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
 }
 
 .seller-status {
-    font-size: 1.1rem !important;
-    line-height: 1.5 !important;
+  font-size: 1.1rem !important;
+  line-height: 1.5 !important;
 }
 
 .seller-status.pending {
-    color: #f39c12 !important; /* Vàng cam */
+  color: #f39c12 !important; /* Vàng cam */
 }
 
 .seller-status.approved {
-    color: #2ecc71 !important; /* Xanh lá */
+  color: #2ecc71 !important; /* Xanh lá */
 }
 
 .seller-status.rejected {
-    color: #e74c3c !important; /* Đỏ */
+  color: #e74c3c !important; /* Đỏ */
 }
 
 /* Nút/Link trong khu vực trạng thái */
 .seller-status .profile-button {
-    display: inline-block !important;
-    margin-top: 1rem !important;
-    padding: 0.6rem 1.2rem !important;
-    text-decoration: none !important;
-    background-color: #3b82f6 !important; /* Xanh dương */
-    color: white !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
+  display: inline-block !important;
+  margin-top: 1rem !important;
+  padding: 0.6rem 1.2rem !important;
+  text-decoration: none !important;
+  background-color: #3b82f6 !important; /* Xanh dương */
+  color: white !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
 }
 
 .seller-status .profile-button:hover {
-    opacity: 0.9 !important;
+  opacity: 0.9 !important;
 }
-
 
 /* Wrapper cho mỗi trường thông tin (label + input) */
 .profile-field {
@@ -155,8 +164,17 @@
 }
 
 /* Thông báo lỗi */
-.profile-error {
+.profile-error,
+.error-text {
   color: #e74c3c !important; /* Đỏ */
+  margin-top: 10px !important;
+  text-align: center !important;
+  font-size: 14px !important;
+}
+
+/* Thông báo thành công */
+.success-text {
+  color: #22c55e !important; /* Xanh lá */
   margin-top: 10px !important;
   text-align: center !important;
   font-size: 14px !important;
@@ -167,4 +185,25 @@
   padding: 50px !important;
   font-size: 1.2rem !important;
   color: #111827 !important;
+}
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .profile-input {
+  padding-right: 40px !important; /* chừa chỗ cho icon */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #6b7280; /* xám */
+}
+
+.password-toggle:hover {
+  color: #111827; /* đen */
 }
