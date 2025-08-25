@@ -7,6 +7,8 @@ import Footer from "./Footer";
 import useAddToCart from "./hooks/useAddToCart";
 
 // Import icon đen/trắng cho từng loại
+import whiteCartIcon from "./icons/white-cart-icon.png"
+import searchIcon from "./icons/black-search-icon.png";
 import heroBanner from "./icons/hero-banner.png";
 import shopIcon from "./icons/shop-icon.png";
 import defaultIconBlack from "./icons/black-default-category-icon.png";
@@ -431,7 +433,7 @@ const ProductCard = ({ product, onQuickAddToCart, t }) => (
           }}
         >
           <img
-            src="/src/icons/white-cart-icon.png"
+            src={whiteCartIcon}
             alt={t ? t('add_to_cart_alt') : 'Thêm vào giỏ'}
           />
         </button>
@@ -649,7 +651,7 @@ const HomePage = ({ t }) => {
             />
             <button className="search-button" type="submit">
               <img
-                src="/src/icons/black-search-icon.png"
+                src={searchIcon}
                 alt={t ? t('search_icon_alt') : 'Tìm kiếm'}
                 className="header-icon"
               />

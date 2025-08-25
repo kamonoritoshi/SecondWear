@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "./apiConfig";
 import { toast } from "react-toastify";
 import "./css/Favorites.css"; 
+import blackUserIcon from "./icons/black-user-icon.png"
 
 const Favorites = () => {
   const [activeTab, setActiveTab] = useState("products");
@@ -315,7 +316,7 @@ const Favorites = () => {
               }}
             >
               <img
-                src={item.avatarUrl || "/src/icons/black-user-icon.png"}
+                src={item.avatarUrl || blackUserIcon}
                 alt={item.storeName}
                 className="favorites-card-img"
               />

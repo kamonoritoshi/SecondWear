@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from './apiConfig';
+import hideIcon from "./icons/password-hide.png";
+import viewIcon from "./icons/password-view.png";
 
 const RegisterPage = ({ t }) => {
     const [formData, setFormData] = useState({
@@ -119,7 +121,7 @@ const RegisterPage = ({ t }) => {
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 <img
-                                    src={showPassword ? '/src/icons/password-hide.png' : '/src/icons/password-view.png'}
+                                    src={showPassword ? hideIcon : viewIcon}
                                     alt="toggle"
                                 />
                             </span>
@@ -143,7 +145,7 @@ const RegisterPage = ({ t }) => {
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             >
                                 <img
-                                    src={showConfirmPassword ? '/src/icons/password-hide.png' : '/src/icons/password-view.png'}
+                                    src={showConfirmPassword ? hideIcon : viewIcon}
                                     alt="toggle"
                                 />
                             </span>

@@ -24,7 +24,7 @@ export default function ChatRoom() {
 
   const token = localStorage.getItem("jwtToken");
   const accountId = currentUser?.accountId;
-  const API_URL = "http://localhost:8080";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   // Redirect nếu chưa login
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function ChatRoom() {
   useEffect(() => {
     if (!accountId) return;
 
-    fetch(`${API_URL}/api/chat/rooms/${accountId}`, {
+    fetch(`${API_BASE_URL}/api/chat/rooms/${accountId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -107,7 +107,7 @@ export default function ChatRoom() {
 
     setChatMessages([]);
 
-    fetch(`${API_URL}/api/chat/room/${roomId}/messages`, {
+    fetch(`${API_BASE_URL}/api/chat/room/${roomId}/messages`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -121,7 +121,7 @@ export default function ChatRoom() {
   useEffect(() => {
     if (!roomId || !accountId) return;
 
-    fetch(`${API_URL}/api/chat/room/${roomId}/read?accountId=${accountId}`, {
+    fetch(`${API_BASE_URL}/api/chat/room/${roomId}/read?accountId=${accountId}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -135,7 +135,7 @@ export default function ChatRoom() {
   useEffect(() => {
     if (!accountId) return;
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(`${API_BASE_URL}/ws`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 300,
@@ -219,7 +219,7 @@ export default function ChatRoom() {
     if (imageFile) formData.append("file", imageFile);
 
     try {
-      const res = await fetch(`${API_URL}/api/chat/room/${roomId}/message`, {
+      const res = await fetch(`${API_BASE_URL}/api/chat/room/${roomId}/message`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

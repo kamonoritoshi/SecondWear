@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "./apiConfig";
 import Footer from "./Footer";
+import blackCartIcon from "./icons/black-cart-icon.png"
 
 // Sử dụng lại ProductCard từ HomePage, áp dụng i18n cho các văn bản
 const ProductCard = ({ product, t }) => (
@@ -36,7 +37,7 @@ const ProductCard = ({ product, t }) => (
           }}
         >
           <img
-            src="/src/icons/black-cart-icon.png"
+            src={blackCartIcon}
             alt={t ? t("add_to_cart_alt") : "Thêm vào giỏ"}
           />
         </button>

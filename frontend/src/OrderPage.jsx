@@ -19,16 +19,17 @@ export default function OrderPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = getToken();
         const res = await axios.get("/api/orders/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${getToken()}` },
         });
         console.log("📦 Orders từ API:", res.data);
-        setOrders(res.data);
+
+        // ✅ Thêm bước kiểm tra an toàn
+        const ordersData = Array.isArray(res.data) ? res.data : [];
+        setOrders(ordersData);
       } catch (err) {
         console.error("Lỗi khi tải đơn hàng:", err);
+        setOrders([]); // ✅ Đảm bảo orders là mảng ngay cả khi có lỗi
       } finally {
         setLoading(false);
       }
@@ -58,15 +59,17 @@ export default function OrderPage() {
   };
 
   const getStatusClass = (status) => {
-    if (!status) return '';
+    if (!status) return "";
 
-    return 'status-' + status
-      .normalize('NFD')                 // tách dấu tiếng Việt
-      .replace(/[\u0300-\u036f]/g, '') // xóa dấu
-      .toLowerCase()
-      .replace(/\s+/g, '-');           // thay khoảng trắng bằng gạch nối
+    return (
+      "status-" +
+      status
+        .normalize("NFD") // tách dấu tiếng Việt
+        .replace(/[\u0300-\u036f]/g, "") // xóa dấu
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+    ); // thay khoảng trắng bằng gạch nối
   };
-
 
   return (
     <div className="orders-container">
@@ -93,7 +96,9 @@ export default function OrderPage() {
               </div>
               <div>
                 <strong>Trạng thái:</strong>{" "}
-                <span className={getStatusClass(order.status)}>{order.status}</span>
+                <span className={getStatusClass(order.status)}>
+                  {order.status}
+                </span>
               </div>
 
               <div>
@@ -116,14 +121,15 @@ export default function OrderPage() {
         <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">
-              Chi tiết đơn hàng #{selectedOrder.orderCode || selectedOrder.orderId}
+              Chi tiết đơn hàng #
+              {selectedOrder.orderCode || selectedOrder.orderId}
             </h3>
 
             {loadingDetail ? (
               <p>Đang tải chi tiết...</p>
             ) : (
               <ul className="order-items-list">
-                {selectedOrder.items?.map((item, index) => (
+                {Array.isArray(selectedOrder?.items) && selectedOrder.items.map((item, index) => (
                   <li key={index} className="order-item">
                     <div className="order-item-thumbnail">
                       <img
@@ -137,11 +143,14 @@ export default function OrderPage() {
                       />
                     </div>
                     <div className="item-info">
-                      <div><strong>{item.product.name}</strong></div>
+                      <div>
+                        <strong>{item.product.name}</strong>
+                      </div>
                       <div>Số lượng: {item.quantity}</div>
                       <div>Đơn giá: {item.price.toLocaleString()} đ</div>
                       <div>
-                        Thành tiền: {(item.price * item.quantity).toLocaleString()} đ
+                        Thành tiền:{" "}
+                        {(item.price * item.quantity).toLocaleString()} đ
                       </div>
                       <button
                         className="btn-view-product"
@@ -158,7 +167,10 @@ export default function OrderPage() {
               </ul>
             )}
 
-            <button className="btn-close" onClick={() => setSelectedOrder(null)}>
+            <button
+              className="btn-close"
+              onClick={() => setSelectedOrder(null)}
+            >
               Đóng
             </button>
           </div>
