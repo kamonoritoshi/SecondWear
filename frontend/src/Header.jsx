@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import avt from "./icons/black-user-icon.png"
 
 // --- SVG Icons ---
 // Định nghĩa các icon SVG dưới dạng component để dễ dàng tái sử dụng và tùy chỉnh
@@ -389,7 +390,7 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
     setTheme(theme);
   };
 
-  const defaultAvatar = "/src/icons/black-user-icon.png"; // Icon user mặc định của bạn
+  const defaultAvatar = avt; // Icon user mặc định của bạn
   const avatarToShow = currentUser?.avatarUrl || defaultAvatar;
   return (
     <>
