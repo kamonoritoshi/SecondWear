@@ -6,7 +6,9 @@ import { useAuth } from "./contexts/AuthContext";
 
 import { useNavigate } from "react-router-dom";
 
-const accountId = localStorage.getItem("accountId");
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 // --- SVG Icons ---
 // Định nghĩa các icon SVG dưới dạng component để dễ dàng tái sử dụng và tùy chỉnh
 const HomeIcon = (props) => (
@@ -159,6 +161,45 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
   console.log(currentUser);
 
   const navigate = useNavigate();
+
+  const [totalUnread, setTotalUnread] = useState(0);
+
+  const accountId = localStorage.getItem("currentUser");
+  const token = localStorage.getItem("jwtToken");
+
+  const fetchUnread = async () => {
+    if (!accountId || !token) return;
+    try {
+      const res = await fetch(`http://localhost:8080/api/chat/rooms/${accountId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const rooms = await res.json();
+      const unreadSum = rooms.reduce((sum, r) => sum + (r.unread || 0), 0);
+      setTotalUnread(unreadSum);
+    } catch (e) {
+      console.error("Lỗi fetch unread:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (!accountId) return;
+    fetchUnread();
+
+    const client = new Client({
+      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      onConnect: () => {
+        client.subscribe(`/topic/rooms/${accountId}`, (msg) => {
+          console.log("Room update:", msg.body);
+          fetchUnread(); // 🔥 cập nhật lại mỗi khi có sự kiện
+        });
+      },
+    });
+
+    client.activate();
+    return () => client.deactivate();
+  }, [accountId, token]);
+
 
   // Hàm xử lý đăng xuất
   const handleLogout = (e) => {
@@ -350,7 +391,6 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
 
   const defaultAvatar = "/src/icons/black-user-icon.png"; // Icon user mặc định của bạn
   const avatarToShow = currentUser?.avatarUrl || defaultAvatar;
-
   return (
     <>
       {/* CSS cho Tray Menu, đặt ở đây để component tự chứa và dễ quản lý */}
@@ -799,9 +839,9 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                   borderRadius: 8,
                 }}
               >
-                <img 
-                  src={avatarToShow} 
-                  alt="User Avatar" 
+                <img
+                  src={avatarToShow}
+                  alt="User Avatar"
                   className="header-icon" // Thêm class để style
                 />
                 <span
@@ -875,10 +915,9 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                       >
                         {t("Yêu thích")}
                       </Link>
-
-                      {/* Nút Tin nhắn */}
+                      {/* Đổi mật khẩu */}
                       <Link
-                        to={`/chat/rooms/${accountId}`}
+                        to="/change-password"
                         className="dropdown-item"
                         style={{
                           fontSize: 15,
@@ -889,7 +928,38 @@ const Header = ({ t, currentTheme, setTheme, handleLanguageChange }) => {
                           display: "block",
                         }}
                       >
+                        {t("Đổi mật khẩu")}
+                      </Link>
+                      {/* Nút Tin nhắn */}
+                      <Link
+                        to={`/chat/rooms/${currentUser.accountId}`}
+                        className="dropdown-item"
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          padding: "10px 22px",
+                          color: "var(--main-text)",
+                          textDecoration: "none",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center"
+                        }}
+                      >
                         {t("Tin nhắn")}
+                        {totalUnread > 0 && (
+                          <span
+                            style={{
+                              background: "red",
+                              color: "white",
+                              borderRadius: "50%",
+                              fontSize: 12,
+                              padding: "2px 6px",
+                              marginLeft: 8
+                            }}
+                          >
+                            {totalUnread}
+                          </span>
+                        )}
                       </Link>
 
                       {currentUser?.role?.toLowerCase() === "admin" && (

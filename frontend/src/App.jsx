@@ -7,7 +7,6 @@ import {
   Routes,
   Route,
   useLocation,
-  Outlet,
 } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import Header from "./Header";
@@ -24,6 +23,7 @@ import WrappedLoginPage from "./LoginPage";
 import WrappedRegisterPage from "./RegisterPage";
 import VerifyPage from "./VerifyPage";
 import ProfilePage from "./ProfilePage";
+import ChangePasswordPage from "./ChangePasswordPage"; // ✅ Import trang đổi mật khẩu
 import CheckoutPage from "./CheckoutPage";
 import PaymentFailPage from "./PaymentFailPage";
 import SuccessPage from "./SuccessPage";
@@ -52,7 +52,6 @@ import SellerList from "./pages/admin/account/SellerList";
 import CustomerList from "./pages/admin/account/CustomerList";
 import PendingProducts from "./pages/admin/product/PendingProducts";
 import OrderManagementAdmin from "./pages/admin/order/OrderManagement";
-import ViolatedProducts from "./pages/admin/product/ViolatedProducts";
 import DisputeManagementAdmin from "./pages/admin/order/DisputeManagementAdmin";
 
 // Chính sách
@@ -62,7 +61,7 @@ import ReturnPolicy from "./ReturnPolicy";
 import ShippingPolicy from "./ShippingPolicy";
 import PaymentSecurity from "./PaymentSecurity";
 import FAQPage from "./FAQPage";
-import UserGuide from "./UserGuide"
+import UserGuide from "./UserGuide";
 import ContactSupport from "./ContactSupport";
 
 // Route bảo vệ
@@ -117,6 +116,7 @@ const AppContent = () => {
           <Route path="/register" element={<WrappedRegisterPage t={t} />} />
           <Route path="/verify" element={<VerifyPage t={t} />} />
           <Route path="/profile" element={<ProfilePage t={t} />} />
+          <Route path="/change-password" element={<ProtectedRoute><ChangePasswordPage t={t} /></ProtectedRoute>} />
           <Route path="/checkout" element={<CheckoutPage t={t} />} />
           <Route path="/payment-fail" element={<PaymentFailPage />} />
           <Route path="/payment-success" element={<SuccessPage />} />
@@ -141,10 +141,8 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
-          {/* <Route path="/chat/rooms/:accountId" element={<ChatRoomsPage />} />*/}
           <Route path="/chat/:roomId" element={<ChatRoom />} />
           <Route path="/chat/rooms/:accountId" element={<ChatRoom />} />
-            
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/stores/:storeId" element={<StorePage />} />
           <Route
@@ -189,7 +187,6 @@ const AppContent = () => {
             <Route path="sellers" element={<SellerList />} />
             <Route path="customers" element={<CustomerList />} />
             <Route path="products/pending" element={<PendingProducts />} />
-            <Route path="products/violations" element={<ViolatedProducts />} />
             <Route path="orders" element={<OrderManagementAdmin />} />
             <Route path="disputes" element={<DisputeManagementAdmin />} />
           </Route>
@@ -197,14 +194,12 @@ const AppContent = () => {
       </main>
 
       {!isAdminOrSellerRoute && (
-        <>
-          <Footer
-            t={t}
-            currentTheme={theme}
-            setTheme={setTheme}
-            handleLanguageChange={setLanguage}
-          />
-        </>
+        <Footer
+          t={t}
+          currentTheme={theme}
+          setTheme={setTheme}
+          handleLanguageChange={setLanguage}
+        />
       )}
     </div>
   );
@@ -217,7 +212,7 @@ function App() {
       <AppContent />
       <ChatbotWidget />
 
-      {/* ✅ THÊM ToastContainer ở đây để hiện thông báo */}
+      {/* ✅ Thông báo toast */}
       <ToastContainer
         position="top-right"
         autoClose={1000}

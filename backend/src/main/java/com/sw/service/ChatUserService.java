@@ -3,7 +3,7 @@ package com.sw.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,7 +14,8 @@ import com.sw.dao.AccountRepository;
 import com.sw.dao.ChatMessageRepository;
 import com.sw.dao.ChatRoomRepository;
 import com.sw.dao.ProductRepository;
-import com.sw.dto.ChatRoomDTO;
+
+import com.sw.dto.ChatRoomUpdateDTO;
 import com.sw.dto.UnreadCountDTO;
 import com.sw.entity.Account;
 import com.sw.entity.ChatMessage;
@@ -79,30 +80,55 @@ public class ChatUserService {
     }
 
     
-    public List<ChatRoomDTO> getChatRoomsWithUnread(Long userId) {
-        List<ChatRoom> rooms = chatRoomRepository.findRoomsWithMessages(userId);
+    public List<ChatRoomUpdateDTO> getChatRoomsWithUnread(Long userId) {
+        List<Object[]> result = chatRoomRepository.findRoomsWithLastMessage(userId);
 
-        return rooms.stream().map(room -> {
-            int unread = chatMessageRepository.countUnreadMessagesByRoomAndUser(room.getRoomId(), userId);
+        return result.stream()
+            .map(rowObj -> {
+                Object[] row = (Object[]) rowObj;
+                ChatRoom room = (ChatRoom) row[0];
+                ChatMessage lastMsg = (ChatMessage) row[1];
 
-            ChatMessage lastMsg = room.getMessages().isEmpty() ? null :
-                    room.getMessages().get(room.getMessages().size() - 1);
+                int unread = chatMessageRepository.countUnreadMessagesByRoomAndUser(room.getRoomId(), userId);
 
-            Long receiverId = room.getBuyer().getAccountId().equals(userId)
-                ? room.getSeller().getAccountId()
-                : room.getBuyer().getAccountId();
+                Long receiverId = room.getBuyer().getAccountId().equals(userId)
+                        ? room.getSeller().getAccountId()
+                        : room.getBuyer().getAccountId();
 
-            return new ChatRoomDTO(
-                room.getRoomId(),
-                room.getBuyer().getUser().getName(),
-                room.getSeller().getUser().getName(),
-                lastMsg != null ? lastMsg.getContent() : null,
-                lastMsg != null ? lastMsg.getTimestamp() : null,
-                unread,
-                receiverId
-            );
-        }).collect(Collectors.toList());
+                // 👇 roomName = tên đối thủ
+                String roomName = room.getBuyer().getAccountId().equals(userId)
+                        ? room.getSeller().getUser().getName()
+                        : room.getBuyer().getUser().getName();
+
+                return ChatRoomUpdateDTO.builder()
+                        .roomId(room.getRoomId())
+                        .content(lastMsg != null
+                                ? (lastMsg.getImageUrl() != null ? "[Hình ảnh]" : lastMsg.getContent())
+                                : null)
+                        .messageType(lastMsg != null
+                                ? (lastMsg.getImageUrl() != null ? "IMAGE"
+                                  : lastMsg.getProduct() != null ? "PRODUCT"
+                                  : "TEXT")
+                                : null)
+                        .timestamp(lastMsg != null ? lastMsg.getTimestamp() : null)
+                        .unread(unread)
+                        .receiverId(receiverId)
+                        .senderId(lastMsg != null ? lastMsg.getSender().getAccountId() : null)
+                        .senderName(lastMsg != null ? lastMsg.getSender().getUser().getName() : null)
+                        .roomName(roomName) // 👈 luôn là đối thủ
+                        .avatarUrl(null)    // sau có thể bổ sung ảnh đại diện
+                        .build();
+            })
+            .sorted((a, b) -> {
+                if (a.getTimestamp() == null && b.getTimestamp() == null) return 0;
+                if (a.getTimestamp() == null) return 1;
+                if (b.getTimestamp() == null) return -1;
+                return b.getTimestamp().compareTo(a.getTimestamp());
+            })
+            .collect(Collectors.toList());
     }
+
+
 
 
     // ---------- SEND / GET MESSAGES ----------
