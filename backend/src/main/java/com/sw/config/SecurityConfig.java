@@ -80,7 +80,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("https://second-wear.vercel.app", "http://localhost:5173")); // ✅ Cụ thể, KHÔNG dùng "*"
+        config.setAllowedOrigins(Arrays.asList("https://second-wear.vercel.app", "http://localhost:5173", "https://secondwear-api.onrender.com")); // ✅ Cụ thể, KHÔNG dùng "*"
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type")); // ✅ rõ ràng
         config.setAllowCredentials(true); // ✅ PHẢI đặt true để SockJS hoạt động
