@@ -2,14 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "./css/ProfilePage.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./contexts/AuthContext"; // ✨ 1. Import useAuth
+import { useAuth } from "./contexts/AuthContext";
 import { API_BASE_URL } from "./apiConfig";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ProfilePage = ({ t }) => {
-  // ✨ 2. Lấy thông tin cốt lõi và hàm cập nhật từ context
   const { currentUser, token, updateUserAvatar } = useAuth();
 
-  // Giữ lại state cục bộ để chứa thông tin chi tiết (SĐT, địa chỉ)
   const [account, setAccount] = useState(null);
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -22,10 +21,25 @@ const ProfilePage = ({ t }) => {
   const [error, setError] = useState("");
   const [isLoadingAvatar, setIsLoadingAvatar] = useState(false);
 
+  // ✨ state cho đổi mật khẩu
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  // ✨ state ẩn/hiện mật khẩu
+  const [showPassword, setShowPassword] = useState({
+    old: false,
+    new: false,
+    confirm: false,
+  });
+
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // ✨ 3. Giữ lại API call này để fetch dữ liệu chi tiết
   useEffect(() => {
     const fetchProfile = async () => {
       if (!token) {
@@ -56,9 +70,8 @@ const ProfilePage = ({ t }) => {
     };
 
     fetchProfile();
-  }, [token]); // Phụ thuộc vào token
+  }, [token]);
 
-  // ✨ 4. Thêm các hàm xử lý avatar
   const handleAvatarClick = () => {
     if (!isLoadingAvatar) {
       fileInputRef.current.click();
@@ -82,10 +95,8 @@ const ProfilePage = ({ t }) => {
 
       const newAvatarUrl = response.data.avatarUrl;
 
-      // Bắn tín hiệu lên context để cập nhật toàn cục
       updateUserAvatar(newAvatarUrl);
 
-      // Cập nhật state cục bộ của trang này để giao diện thay đổi ngay
       setAccount((prevAccount) => ({
         ...prevAccount,
         avatarUrl: newAvatarUrl,
@@ -182,6 +193,36 @@ const ProfilePage = ({ t }) => {
     }
   };
 
+  const handlePasswordChange = (e) => {
+    setPasswordData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleChangePassword = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("Mật khẩu mới và xác nhận không khớp.");
+      return;
+    }
+    try {
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.put(
+        `${API_BASE_URL}/api/accounts/${currentUser.accountId}/change-password`,
+        {
+          oldPassword: passwordData.oldPassword,
+          newPassword: passwordData.newPassword,
+        },
+        config
+      );
+      setPasswordSuccess("Đổi mật khẩu thành công!");
+      setPasswordError("");
+      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      setPasswordError(
+        "Đổi mật khẩu thất bại: " + (err.response?.data || err.message)
+      );
+      setPasswordSuccess("");
+    }
+  };
+
   if (error) return <div className="profile-error">{error}</div>;
   if (!account || !user) {
     return (
@@ -191,7 +232,6 @@ const ProfilePage = ({ t }) => {
     );
   }
 
-  // ✨ 5. Ưu tiên avatar từ context, nếu không có thì dùng avatar từ state cục bộ
   const defaultAvatar = "/src/icons/black-user-icon.png";
   const avatarToShow =
     currentUser && currentUser.avatarUrl
@@ -209,7 +249,6 @@ const ProfilePage = ({ t }) => {
         <div className="seller-status-container">{renderSellerStatus()}</div>
       )}
 
-      {/* ✨ 6. Phần JSX cho avatar */}
       <div className="avatar-section" onClick={handleAvatarClick}>
         <img src={avatarToShow} alt="Avatar" className="profile-avatar" />
         <div className="avatar-overlay">
@@ -224,18 +263,13 @@ const ProfilePage = ({ t }) => {
         />
       </div>
 
-      {/* Các trường và nút bấm còn lại giữ nguyên */}
       <div className="profile-field">
-        <label className="profile-label">
-          {t ? t("profile_email") : "Email:"}
-        </label>
+        <label className="profile-label">Email:</label>
         <input value={formData.email} readOnly className="profile-input" />
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">
-          {t ? t("profile_full_name") : "Họ tên:"}
-        </label>
+        <label className="profile-label">Họ tên:</label>
         <input
           name="fullName"
           value={formData.fullName}
@@ -246,9 +280,7 @@ const ProfilePage = ({ t }) => {
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">
-          {t ? t("profile_phone") : "Số điện thoại:"}
-        </label>
+        <label className="profile-label">Số điện thoại:</label>
         <input
           name="phone"
           value={formData.phone}
@@ -259,9 +291,7 @@ const ProfilePage = ({ t }) => {
       </div>
 
       <div className="profile-field">
-        <label className="profile-label">
-          {t ? t("profile_address") : "Địa chỉ:"}
-        </label>
+        <label className="profile-label">Địa chỉ:</label>
         <input
           name="address"
           value={formData.address}
@@ -276,21 +306,96 @@ const ProfilePage = ({ t }) => {
           onClick={() => setEditing(true)}
           className="profile-button edit-button"
         >
-          {t ? t("profile_edit") : "Chỉnh sửa"}
+          Chỉnh sửa
         </button>
       ) : (
         <div className="profile-button-group">
           <button onClick={handleSave} className="profile-button save-button">
-            {t ? t("profile_save") : "Lưu"}
+            Lưu
           </button>
           <button
             onClick={() => setEditing(false)}
             className="profile-button cancel-button"
           >
-            {t ? t("profile_cancel") : "Hủy"}
+            Hủy
           </button>
         </div>
       )}
+
+      {/* ✨ Form đổi mật khẩu */}
+      <h3 className="profile-subtitle">Đổi mật khẩu</h3>
+
+      {/* Mật khẩu cũ */}
+      <div className="profile-field password-field">
+        <label>Mật khẩu cũ:</label>
+        <div className="password-input-wrapper">
+          <input
+            type={showPassword.old ? "text" : "password"}
+            name="oldPassword"
+            value={passwordData.oldPassword}
+            onChange={handlePasswordChange}
+            className="profile-input"
+          />
+          <span
+            className="password-toggle"
+            onClick={() =>
+              setShowPassword((prev) => ({ ...prev, old: !prev.old }))
+            }
+          >
+            {showPassword.old ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+      </div>
+
+      {/* Mật khẩu mới */}
+      <div className="profile-field password-field">
+        <label>Mật khẩu mới:</label>
+        <div className="password-input-wrapper">
+          <input
+            type={showPassword.new ? "text" : "password"}
+            name="newPassword"
+            value={passwordData.newPassword}
+            onChange={handlePasswordChange}
+            className="profile-input"
+          />
+          <span
+            className="password-toggle"
+            onClick={() =>
+              setShowPassword((prev) => ({ ...prev, new: !prev.new }))
+            }
+          >
+            {showPassword.new ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+      </div>
+
+      {/* Xác nhận mật khẩu mới */}
+      <div className="profile-field password-field">
+        <label>Xác nhận mật khẩu mới:</label>
+        <div className="password-input-wrapper">
+          <input
+            type={showPassword.confirm ? "text" : "password"}
+            name="confirmPassword"
+            value={passwordData.confirmPassword}
+            onChange={handlePasswordChange}
+            className="profile-input"
+          />
+          <span
+            className="password-toggle"
+            onClick={() =>
+              setShowPassword((prev) => ({ ...prev, confirm: !prev.confirm }))
+            }
+          >
+            {showPassword.confirm ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+      </div>
+
+      <button onClick={handleChangePassword} className="profile-button edit-button">
+        Đổi mật khẩu
+      </button>
+      {passwordError && <div className="error-text">{passwordError}</div>}
+      {passwordSuccess && <div className="success-text">{passwordSuccess}</div>}
     </div>
   );
 };
