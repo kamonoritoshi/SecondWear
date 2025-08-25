@@ -21,11 +21,19 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query("SELECT COUNT(a) FROM Account a WHERE a.role.roleName = :roleName")
 	long countByRoleName(@Param("roleName") String roleName);
 
-	@Query("SELECT a FROM Account a " +
-		       "WHERE (:role IS NULL OR a.role.roleName = :role) " +
-		       "AND (:status IS NULL OR a.status = :status) " +
-		       "AND (:keyword IS NULL OR LOWER(a.user.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-		       "OR LOWER(a.user.name) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+	@Query(value = "SELECT a.* FROM \"Account\" a " + "JOIN \"User\" u ON a.user_id = u.user_id "
+			+ "JOIN \"Role\" r ON a.role_id = r.role_id " + "WHERE (:role IS NULL OR r.role_name = :role) "
+			+ "AND (:status IS NULL OR a.status = :status) " + "AND (:keyword IS NULL OR ("
+			+ "    LOWER(CAST(u.email AS VARCHAR)) LIKE LOWER(CONCAT('%', :keyword, '%')) "
+			+ "    OR LOWER(CAST(u.name AS VARCHAR)) LIKE LOWER(CONCAT('%', :keyword, '%'))" + ")) "
+			+ "ORDER BY a.account_id DESC",
+
+			countQuery = "SELECT count(*) FROM \"Account\" a " + "JOIN \"User\" u ON a.user_id = u.user_id "
+					+ "JOIN \"Role\" r ON a.role_id = r.role_id " + "WHERE (:role IS NULL OR r.role_name = :role) "
+					+ "AND (:status IS NULL OR a.status = :status) " + "AND (:keyword IS NULL OR ("
+					+ "    LOWER(CAST(u.email AS VARCHAR)) LIKE LOWER(CONCAT('%', :keyword, '%')) "
+					+ "    OR LOWER(CAST(u.name AS VARCHAR)) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+					+ "))", nativeQuery = true)
 	Page<Account> findByFilters(@Param("role") String role, @Param("status") String status,
 			@Param("keyword") String keyword, Pageable pageable);
 	

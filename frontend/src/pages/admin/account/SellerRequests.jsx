@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/SellerRequests.css";
+import { API_BASE_URL } from "../../../apiConfig";
+import { CheckCircle, XCircle } from "lucide-react"; // ✨ 1. Import icon từ thư viện
 
 export default function SellerRequests() {
   const [requests, setRequests] = useState([]);
@@ -15,13 +17,12 @@ export default function SellerRequests() {
   const fetchRequests = () => {
     setLoading(true);
     axios
-      .get("/api/admin/seller-requests", {
+      .get(`${API_BASE_URL}/api/admin/seller-requests`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("jwtToken"),
         },
       })
       .then((res) => {
-        console.log("Data: ", res.data);
         setRequests(res.data);
       })
       .catch((err) => {
@@ -34,11 +35,15 @@ export default function SellerRequests() {
 
   const handleAction = (id, action) => {
     const reason = reasons[id] || "";
-    setProcessingId(id);
+    if (action === "REJECT" && !reason.trim()) {
+      alert("Vui lòng nhập lý do trước khi từ chối yêu cầu.");
+      return;
+    }
 
+    setProcessingId(id);
     axios
       .put(
-        `/api/admin/seller-requests/${id}/${action.toLowerCase()}`,
+        `${API_BASE_URL}/api/admin/seller-requests/${id}/${action.toLowerCase()}`,
         { reason },
         {
           headers: {
@@ -47,7 +52,7 @@ export default function SellerRequests() {
         }
       )
       .then(() => {
-        fetchRequests(); // reload danh sách sau khi xử lý
+        fetchRequests();
       })
       .catch((err) => {
         alert("❌ Có lỗi xảy ra khi xử lý yêu cầu!");
@@ -58,10 +63,13 @@ export default function SellerRequests() {
       });
   };
 
+  const handleReasonChange = (accountId, value) => {
+    setReasons((prev) => ({ ...prev, [accountId]: value }));
+  };
+
   return (
     <div className="seller-requests-page">
       <h2>Yêu cầu đăng ký người bán</h2>
-
       {loading ? (
         <p>Đang tải dữ liệu...</p>
       ) : requests.length === 0 ? (
@@ -81,17 +89,21 @@ export default function SellerRequests() {
           </thead>
           <tbody>
             {requests.map((req) => (
-              <tr key={req.id}>
-                <td>{req.name}</td>
-                <td>{req.email}</td>
-                <td>{req.phone}</td>
+              <tr key={req.accountId}>
+                <td>{req.name || "N/A"}</td>
+                <td>{req.email || "N/A"}</td>
+                <td>{req.phone || "N/A"}</td>
                 <td>
                   {new Date(req.createdAt).toLocaleString("vi-VN", {
                     dateStyle: "short",
                     timeStyle: "short",
                   })}
                 </td>
-                <td>{req.sellerStatus}</td>
+                <td>
+                  <span className={`status-${req.sellerStatus.toLowerCase()}`}>
+                    {req.sellerStatus}
+                  </span>
+                </td>
                 <td>
                   <input
                     type="text"
@@ -99,40 +111,40 @@ export default function SellerRequests() {
                     disabled={req.sellerStatus !== "PENDING"}
                     value={reasons[req.accountId] || ""}
                     onChange={(e) =>
-                      setReasons((prev) => ({
-                        ...prev,
-                        [req.accountId]: e.target.value,
-                      }))
+                      handleReasonChange(req.accountId, e.target.value)
                     }
                   />
                 </td>
                 <td>
                   {req.sellerStatus === "PENDING" ? (
-                    <>
-                      <img
-                        src="/src/icons/approved.png"
-                        alt="Phê duyệt"
-                        className="action-icon"
+                    <div className="action-buttons">
+                      {/* ✨ 2. Thay thế <img> bằng component icon */}
+                      <CheckCircle
+                        className="action-icon approve"
+                        size={24}
                         title="Phê duyệt yêu cầu"
-                        onClick={() => handleAction(req.accountId, "APPROVE")}
+                        onClick={() =>
+                          !processingId &&
+                          handleAction(req.accountId, "APPROVE")
+                        }
                         style={{
-                          cursor:
-                            processingId === req.accountId ? "not-allowed" : "pointer",
+                          cursor: processingId ? "not-allowed" : "pointer",
+                          opacity: processingId ? 0.5 : 1,
                         }}
                       />
-                      <img
-                        src="/src/icons/rejected.png"
-                        alt="Từ chối"
-                        className="action-icon"
+                      <XCircle
+                        className="action-icon reject"
+                        size={24}
                         title="Từ chối yêu cầu"
-                        onClick={() => handleAction(req.accountId, "REJECT")}
+                        onClick={() =>
+                          !processingId && handleAction(req.accountId, "REJECT")
+                        }
                         style={{
-                          cursor:
-                            processingId === req.accountId ? "not-allowed" : "pointer",
-                          marginLeft: "8px",
+                          cursor: processingId ? "not-allowed" : "pointer",
+                          opacity: processingId ? 0.5 : 1,
                         }}
                       />
-                    </>
+                    </div>
                   ) : (
                     <span>Đã xử lý</span>
                   )}

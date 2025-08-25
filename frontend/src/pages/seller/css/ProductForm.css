@@ -1,120 +1,226 @@
+/* ==========================================================================
+   #PRODUCT FORM STYLES
+   ========================================================================== */
+
+/* Biến màu để dễ dàng thay đổi giao diện */
+:root {
+  --pf-primary-color: #007bff;
+  --pf-success-color: #28a745;
+  --pf-danger-color: #dc3545;
+  --pf-light-gray: #f8f9fa;
+  --pf-medium-gray: #dee2e6;
+  --pf-dark-gray: #495057;
+  --pf-text-color: #212529;
+  --pf-bg-color: #ffffff;
+  --pf-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
 .product-form-container {
-  max-width: 700px;
+  max-width: 850px; /* Rộng hơn một chút để chứa 2 cột */
   margin: 40px auto;
-  padding: 30px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  font-family: "Segoe UI", sans-serif;
-  border: 1px solid #eee;
+  padding: 40px;
+  background-color: var(--pf-bg-color);
+  border-radius: 16px;
+  box-shadow: var(--pf-shadow);
+  border: 1px solid #e9ecef;
 }
 
 .product-form-container h1 {
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 28px;
-  color: #222;
-  font-weight: 600;
+  margin-bottom: 35px;
+  font-size: 2rem;
+  color: var(--pf-text-color);
+  font-weight: 700;
+  letter-spacing: -1px;
 }
 
 .product-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 30px; /* Tăng khoảng cách giữa các section */
+}
+
+/* Chia form thành các nhóm trực quan */
+.form-section {
+  padding: 25px;
+  border: 1px solid var(--pf-medium-gray);
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.form-section h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.25rem;
+  color: var(--pf-primary-color);
+  border-bottom: 2px solid var(--pf-light-gray);
+  padding-bottom: 10px;
+}
+
+/* Grid layout cho các input field */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Tạo layout 2 cột */
+    gap: 20px;
+}
+
+.form-grid .full-width {
+    grid-column: 1 / -1; /* Cho các field như mô tả chiếm toàn bộ chiều rộng */
 }
 
 .product-form label {
   font-weight: 600;
-  color: #333;
+  color: #555;
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .product-form input[type="text"],
 .product-form input[type="number"],
 .product-form select,
 .product-form textarea {
-  padding: 12px 14px;
-  font-size: 15px;
-  border: 1px solid #d0d0d0;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 1px solid var(--pf-medium-gray);
   border-radius: 8px;
   width: 100%;
   box-sizing: border-box;
-  transition: all 0.25s ease;
-  background-color: #fafafa;
+  transition: all 0.3s ease;
+  background-color: var(--pf-light-gray);
 }
 
-.product-form input[type="text"]:focus,
-.product-form input[type="number"]:focus,
+.product-form input:focus,
 .product-form select:focus,
 .product-form textarea:focus {
-  border-color: #007bff;
+  border-color: var(--pf-primary-color);
   background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15);
   outline: none;
 }
 
 .product-form textarea {
-  min-height: 90px;
+  min-height: 120px;
   resize: vertical;
 }
 
-.product-form input[type="file"] {
-  margin-top: 8px;
+/* --- Image Uploader --- */
+.image-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
 }
 
-.product-form img {
-  margin-top: 14px;
-  border-radius: 8px;
-  width: 130px;
-  height: auto;
+.image-preview-item {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* Tạo ô vuông */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.image-preview-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease;
 }
 
-.product-form .checkbox-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 6px;
+.image-preview-item:hover img {
+  transform: scale(1.05);
 }
 
-.product-form input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #007bff;
-  cursor: pointer;
-}
-
-.submit-btn {
-  margin-top: 20px;
-  padding: 14px 20px;
-  background-color: #28a745;
+.image-preview-item .remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
-  font-size: 16px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: scale(0.8);
+}
+
+.image-preview-item:hover .remove-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.image-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 10%;
+  border: 2px dashed var(--pf-medium-gray);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #999;
+  padding-top: 100%; /* Để giữ tỷ lệ vuông */
+  position: relative;
+}
+.image-upload-placeholder > * {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.image-upload-placeholder:hover {
+  background-color: var(--pf-light-gray);
+  border-color: var(--pf-primary-color);
+  color: var(--pf-primary-color);
+}
+
+.image-upload-placeholder span {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.image-upload-placeholder p {
+  margin: 5px 0 0;
+  font-size: 14px;
+}
+
+/* Nút Submit */
+.submit-btn {
+  margin-top: 20px;
+  padding: 15px 25px;
+  background-image: linear-gradient(45deg, var(--pf-success-color), #20c997);
+  color: white;
+  border: none;
+  font-size: 1.1rem;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  align-self: flex-end; /* Đẩy nút về bên phải */
 }
 
-.submit-btn:hover {
-  background-color: #218838;
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
 }
 
-@media screen and (max-width: 480px) {
-  .product-form-container {
-    padding: 20px;
-    border-radius: 8px;
-  }
-
-  .product-form-container h1 {
-    font-size: 22px;
-  }
-
-  .submit-btn {
-    font-size: 15px;
-    padding: 12px;
-  }
+.submit-btn:disabled {
+  background-image: none;
+  background-color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
 }

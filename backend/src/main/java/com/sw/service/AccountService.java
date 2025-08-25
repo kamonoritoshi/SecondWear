@@ -59,12 +59,14 @@ public class AccountService {
     }
     
     public Page<Account> getAccountsFiltered(String role, String status, String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("accountId").descending());
+        // ✨ Bỏ phần Sort.by(...) đi
+        Pageable pageable = PageRequest.of(page, size); 
 
         if ((role == null || role.isEmpty()) &&
             (status == null || status.isEmpty()) &&
             (keyword == null || keyword.isEmpty())) {
-            return accountRepository.findAll(pageable);
+            // ✨ Thêm Sort vào đây cho trường hợp không có filter
+            return accountRepository.findAll(PageRequest.of(page, size, Sort.by("accountId").descending()));
         }
 
         return accountRepository.findByFilters(role, status, keyword, pageable);

@@ -22,8 +22,16 @@ public class ProductImageService {
 		image.setImageUrl(imageUrl);
 		return productImageRepo.save(image);
 	}
+	
+	public void deleteImagesByIds(List<Long> imageIds) {
+		productImageRepo.deleteAllById(imageIds);
+	}
 
 	public void deleteImage(Long imageId) {
 		productImageRepo.deleteById(imageId);
 	}
+	
+	public ProductImage save(ProductImage image) {
+        return productImageRepo.save(image);
+    }
 }

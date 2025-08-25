@@ -29,9 +29,9 @@
 }
 
 .card-title {
-  font-size: 14px;
-  color: #555;
-  font-weight: 500;
+  font-size: 14px !important;
+  color: #555 !important;
+  font-weight: 500 !important;
 }
 
 .growth-tag {
